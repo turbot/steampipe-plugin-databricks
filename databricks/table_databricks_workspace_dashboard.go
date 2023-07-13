@@ -16,24 +16,8 @@ func tableDatabricksWorkspaceDashboard(_ context.Context) *plugin.Table {
 		Name:        "databricks_workspace_dashboard",
 		Description: "Gets details for all the dashboards associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
-			KeyColumns: []*plugin.KeyColumn{
-				{
-					Name:      "id",
-					Require:   plugin.Optional,
-					Operators: []string{"=", "<>"},
-				},
-				{
-					Name:      "dashboard_name",
-					Require:   plugin.Optional,
-					Operators: []string{"=", "<>"},
-				},
-				{
-					Name:      "display_name",
-					Require:   plugin.Optional,
-					Operators: []string{"=", "<>"},
-				},
-			},
-			Hydrate: listWorkspaceDashboards,
+			KeyColumns: plugin.OptionalColumns([]string{"name"}),
+			Hydrate:    listWorkspaceDashboards,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
@@ -181,7 +165,7 @@ func listWorkspaceDashboards(ctx context.Context, d *plugin.QueryData, h *plugin
 		}
 
 		for _, item := range response.Results {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -222,5 +206,5 @@ func getWorkspaceDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 		return nil, err
 	}
 
-	return dashboard, nil
+	return *dashboard, nil
 }

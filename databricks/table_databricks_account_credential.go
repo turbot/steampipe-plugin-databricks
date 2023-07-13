@@ -35,6 +35,7 @@ func tableDatabricksAccountCredential(_ context.Context) *plugin.Table {
 			{
 				Name:        "creation_time",
 				Description: "Time in epoch milliseconds when the credential was created.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -80,7 +81,7 @@ func listAccountCredentials(ctx context.Context, d *plugin.QueryData, h *plugin.
 	}
 
 	for _, item := range credentials {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or if the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -123,7 +124,7 @@ func getAccountCredential(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 			logger.Error("databricks_account_credential.getAccountCredential", "api_error", err)
 			return nil, err
 		}
-		return credential, nil
+		return *credential, nil
 	}
 
 	return nil, nil

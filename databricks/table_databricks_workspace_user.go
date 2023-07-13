@@ -147,7 +147,7 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		}
 
 		for _, item := range response.Resources {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -187,5 +187,5 @@ func getWorkspaceUser(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 		return nil, err
 	}
 
-	return user, nil
+	return *user, nil
 }

@@ -45,6 +45,7 @@ func tableDatabricksWorkspaceCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this catalog was created, in epoch milliseconds.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -95,6 +96,7 @@ func tableDatabricksWorkspaceCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this catalog was last updated, in epoch milliseconds.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -150,7 +152,7 @@ func listWorkspaceCatalogs(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	}
 
 	for _, item := range catalogs {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -185,5 +187,5 @@ func getWorkspaceCatalog(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 		return nil, err
 	}
 
-	return catalog, nil
+	return *catalog, nil
 }

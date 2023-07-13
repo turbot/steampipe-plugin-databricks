@@ -110,7 +110,7 @@ func listAccountBudgets(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	for _, item := range budgets {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or if the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -153,7 +153,7 @@ func getAccountBudget(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 			logger.Error("databricks_account_budget.getAccountBudget", "api_error", err)
 			return nil, err
 		}
-		return budget, nil
+		return *budget, nil
 	}
 
 	return nil, nil

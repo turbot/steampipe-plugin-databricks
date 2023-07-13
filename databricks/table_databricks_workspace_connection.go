@@ -45,6 +45,7 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "The creation time of the connection.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -68,11 +69,6 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "name",
-				Description: "Name of the connection.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
 				Name:        "owner",
 				Description: "The user who owns the connection.",
 				Type:        proto.ColumnType_STRING,
@@ -85,6 +81,7 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "The last time the connection was updated.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -140,7 +137,7 @@ func listWorkspaceConnections(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	for _, item := range connections {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -175,5 +172,5 @@ func getWorkspaceConnection(ctx context.Context, d *plugin.QueryData, _ *plugin.
 		return nil, err
 	}
 
-	return connection, nil
+	return *connection, nil
 }

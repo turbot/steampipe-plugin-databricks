@@ -38,6 +38,7 @@ func tableDatabricksWorkspaceJob(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_time",
 				Description: "The time at which this job was created in epoch milliseconds.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -197,7 +198,7 @@ func listWorkspaceJobs(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		}
 
 		for _, item := range response.Jobs {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -237,5 +238,5 @@ func getWorkspaceJob(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		return nil, err
 	}
 
-	return job, nil
+	return *job, nil
 }

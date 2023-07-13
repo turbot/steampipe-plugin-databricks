@@ -110,7 +110,7 @@ func listWorkspaceAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	for _, item := range alerts {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -153,7 +153,7 @@ func getWorkspaceAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 			logger.Error("databricks_workspace_alert.getWorkspaceAlert", "api_error", err)
 			return nil, err
 		}
-		return alert, nil
+		return *alert, nil
 	}
 
 	return nil, nil

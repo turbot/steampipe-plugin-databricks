@@ -43,7 +43,7 @@ func tableDatabricksAccountGroup(_ context.Context) *plugin.Table {
 			{
 				Name:        "external_id",
 				Description: "External id of the group.",
-				Type:        proto.ColumnType_TIMESTAMP,
+				Type:        proto.ColumnType_STRING,
 			},
 
 			// JSON fields
@@ -124,7 +124,7 @@ func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		}
 
 		for _, item := range groups {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or if the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -163,5 +163,5 @@ func getAccountGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		logger.Error("databricks_account_group.getAccountGroup", "api_error", err)
 		return nil, err
 	}
-	return group, nil
+	return *group, nil
 }

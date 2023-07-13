@@ -154,7 +154,7 @@ func listAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		}
 
 		for _, item := range users {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -194,7 +194,7 @@ func getAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, err
 	}
 
-	return user, nil
+	return *user, nil
 }
 
 // func getAccessControlAssignableRoles(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {

@@ -36,6 +36,7 @@ func tableDatabricksWorkspaceClusterPolicy(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at_timestamp",
 				Description: "The timestamp (in millisecond) when this Cluster Policy was created.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -106,7 +107,7 @@ func listWorkspaceClusterPolicies(ctx context.Context, d *plugin.QueryData, h *p
 	}
 
 	for _, item := range policies {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -150,7 +151,7 @@ func getWorkspaceClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plug
 			logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "api_error", err)
 			return nil, err
 		}
-		return policy, nil
+		return *policy, nil
 	}
 
 	return nil, nil

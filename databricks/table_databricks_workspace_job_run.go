@@ -52,6 +52,7 @@ func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
 			{
 				Name:        "end_time",
 				Description: "The time at which this run ended.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -97,6 +98,7 @@ func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
 			{
 				Name:        "start_time",
 				Description: "The time at which this run started.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -179,7 +181,7 @@ func listWorkspaceJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
-	maxLimit := int32(100)
+	maxLimit := int32(25)
 	if d.QueryContext.Limit != nil {
 		limit := int32(*d.QueryContext.Limit)
 		if limit < maxLimit {
@@ -213,7 +215,7 @@ func listWorkspaceJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		}
 
 		for _, item := range response.Runs {
-			d.StreamListItem(ctx, &item)
+			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
@@ -257,5 +259,5 @@ func getWorkspaceJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 		return nil, err
 	}
 
-	return run, nil
+	return *run, nil
 }

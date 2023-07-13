@@ -98,7 +98,7 @@ func listWorkspaceDataSources(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	for _, item := range dataSources {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -133,5 +133,5 @@ func getWorkspaceDataSource(ctx context.Context, d *plugin.QueryData, _ *plugin.
 		return nil, err
 	}
 
-	return dataSource, nil
+	return *dataSource, nil
 }

@@ -85,7 +85,7 @@ func listAccountCustomAppIntegrations(ctx context.Context, d *plugin.QueryData, 
 	}
 
 	for _, item := range integrations {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or if the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -118,5 +118,5 @@ func getAccountCustomAppIntegration(ctx context.Context, d *plugin.QueryData, _ 
 		logger.Error("databricks_account_custom_app_integration.getAccountCustomAppIntegration", "api_error", err)
 		return nil, err
 	}
-	return integration, nil
+	return *integration, nil
 }

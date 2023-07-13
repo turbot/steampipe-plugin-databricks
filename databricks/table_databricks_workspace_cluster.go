@@ -96,11 +96,13 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "last_restarted_time",
 				Description: "The time when the cluster was started/restarted.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "last_state_loss_time",
 				Description: "Time when the cluster driver last lost its state (due to a restart or driver failure).",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -141,6 +143,7 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "start_time",
 				Description: "The time when the cluster creation request was received.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -156,6 +159,7 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "terminated_time",
 				Description: "The time when the cluster was terminated.",
+				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 
@@ -279,7 +283,7 @@ func listWorkspaceClusters(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	}
 
 	for _, item := range clusters {
-		d.StreamListItem(ctx, &item)
+		d.StreamListItem(ctx, item)
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {
@@ -322,7 +326,7 @@ func getWorkspaceCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 			logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "api_error", err)
 			return nil, err
 		}
-		return cluster, nil
+		return *cluster, nil
 	}
 
 	return nil, nil
