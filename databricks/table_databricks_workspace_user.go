@@ -140,13 +140,13 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	for {
-		users, err := client.Users.ListAll(ctx, request)
+		response, err := client.Users.Impl().List(ctx, request)
 		if err != nil {
 			logger.Error("databricks_workspace_user.listWorkspaceUsers", "api_error", err)
 			return nil, err
 		}
 
-		for _, item := range users {
+		for _, item := range response.Resources {
 			d.StreamListItem(ctx, &item)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
@@ -155,7 +155,7 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 			}
 		}
 
-		if len(users) < request.Count {
+		if response.ItemsPerPage < int64(request.Count) {
 			return nil, nil
 		} else {
 			request.StartIndex = request.StartIndex + request.Count

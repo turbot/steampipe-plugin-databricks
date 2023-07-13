@@ -33,6 +33,11 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_workspace_cluster":              tableDatabricksWorkspaceCluster(ctx),
 			"databricks_workspace_cluster_policy":       tableDatabricksWorkspaceClusterPolicy(ctx),
 			"databricks_workspace_connection":           tableDatabricksWorkspaceConnection(ctx),
+			"databricks_workspace_current_user":         tableDatabricksWorkspaceCurrentUser(ctx),
+			"databricks_workspace_dashboard":            tableDatabricksWorkspaceDashboard(ctx),
+			"databricks_workspace_data_source":          tableDatabricksWorkspaceDataSource(ctx),
+			"databricks_workspace_job":                  tableDatabricksWorkspaceJob(ctx),
+			"databricks_workspace_job_run":              tableDatabricksWorkspaceJobRun(ctx),
 			"databricks_workspace_user":                 tableDatabricksWorkspaceUser(ctx),
 		},
 	}
