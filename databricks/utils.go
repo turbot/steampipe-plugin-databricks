@@ -23,7 +23,8 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 }
 
 func convertTimestamp(_ context.Context, d *transform.TransformData) (interface{}, error) {
-	epochTime := d.Value.(int64)
+
+	epochTime := getEpochTime(d.Value)
 
 	if epochTime != 0 {
 		timeInSec := math.Floor(float64(epochTime) / 1000)
@@ -32,6 +33,16 @@ func convertTimestamp(_ context.Context, d *transform.TransformData) (interface{
 		return timestampRFC3339Format, nil
 	}
 	return nil, nil
+}
+
+func getEpochTime(item interface{}) int64 {
+	switch item := item.(type) {
+	case int64:
+		return item
+	case int:
+		return int64(item)
+	}
+	return 0
 }
 
 func buildQueryFilterFromQuals(filterQuals []filterQualMap, equalQuals plugin.KeyColumnQualMap) string {
