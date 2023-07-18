@@ -45,7 +45,7 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "The creation time of the connection.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -81,7 +81,7 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "The last time the connection was updated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

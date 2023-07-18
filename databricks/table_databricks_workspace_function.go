@@ -47,7 +47,7 @@ func tableDatabricksWorkspaceFunction(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this function was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -143,7 +143,7 @@ func tableDatabricksWorkspaceFunction(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this function was last updated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

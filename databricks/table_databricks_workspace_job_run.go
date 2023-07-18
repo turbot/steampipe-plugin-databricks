@@ -52,7 +52,7 @@ func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
 			{
 				Name:        "end_time",
 				Description: "The time at which this run ended.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -98,7 +98,7 @@ func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
 			{
 				Name:        "start_time",
 				Description: "The time at which this run started.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

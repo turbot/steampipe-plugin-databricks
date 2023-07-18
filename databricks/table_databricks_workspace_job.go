@@ -38,7 +38,7 @@ func tableDatabricksWorkspaceJob(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_time",
 				Description: "The time at which this job was created in epoch milliseconds.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

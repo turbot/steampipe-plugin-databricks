@@ -38,7 +38,7 @@ func tableDatabricksWorkspaceDbfs(_ context.Context) *plugin.Table {
 			{
 				Name:        "modification_time",
 				Description: "Last modification time of given file/dir in milliseconds since Epoch.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 

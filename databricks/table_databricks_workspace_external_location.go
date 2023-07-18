@@ -35,8 +35,8 @@ func tableDatabricksWorkspaceExternalLocation(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this external location was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -71,7 +71,7 @@ func tableDatabricksWorkspaceExternalLocation(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this external location was last updated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

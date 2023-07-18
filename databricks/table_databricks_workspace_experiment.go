@@ -42,13 +42,13 @@ func tableDatabricksWorkspaceExperiment(_ context.Context) *plugin.Table {
 			{
 				Name:        "creation_time",
 				Description: "Time when the experiment was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "last_update_time",
 				Description: "Time when the experiment was last updated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

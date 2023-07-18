@@ -124,6 +124,12 @@ func listWorkspaceAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 
 func getWorkspaceAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("alert_id")
+
+	// Return nil, if no input provided
+	if id == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -132,29 +138,10 @@ func getWorkspaceAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["alert_id"] != nil {
-		id := d.EqualsQualString("alert_id")
-
-		alert, err := client.Alerts.GetByAlertId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_workspace_alert.getWorkspaceAlert", "api_error", err)
-			return nil, err
-		}
-		return alert, nil
+	alert, err := client.Alerts.GetByAlertId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_workspace_alert.getWorkspaceAlert", "api_error", err)
+		return nil, err
 	}
-
-	// Get by name if name provided as input
-	if d.EqualsQuals["name"] != nil {
-		name := d.EqualsQualString("name")
-
-		alert, err := client.Alerts.GetByName(ctx, name)
-		if err != nil {
-			logger.Error("databricks_workspace_alert.getWorkspaceAlert", "api_error", err)
-			return nil, err
-		}
-		return *alert, nil
-	}
-
-	return nil, nil
+	return alert, nil
 }

@@ -45,7 +45,7 @@ func tableDatabricksWorkspaceCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this catalog was created, in epoch milliseconds.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -96,7 +96,7 @@ func tableDatabricksWorkspaceCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this catalog was last updated, in epoch milliseconds.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

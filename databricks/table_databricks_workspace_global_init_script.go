@@ -35,7 +35,7 @@ func tableDatabricksWorkspaceGlobalInitScript(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "The time the script was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -62,7 +62,7 @@ func tableDatabricksWorkspaceGlobalInitScript(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "The time the script was last updated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{

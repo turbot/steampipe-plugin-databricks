@@ -36,7 +36,7 @@ func tableDatabricksWorkspaceClusterPolicy(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at_timestamp",
 				Description: "The timestamp (in millisecond) when this Cluster Policy was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -122,6 +122,12 @@ func listWorkspaceClusterPolicies(ctx context.Context, d *plugin.QueryData, h *p
 
 func getWorkspaceClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("policy_id")
+
+	// Return nil, if no input provided
+	if id == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -130,29 +136,10 @@ func getWorkspaceClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plug
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["policy_id"] != nil {
-		id := d.EqualsQualString("policy_id")
-
-		policy, err := client.ClusterPolicies.GetByPolicyId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "api_error", err)
-			return nil, err
-		}
-		return policy, nil
+	policy, err := client.ClusterPolicies.GetByPolicyId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "api_error", err)
+		return nil, err
 	}
-
-	// Get by name if name provided as input
-	if d.EqualsQuals["name"] != nil {
-		name := d.EqualsQualString("name")
-
-		policy, err := client.ClusterPolicies.GetByName(ctx, name)
-		if err != nil {
-			logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "api_error", err)
-			return nil, err
-		}
-		return *policy, nil
-	}
-
-	return nil, nil
+	return policy, nil
 }

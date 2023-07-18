@@ -35,7 +35,7 @@ func tableDatabricksAccountCredential(_ context.Context) *plugin.Table {
 			{
 				Name:        "creation_time",
 				Description: "Time in epoch milliseconds when the credential was created.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -95,6 +95,12 @@ func listAccountCredentials(ctx context.Context, d *plugin.QueryData, h *plugin.
 
 func getAccountCredential(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("credentials_id")
+
+	// Return nil, if no input provided
+	if id == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksAccount(ctx, d)
@@ -103,29 +109,10 @@ func getAccountCredential(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["credentials_id"] != nil {
-		id := d.EqualsQualString("credentials_id")
-
-		credential, err := client.Credentials.GetByCredentialsId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_account_credential.getAccountCredential", "api_error", err)
-			return nil, err
-		}
-		return credential, nil
+	credential, err := client.Credentials.GetByCredentialsId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_account_credential.getAccountCredential", "api_error", err)
+		return nil, err
 	}
-
-	// Get by name if name provided as input
-	if d.EqualsQuals["name"] != nil {
-		name := d.EqualsQualString("name")
-
-		credential, err := client.Credentials.GetByCredentialsName(ctx, name)
-		if err != nil {
-			logger.Error("databricks_account_credential.getAccountCredential", "api_error", err)
-			return nil, err
-		}
-		return *credential, nil
-	}
-
-	return nil, nil
+	return credential, nil
 }

@@ -82,6 +82,12 @@ func listWorkspaceGitCredentials(ctx context.Context, d *plugin.QueryData, h *pl
 
 func getWorkspaceGitCredential(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQuals["credential_id"].GetInt64Value()
+
+	// Return nil, if no input provided
+	if id == 0 {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -90,29 +96,10 @@ func getWorkspaceGitCredential(ctx context.Context, d *plugin.QueryData, _ *plug
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["credential_id"] != nil {
-		id := d.EqualsQuals["credential_id"].GetInt64Value()
-
-		cred, err := client.GitCredentials.GetByCredentialId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_workspace_git_credential.getWorkspaceGitCredential", "api_error", err)
-			return nil, err
-		}
-		return *cred, nil
+	cred, err := client.GitCredentials.GetByCredentialId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_workspace_git_credential.getWorkspaceGitCredential", "api_error", err)
+		return nil, err
 	}
-
-	// Get by name if name provided as input
-	if d.EqualsQuals["git_provider"] != nil {
-		provider := d.EqualsQualString("git_provider")
-
-		cred, err := client.GitCredentials.GetByGitProvider(ctx, provider)
-		if err != nil {
-			logger.Error("databricks_workspace_git_credential.getWorkspaceGitCredential", "api_error", err)
-			return nil, err
-		}
-		return *cred, nil
-	}
-
-	return nil, nil
+	return *cred, nil
 }

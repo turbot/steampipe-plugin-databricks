@@ -124,6 +124,12 @@ func listAccountBudgets(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 
 func getAccountBudget(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("budget_id")
+
+	// Return nil, if no input provided
+	if id == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksAccount(ctx, d)
@@ -132,29 +138,11 @@ func getAccountBudget(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["budget_id"] != nil {
-		id := d.EqualsQualString("budget_id")
-
-		budget, err := client.Budgets.GetByBudgetId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_account_budget.getAccountBudget", "api_error", err)
-			return nil, err
-		}
-		return budget, nil
+	budget, err := client.Budgets.GetByBudgetId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_account_budget.getAccountBudget", "api_error", err)
+		return nil, err
 	}
+	return budget, nil
 
-	// Get by name if name provided as input
-	if d.EqualsQuals["name"] != nil {
-		name := d.EqualsQualString("name")
-
-		budget, err := client.Budgets.GetByName(ctx, name)
-		if err != nil {
-			logger.Error("databricks_account_budget.getAccountBudget", "api_error", err)
-			return nil, err
-		}
-		return *budget, nil
-	}
-
-	return nil, nil
 }

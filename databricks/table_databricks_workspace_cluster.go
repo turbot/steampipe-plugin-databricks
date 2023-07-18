@@ -96,13 +96,13 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "last_restarted_time",
 				Description: "The time when the cluster was started/restarted.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "last_state_loss_time",
 				Description: "Time when the cluster driver last lost its state (due to a restart or driver failure).",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -143,7 +143,7 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "start_time",
 				Description: "The time when the cluster creation request was received.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
@@ -159,7 +159,7 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "terminated_time",
 				Description: "The time when the cluster was terminated.",
-				Transform:   transform.FromGo().Transform(convertTimestamp),
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
 			},
 
@@ -297,6 +297,12 @@ func listWorkspaceClusters(ctx context.Context, d *plugin.QueryData, h *plugin.H
 
 func getWorkspaceCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	id := d.EqualsQualString("cluster_id")
+
+	// Return nil, if no input provided
+	if id == "" {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -305,29 +311,10 @@ func getWorkspaceCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 		return nil, err
 	}
 
-	// Get by id if id provided as input
-	if d.EqualsQuals["cluster_id"] != nil {
-		id := d.EqualsQualString("cluster_id")
-
-		cluster, err := client.Clusters.GetByClusterId(ctx, id)
-		if err != nil {
-			logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "api_error", err)
-			return nil, err
-		}
-		return cluster, nil
+	cluster, err := client.Clusters.GetByClusterId(ctx, id)
+	if err != nil {
+		logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "api_error", err)
+		return nil, err
 	}
-
-	// Get by name if name provided as input
-	if d.EqualsQuals["cluster_name"] != nil {
-		name := d.EqualsQualString("cluster_name")
-
-		cluster, err := client.Clusters.GetByClusterName(ctx, name)
-		if err != nil {
-			logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "api_error", err)
-			return nil, err
-		}
-		return *cluster, nil
-	}
-
-	return nil, nil
+	return cluster, nil
 }

@@ -44,9 +44,17 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_workspace_global_init_script":   tableDatabricksWorkspaceGlobalInitScript(ctx),
 			"databricks_workspace_group":                tableDatabricksWorkspaceGroup(ctx),
 			"databricks_workspace_instance_pool":        tableDatabricksWorkspaceInstancePool(ctx),
+			"databricks_workspace_instance_profile":     tableDatabricksWorkspaceInstanceProfile(ctx),
+			"databricks_workspace_ip_access_list":       tableDatabricksWorkspaceIpAccessList(ctx),
 			"databricks_workspace_job":                  tableDatabricksWorkspaceJob(ctx),
 			"databricks_workspace_job_run":              tableDatabricksWorkspaceJobRun(ctx),
+			"databricks_workspace_metastore":            tableDatabricksWorkspaceMetastore(ctx),
+			"databricks_workspace_model":                tableDatabricksWorkspaceModel(ctx),
+			"databricks_workspace_pipeline":             tableDatabricksWorkspacePipeline(ctx),
+			"databricks_workspace_pipeline_event":       tableDatabricksWorkspacePipelineEvent(ctx),
+			"databricks_workspace_pipeline_update":      tableDatabricksWorkspacePipelineUpdate(ctx),
 			"databricks_workspace_user":                 tableDatabricksWorkspaceUser(ctx),
+			"databricks_workspace_webhook":              tableDatabricksWorkspaceWebhook(ctx),
 		},
 	}
 

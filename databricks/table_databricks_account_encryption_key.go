@@ -118,6 +118,5 @@ func getAccountEncryptionKey(ctx context.Context, d *plugin.QueryData, _ *plugin
 		logger.Error("databricks_account_encryption_key.getAccountEncryptionKey", "api_error", err)
 		return nil, err
 	}
-
 	return *key, nil
 }
