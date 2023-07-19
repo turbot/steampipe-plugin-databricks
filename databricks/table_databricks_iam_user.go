@@ -11,9 +11,9 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceUser(_ context.Context) *plugin.Table {
+func tableDatabricksIAMUser(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_user",
+		Name:        "databricks_iam_user",
 		Description: "Gets details for all the users associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
@@ -33,11 +33,11 @@ func tableDatabricksWorkspaceUser(_ context.Context) *plugin.Table {
 					Operators: []string{"=", "<>"},
 				},
 			},
-			Hydrate: listWorkspaceUsers,
+			Hydrate: listIAMUsers,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getWorkspaceUser,
+			Hydrate:    getIAMUser,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -106,7 +106,7 @@ func tableDatabricksWorkspaceUser(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listIAMUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -121,7 +121,7 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_user.listWorkspaceUsers", "connection_error", err)
+		logger.Error("databricks_iam_user.listIAMUsers", "connection_error", err)
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	for {
 		response, err := client.Users.Impl().List(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_user.listWorkspaceUsers", "api_error", err)
+			logger.Error("databricks_iam_user.listIAMUsers", "api_error", err)
 			return nil, err
 		}
 
@@ -165,7 +165,7 @@ func listWorkspaceUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getIAMUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 
@@ -177,13 +177,13 @@ func getWorkspaceUser(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_user.getWorkspaceUser", "connection_error", err)
+		logger.Error("databricks_iam_user.getIAMUser", "connection_error", err)
 		return nil, err
 	}
 
 	user, err := client.Users.GetById(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_user.getWorkspaceUser", "api_error", err)
+		logger.Error("databricks_iam_user.getIAMUser", "api_error", err)
 		return nil, err
 	}
 

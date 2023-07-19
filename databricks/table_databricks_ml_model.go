@@ -11,23 +11,21 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceWebhook(_ context.Context) *plugin.Table {
+func tableDatabricksMLModel(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_webhook",
+		Name:        "databricks_ml_model",
 		Description: "Lists all available registered models.",
 		List: &plugin.ListConfig{
-			Hydrate:    listWorkspaceWebhooks,
-			KeyColumns: plugin.OptionalColumns([]string{"events", "model_name"}),
+			Hydrate: listMLModels,
+		},
+		Get: &plugin.GetConfig{
+			KeyColumns: plugin.SingleColumn("name"),
+			Hydrate:    getMLModel,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
-				Name:        "id",
-				Description: "The ID of the webhook.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
-				Name:        "model_name",
-				Description: "Name of the model whose events would trigger this webhook.",
+				Name:        "name",
+				Description: "Unique name for the model.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -48,25 +46,20 @@ func tableDatabricksWorkspaceWebhook(_ context.Context) *plugin.Table {
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
-				Name:        "status",
-				Description: "Status of the webhook.",
+				Name:        "user_id",
+				Description: "User ID of the user who created this model.",
 				Type:        proto.ColumnType_STRING,
 			},
 
 			// JSON fields
 			{
-				Name:        "events",
-				Description: "Events that can trigger a registry webhook.",
+				Name:        "latest_versions",
+				Description: "Collection of latest model versions for each stage.",
 				Type:        proto.ColumnType_JSON,
 			},
 			{
-				Name:        "http_url_spec",
-				Description: "The HTTP URL specification for the webhook.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "job_spec",
-				Description: "The job specification for the webhook.",
+				Name:        "tags",
+				Description: "Additional metadata key-value pairs for this model.",
 				Type:        proto.ColumnType_JSON,
 			},
 
@@ -75,7 +68,7 @@ func tableDatabricksWorkspaceWebhook(_ context.Context) *plugin.Table {
 				Name:        "title",
 				Description: "The title of the resource.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("Id"),
+				Transform:   transform.FromField("Name"),
 			},
 		}),
 	}
@@ -83,38 +76,37 @@ func tableDatabricksWorkspaceWebhook(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceWebhooks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listMLModels(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+
+	// Limiting the results
+	maxLimit := int32(1000)
+	if d.QueryContext.Limit != nil {
+		limit := int32(*d.QueryContext.Limit)
+		if limit < maxLimit {
+			maxLimit = limit
+		}
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_webhook.listWorkspaceWebhooks", "connection_error", err)
+		logger.Error("databricks_ml_model.listMLModels", "connection_error", err)
 		return nil, err
 	}
 
-	request := ml.ListWebhooksRequest{}
-	if d.EqualsQualString("model_name") != "" {
-		request.ModelName = d.EqualsQualString("model_name")
-	}
-
-	var events []ml.RegistryWebhookEvent
-	quals := d.Quals
-	if quals["events"] != nil {
-		for _, q := range quals["events"].Quals {
-			events = append(events, ml.RegistryWebhookEvent(q.Value.GetStringValue()))
-		}
-		request.Events = events
+	request := ml.ListModelsRequest{
+		MaxResults: int(maxLimit),
 	}
 
 	for {
-		response, err := client.ModelRegistry.Impl().ListWebhooks(ctx, request)
+		response, err := client.ModelRegistry.Impl().ListModels(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_webhook.listWorkspaceWebhooks", "api_error", err)
+			logger.Error("databricks_ml_model.listMLModels", "api_error", err)
 			return nil, err
 		}
 
-		for _, item := range response.Webhooks {
+		for _, item := range response.RegisteredModels {
 			d.StreamListItem(ctx, item)
 
 			// Context can be cancelled due to manual cancellation or if the limit has been hit
@@ -128,4 +120,34 @@ func listWorkspaceWebhooks(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		}
 		request.PageToken = response.NextPageToken
 	}
+}
+
+//// HYDRATE FUNCTIONS
+
+func getMLModel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := d.EqualsQualString("name")
+
+	// Return nil, if no input provided
+	if name == "" {
+		return nil, nil
+	}
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_ml_model.getMLModel", "connection_error", err)
+		return nil, err
+	}
+
+	request := ml.GetModelRequest{
+		Name: name,
+	}
+
+	model, err := client.ModelRegistry.GetModel(ctx, request)
+	if err != nil {
+		logger.Error("databricks_ml_model.getMLModel", "api_error", err)
+		return nil, err
+	}
+	return *model, nil
 }

@@ -10,12 +10,12 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceCurrentUser(_ context.Context) *plugin.Table {
+func tableDatabricksIAMCurrentUser(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_current_user",
+		Name:        "databricks_iam_current_user",
 		Description: "Gets details for the current user of the workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: getWorkspaceCurrentUser,
+			Hydrate: getIAMCurrentUser,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -84,19 +84,19 @@ func tableDatabricksWorkspaceCurrentUser(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func getWorkspaceCurrentUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getIAMCurrentUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_current_user.getWorkspaceCurrentUser", "connection_error", err)
+		logger.Error("databricks_iam_current_user.getIAMCurrentUser", "connection_error", err)
 		return nil, err
 	}
 
 	user, err := client.CurrentUser.Me(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_current_user.getWorkspaceCurrentUser", "api_error", err)
+		logger.Error("databricks_iam_current_user.getIAMCurrentUser", "api_error", err)
 		return nil, err
 	}
 

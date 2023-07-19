@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
+func tableDatabricksCatalogConnection(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_connection",
+		Name:        "databricks_catalog_connection",
 		Description: "Gets an array of connections for the workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceConnections,
+			Hydrate: listCatalogConnections,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getWorkspaceConnection,
+			Hydrate:    getCatalogConnection,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -120,19 +120,19 @@ func tableDatabricksWorkspaceConnection(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceConnections(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCatalogConnections(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_connection.listWorkspaceConnections", "connection_error", err)
+		logger.Error("databricks_catalog_connection.listCatalogConnections", "connection_error", err)
 		return nil, err
 	}
 
 	connections, err := client.Connections.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_connection.listWorkspaceConnections", "api_error", err)
+		logger.Error("databricks_catalog_connection.listCatalogConnections", "api_error", err)
 		return nil, err
 	}
 
@@ -150,7 +150,7 @@ func listWorkspaceConnections(ctx context.Context, d *plugin.QueryData, h *plugi
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceConnection(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getCatalogConnection(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -162,13 +162,13 @@ func getWorkspaceConnection(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_connection.getWorkspaceConnection", "connection_error", err)
+		logger.Error("databricks_catalog_connection.getCatalogConnection", "connection_error", err)
 		return nil, err
 	}
 
 	connection, err := client.Connections.GetByNameArg(ctx, name)
 	if err != nil {
-		logger.Error("databricks_workspace_connection.getWorkspaceConnection", "api_error", err)
+		logger.Error("databricks_catalog_connection.getCatalogConnection", "api_error", err)
 		return nil, err
 	}
 

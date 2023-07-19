@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceExperiment(_ context.Context) *plugin.Table {
+func tableDatabricksMLExperiment(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_experiment",
+		Name:        "databricks_ml_experiment",
 		Description: "Gets details for all the experiments associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
-			Hydrate:    listWorkspaceExperiments,
+			Hydrate:    listMLExperiments,
 			KeyColumns: plugin.OptionalColumns([]string{"lifecycle_stage"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("experiment_id"),
-			Hydrate:    getWorkspaceExperiment,
+			Hydrate:    getMLExperiment,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -77,7 +77,7 @@ func tableDatabricksWorkspaceExperiment(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceExperiments(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listMLExperiments(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -104,14 +104,14 @@ func listWorkspaceExperiments(ctx context.Context, d *plugin.QueryData, h *plugi
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_experiment.listWorkspaceExperiments", "connection_error", err)
+		logger.Error("databricks_ml_experiment.listMLExperiments", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Experiments.Impl().ListExperiments(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_experiment.listWorkspaceExperiments", "api_error", err)
+			logger.Error("databricks_ml_experiment.listMLExperiments", "api_error", err)
 			return nil, err
 		}
 
@@ -134,7 +134,7 @@ func listWorkspaceExperiments(ctx context.Context, d *plugin.QueryData, h *plugi
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceExperiment(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getMLExperiment(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -150,13 +150,13 @@ func getWorkspaceExperiment(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_experiment.getWorkspaceExperiment", "connection_error", err)
+		logger.Error("databricks_ml_experiment.getMLExperiment", "connection_error", err)
 		return nil, err
 	}
 
 	experiment, err := client.Experiments.GetByName(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_experiment.getWorkspaceExperiment", "api_error", err)
+		logger.Error("databricks_ml_experiment.getMLExperiment", "api_error", err)
 		return nil, err
 	}
 

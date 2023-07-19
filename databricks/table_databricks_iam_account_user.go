@@ -11,9 +11,9 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksAccountUser(_ context.Context) *plugin.Table {
+func tableDatabricksIAMAccountUser(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_account_user",
+		Name:        "databricks_iam_account_user",
 		Description: "Gets details for all the users associated with a Databricks account.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
@@ -33,11 +33,11 @@ func tableDatabricksAccountUser(_ context.Context) *plugin.Table {
 					Operators: []string{"=", "<>"},
 				},
 			},
-			Hydrate: listAccountUsers,
+			Hydrate: listIAMAccountUsers,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getAccountUser,
+			Hydrate:    getIAMAccountUser,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -113,7 +113,7 @@ func tableDatabricksAccountUser(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listIAMAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -128,7 +128,7 @@ func listAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	// Create client
 	client, err := connectDatabricksAccount(ctx, d)
 	if err != nil {
-		logger.Error("databricks_account_user.listAccountUsers", "connection_error", err)
+		logger.Error("databricks_iam_account_user.listIAMAccountUsers", "connection_error", err)
 		return nil, err
 	}
 
@@ -149,7 +149,7 @@ func listAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	for {
 		users, err := client.Users.ListAll(ctx, request)
 		if err != nil {
-			logger.Error("databricks_account_user.listAccountUsers", "api_error", err)
+			logger.Error("databricks_iam_account_user.listIAMAccountUsers", "api_error", err)
 			return nil, err
 		}
 
@@ -172,7 +172,7 @@ func listAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 
 //// HYDRATE FUNCTIONS
 
-func getAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getIAMAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 
@@ -184,13 +184,13 @@ func getAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 	// Create client
 	client, err := connectDatabricksAccount(ctx, d)
 	if err != nil {
-		logger.Error("databricks_account_user.getAccountUser", "connection_error", err)
+		logger.Error("databricks_iam_account_user.getIAMAccountUser", "connection_error", err)
 		return nil, err
 	}
 
 	user, err := client.Users.GetById(ctx, id)
 	if err != nil {
-		logger.Error("databricks_account_user.getAccountUser", "api_error", err)
+		logger.Error("databricks_iam_account_user.getIAMAccountUser", "api_error", err)
 		return nil, err
 	}
 
@@ -209,7 +209,7 @@ func getAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 // 	// Create client
 // 	client, err := connectDatabricksAccount(ctx, d)
 // 	if err != nil {
-// 		logger.Error("databricks_account_user.getUser", "connection_error", err)
+// 		logger.Error("databricks_iam_account_user.getUser", "connection_error", err)
 // 		return nil, err
 // 	}
 
@@ -219,7 +219,7 @@ func getAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 
 // 	role, err := client.AccessControl.GetAssignableRolesForResource(ctx, request)
 // 	if err != nil {
-// 		logger.Error("databricks_account_user.getUser", "api_error", err)
+// 		logger.Error("databricks_iam_account_user.getUser", "api_error", err)
 // 		return nil, err
 // 	}
 // 	return role, nil

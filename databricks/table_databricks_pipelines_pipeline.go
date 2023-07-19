@@ -11,16 +11,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspacePipeline(_ context.Context) *plugin.Table {
+func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_pipeline",
+		Name:        "databricks_pipelines_pipeline",
 		Description: "Lists pipelines defined in the Delta Live Tables system.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspacePipelines,
+			Hydrate: listPipelinesPipelines,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("pipeline_id"),
-			Hydrate:    getWorkspacePipeline,
+			Hydrate:    getPipelinesPipeline,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -74,7 +74,7 @@ func tableDatabricksWorkspacePipeline(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspacePipelines(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listPipelinesPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -93,14 +93,14 @@ func listWorkspacePipelines(ctx context.Context, d *plugin.QueryData, h *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_pipeline.listWorkspacePipelines", "connection_error", err)
+		logger.Error("databricks_pipelines_pipeline.listPipelinesPipelines", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Pipelines.Impl().ListPipelines(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_pipeline.listWorkspacePipelines", "api_error", err)
+			logger.Error("databricks_pipelines_pipeline.listPipelinesPipelines", "api_error", err)
 			return nil, err
 		}
 
@@ -122,7 +122,7 @@ func listWorkspacePipelines(ctx context.Context, d *plugin.QueryData, h *plugin.
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspacePipeline(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getPipelinesPipeline(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("pipeline_id")
 
@@ -134,13 +134,13 @@ func getWorkspacePipeline(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_pipeline.getWorkspacePipeline", "connection_error", err)
+		logger.Error("databricks_pipelines_pipeline.getPipelinesPipeline", "connection_error", err)
 		return nil, err
 	}
 
 	pipeline, err := client.Pipelines.GetByPipelineId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_pipeline.getWorkspacePipeline", "api_error", err)
+		logger.Error("databricks_pipelines_pipeline.getPipelinesPipeline", "api_error", err)
 		return nil, err
 	}
 	return *pipeline, nil

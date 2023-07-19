@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceFunction(_ context.Context) *plugin.Table {
+func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_function",
+		Name:        "databricks_catalog_function",
 		Description: "List functions within the specified parent catalog and schema.",
 		List: &plugin.ListConfig{
-			Hydrate:    listWorkspaceFunctions,
+			Hydrate:    listCatalogFunctions,
 			KeyColumns: plugin.OptionalColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getWorkspaceFunction,
+			Hydrate:    getCatalogFunction,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -187,7 +187,7 @@ func tableDatabricksWorkspaceFunction(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCatalogFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	request := catalog.ListFunctionsRequest{}
@@ -201,13 +201,13 @@ func listWorkspaceFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_function.listWorkspaceFunctions", "connection_error", err)
+		logger.Error("databricks_catalog_function.listCatalogFunctions", "connection_error", err)
 		return nil, err
 	}
 
 	response, err := client.Functions.ListAll(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_function.listWorkspaceFunctions", "api_error", err)
+		logger.Error("databricks_catalog_function.listCatalogFunctions", "api_error", err)
 		return nil, err
 	}
 
@@ -224,7 +224,7 @@ func listWorkspaceFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getCatalogFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -236,13 +236,13 @@ func getWorkspaceFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_function.getWorkspaceFunction", "connection_error", err)
+		logger.Error("databricks_catalog_function.getCatalogFunction", "connection_error", err)
 		return nil, err
 	}
 
 	function, err := client.Functions.GetByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_workspace_function.getWorkspaceFunction", "api_error", err)
+		logger.Error("databricks_catalog_function.getCatalogFunction", "api_error", err)
 		return nil, err
 	}
 

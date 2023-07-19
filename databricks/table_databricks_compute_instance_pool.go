@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceInstancePool(_ context.Context) *plugin.Table {
+func tableDatabricksComputeInstancePool(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_instance_pool",
+		Name:        "databricks_compute_instance_pool",
 		Description: "Gets a list of instance pools with their statistics.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceInstancePools,
+			Hydrate: listComputeInstancePools,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("instance_pool_id"),
-			Hydrate:    getWorkspaceInstancePool,
+			Hydrate:    getComputeInstancePool,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -134,19 +134,19 @@ func tableDatabricksWorkspaceInstancePool(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceInstancePools(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listComputeInstancePools(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_pool.listWorkspaceInstancePools", "connection_error", err)
+		logger.Error("databricks_compute_instance_pool.listComputeInstancePools", "connection_error", err)
 		return nil, err
 	}
 
 	instancePools, err := client.InstancePools.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_pool.listWorkspaceInstancePools", "api_error", err)
+		logger.Error("databricks_compute_instance_pool.listComputeInstancePools", "api_error", err)
 		return nil, err
 	}
 
@@ -163,7 +163,7 @@ func listWorkspaceInstancePools(ctx context.Context, d *plugin.QueryData, h *plu
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getComputeInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 
@@ -175,13 +175,13 @@ func getWorkspaceInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugi
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_pool.getWorkspaceInstancePool", "connection_error", err)
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePool", "connection_error", err)
 		return nil, err
 	}
 
 	instancePool, err := client.InstancePools.GetByInstancePoolId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_pool.getWorkspaceInstancePool", "api_error", err)
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePool", "api_error", err)
 		return nil, err
 	}
 	return *instancePool, nil

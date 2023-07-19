@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceExternalLocation(_ context.Context) *plugin.Table {
+func tableDatabricksCatalogExternalLocation(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_external_location",
+		Name:        "databricks_catalog_external_location",
 		Description: "Gets an array of external locations from the metastore.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceExternalLocations,
+			Hydrate: listCatalogExternalLocations,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getWorkspaceExternalLocation,
+			Hydrate:    getCatalogExternalLocation,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -98,19 +98,19 @@ func tableDatabricksWorkspaceExternalLocation(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceExternalLocations(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCatalogExternalLocations(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_external_location.listWorkspaceExternalLocations", "connection_error", err)
+		logger.Error("databricks_catalog_external_location.listCatalogExternalLocations", "connection_error", err)
 		return nil, err
 	}
 
 	response, err := client.ExternalLocations.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_external_location.listWorkspaceExternalLocations", "api_error", err)
+		logger.Error("databricks_catalog_external_location.listCatalogExternalLocations", "api_error", err)
 		return nil, err
 	}
 
@@ -127,7 +127,7 @@ func listWorkspaceExternalLocations(ctx context.Context, d *plugin.QueryData, h 
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceExternalLocation(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getCatalogExternalLocation(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -139,13 +139,13 @@ func getWorkspaceExternalLocation(ctx context.Context, d *plugin.QueryData, _ *p
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_external_location.getWorkspaceExternalLocation", "connection_error", err)
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocation", "connection_error", err)
 		return nil, err
 	}
 
 	el, err := client.ExternalLocations.GetByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_workspace_external_location.getWorkspaceExternalLocation", "api_error", err)
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocation", "api_error", err)
 		return nil, err
 	}
 

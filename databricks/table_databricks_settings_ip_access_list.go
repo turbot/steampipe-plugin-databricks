@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceIpAccessList(_ context.Context) *plugin.Table {
+func tableDatabricksSettingsIpAccessList(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_ip_access_list",
+		Name:        "databricks_settings_ip_access_list",
 		Description: "Gets all IP access lists for the specified workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceIpAccessLists,
+			Hydrate: listSettingsIpAccessLists,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("list_id"),
-			Hydrate:    getWorkspaceIpAccessList,
+			Hydrate:    getSettingsIpAccessList,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -90,19 +90,19 @@ func tableDatabricksWorkspaceIpAccessList(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceIpAccessLists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listSettingsIpAccessLists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_ip_access_list.listWorkspaceIpAccessLists", "connection_error", err)
+		logger.Error("databricks_settings_ip_access_list.listSettingsIpAccessLists", "connection_error", err)
 		return nil, err
 	}
 
 	lists, err := client.IpAccessLists.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_ip_access_list.listWorkspaceIpAccessLists", "api_error", err)
+		logger.Error("databricks_settings_ip_access_list.listSettingsIpAccessLists", "api_error", err)
 		return nil, err
 	}
 
@@ -119,7 +119,7 @@ func listWorkspaceIpAccessLists(ctx context.Context, d *plugin.QueryData, h *plu
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceIpAccessList(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getSettingsIpAccessList(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("list_id")
 
@@ -131,13 +131,13 @@ func getWorkspaceIpAccessList(ctx context.Context, d *plugin.QueryData, _ *plugi
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_ip_access_list.getWorkspaceIpAccessList", "connection_error", err)
+		logger.Error("databricks_settings_ip_access_list.getSettingsIpAccessList", "connection_error", err)
 		return nil, err
 	}
 
 	list, err := client.IpAccessLists.GetByIpAccessListId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_ip_access_list.getWorkspaceIpAccessList", "api_error", err)
+		logger.Error("databricks_settings_ip_access_list.getSettingsIpAccessList", "api_error", err)
 		return nil, err
 	}
 	return *list, nil

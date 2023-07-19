@@ -11,16 +11,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
+func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_cluster",
+		Name:        "databricks_compute_cluster",
 		Description: "Gets a list of clusters.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceClusters,
+			Hydrate: listComputeClusters,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"cluster_id", "cluster_name"}),
-			Hydrate:    getWorkspaceCluster,
+			Hydrate:    getComputeCluster,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -264,13 +264,13 @@ func tableDatabricksWorkspaceCluster(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceClusters(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listComputeClusters(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster.listWorkspaceClusters", "connection_error", err)
+		logger.Error("databricks_compute_cluster.listComputeClusters", "connection_error", err)
 		return nil, err
 	}
 
@@ -278,7 +278,7 @@ func listWorkspaceClusters(ctx context.Context, d *plugin.QueryData, h *plugin.H
 
 	clusters, err := client.Clusters.ListAll(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster.listWorkspaceClusters", "api_error", err)
+		logger.Error("databricks_compute_cluster.listComputeClusters", "api_error", err)
 		return nil, err
 	}
 
@@ -295,7 +295,7 @@ func listWorkspaceClusters(ctx context.Context, d *plugin.QueryData, h *plugin.H
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getComputeCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("cluster_id")
 
@@ -307,13 +307,13 @@ func getWorkspaceCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "connection_error", err)
+		logger.Error("databricks_compute_cluster.getComputeCluster", "connection_error", err)
 		return nil, err
 	}
 
 	cluster, err := client.Clusters.GetByClusterId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster.getWorkspaceCluster", "api_error", err)
+		logger.Error("databricks_compute_cluster.getComputeCluster", "api_error", err)
 		return nil, err
 	}
 	return cluster, nil

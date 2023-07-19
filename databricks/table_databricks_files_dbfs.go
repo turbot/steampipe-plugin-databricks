@@ -11,12 +11,12 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceDbfs(_ context.Context) *plugin.Table {
+func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_dbfs",
+		Name:        "databricks_files_dbfs",
 		Description: "List the contents of a directory, or details of the file.",
 		Get: &plugin.GetConfig{
-			Hydrate:    getWorkspaceDbfs,
+			Hydrate:    getFilesDbfs,
 			KeyColumns: plugin.SingleColumn("path"),
 		},
 		Columns: []*plugin.Column{
@@ -46,7 +46,7 @@ func tableDatabricksWorkspaceDbfs(_ context.Context) *plugin.Table {
 			{
 				Name:        "content",
 				Description: "The content of the file.",
-				Hydrate:     getWorkspaceDbfsContent,
+				Hydrate:     getFilesDbfsContent,
 				Transform:   transform.FromValue(),
 				Type:        proto.ColumnType_JSON,
 			},
@@ -64,7 +64,7 @@ func tableDatabricksWorkspaceDbfs(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func getWorkspaceDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	if d.EqualsQualString("path") == "" {
@@ -77,13 +77,13 @@ func getWorkspaceDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_dbfs.listWorkspaceDbfs", "connection_error", err)
+		logger.Error("databricks_files_dbfs.listFilesDbfs", "connection_error", err)
 		return nil, err
 	}
 
 	files, err := client.Dbfs.ListAll(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_dbfs.listWorkspaceDbfs", "api_error", err)
+		logger.Error("databricks_files_dbfs.listFilesDbfs", "api_error", err)
 		return nil, err
 	}
 
@@ -101,14 +101,14 @@ func getWorkspaceDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getFilesDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	path := h.Item.(files.FileInfo).Path
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_dbfs.getWorkspaceDbfsContent", "connection_error", err)
+		logger.Error("databricks_files_dbfs.getFilesDbfsContent", "connection_error", err)
 		return nil, err
 	}
 
@@ -118,7 +118,7 @@ func getWorkspaceDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin
 
 	content, err := client.Dbfs.Read(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_dbfs.getWorkspaceDbfsContent", "api_error", err)
+		logger.Error("databricks_files_dbfs.getFilesDbfsContent", "api_error", err)
 		return nil, err
 	}
 

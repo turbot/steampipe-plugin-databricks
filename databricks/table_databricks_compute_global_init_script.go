@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceGlobalInitScript(_ context.Context) *plugin.Table {
+func tableDatabricksComputeGlobalInitScript(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_global_init_script",
+		Name:        "databricks_compute_global_init_script",
 		Description: "Get a list of all global init scripts for this workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceGlobalInitScripts,
+			Hydrate: listComputeGlobalInitScripts,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("script_id"),
-			Hydrate:    getWorkspaceGlobalInitScript,
+			Hydrate:    getComputeGlobalInitScript,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -56,7 +56,7 @@ func tableDatabricksWorkspaceGlobalInitScript(_ context.Context) *plugin.Table {
 			{
 				Name:        "script",
 				Description: "The Base64-encoded content of the script.",
-				Hydrate:     getWorkspaceGlobalInitScript,
+				Hydrate:     getComputeGlobalInitScript,
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -84,19 +84,19 @@ func tableDatabricksWorkspaceGlobalInitScript(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceGlobalInitScripts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listComputeGlobalInitScripts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_global_init_script.listWorkspaceGlobalInitScripts", "connection_error", err)
+		logger.Error("databricks_compute_global_init_script.listComputeGlobalInitScripts", "connection_error", err)
 		return nil, err
 	}
 
 	scripts, err := client.GlobalInitScripts.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_global_init_script.listWorkspaceGlobalInitScripts", "api_error", err)
+		logger.Error("databricks_compute_global_init_script.listComputeGlobalInitScripts", "api_error", err)
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func listWorkspaceGlobalInitScripts(ctx context.Context, d *plugin.QueryData, h 
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceGlobalInitScript(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getComputeGlobalInitScript(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("script_id")
 
@@ -125,13 +125,13 @@ func getWorkspaceGlobalInitScript(ctx context.Context, d *plugin.QueryData, _ *p
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_global_init_script.getWorkspaceGlobalInitScript", "connection_error", err)
+		logger.Error("databricks_compute_global_init_script.getComputeGlobalInitScript", "connection_error", err)
 		return nil, err
 	}
 
 	script, err := client.GlobalInitScripts.GetByScriptId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_global_init_script.getWorkspaceGlobalInitScript", "api_error", err)
+		logger.Error("databricks_compute_global_init_script.getComputeGlobalInitScript", "api_error", err)
 		return nil, err
 	}
 	return *script, nil

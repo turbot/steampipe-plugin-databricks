@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceJob(_ context.Context) *plugin.Table {
+func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_job",
+		Name:        "databricks_jobs_job",
 		Description: "Gets details for all the jobs associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),
-			Hydrate:    listWorkspaceJobs,
+			Hydrate:    listJobsJobs,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("job_id"),
-			Hydrate:    getWorkspaceJob,
+			Hydrate:    getJobsJob,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -141,7 +141,7 @@ func tableDatabricksWorkspaceJob(_ context.Context) *plugin.Table {
 			{
 				Name:        "trigger_history",
 				Description: "History of the file arrival trigger associated with the job.",
-				Hydrate:     getWorkspaceJob,
+				Hydrate:     getJobsJob,
 				Type:        proto.ColumnType_JSON,
 			},
 			{
@@ -164,7 +164,7 @@ func tableDatabricksWorkspaceJob(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -186,14 +186,14 @@ func listWorkspaceJobs(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_job.listWorkspaceJobs", "connection_error", err)
+		logger.Error("databricks_jobs_job.listJobsJobs", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Jobs.Impl().List(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_job.listWorkspaceJobs", "api_error", err)
+			logger.Error("databricks_jobs_job.listJobsJobs", "api_error", err)
 			return nil, err
 		}
 
@@ -216,7 +216,7 @@ func listWorkspaceJobs(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceJob(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getJobsJob(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQuals["job_id"].GetInt64Value()
 
@@ -228,13 +228,13 @@ func getWorkspaceJob(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_job.getWorkspaceJob", "connection_error", err)
+		logger.Error("databricks_jobs_job.getJobsJob", "connection_error", err)
 		return nil, err
 	}
 
 	job, err := client.Jobs.GetByJobId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_job.getWorkspaceJob", "api_error", err)
+		logger.Error("databricks_jobs_job.getJobsJob", "api_error", err)
 		return nil, err
 	}
 

@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceAlert(_ context.Context) *plugin.Table {
+func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_alert",
+		Name:        "databricks_sql_alert",
 		Description: "Gets a list of alerts.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceAlerts,
+			Hydrate: listSQLAlerts,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"id", "name"}),
-			Hydrate:    getWorkspaceAlert,
+			Hydrate:    getSQLAlert,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -93,19 +93,19 @@ func tableDatabricksWorkspaceAlert(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listSQLAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_alert.listWorkspaceAlerts", "connection_error", err)
+		logger.Error("databricks_sql_alert.listSQLAlerts", "connection_error", err)
 		return nil, err
 	}
 
 	alerts, err := client.Alerts.List(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_alert.listWorkspaceAlerts", "api_error", err)
+		logger.Error("databricks_sql_alert.listSQLAlerts", "api_error", err)
 		return nil, err
 	}
 
@@ -122,7 +122,7 @@ func listWorkspaceAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getSQLAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("alert_id")
 
@@ -134,13 +134,13 @@ func getWorkspaceAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_alert.getWorkspaceAlert", "connection_error", err)
+		logger.Error("databricks_sql_alert.getSQLAlert", "connection_error", err)
 		return nil, err
 	}
 
 	alert, err := client.Alerts.GetByAlertId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_alert.getWorkspaceAlert", "api_error", err)
+		logger.Error("databricks_sql_alert.getSQLAlert", "api_error", err)
 		return nil, err
 	}
 	return alert, nil

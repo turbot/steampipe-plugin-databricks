@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceMetastore(_ context.Context) *plugin.Table {
+func tableDatabricksCatalogMetastore(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_metastore",
+		Name:        "databricks_catalog_metastore",
 		Description: "Gets an array of the available metastores.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceMetastores,
+			Hydrate: listCatalogMetastores,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("metastore_id"),
-			Hydrate:    getWorkspaceMetastore,
+			Hydrate:    getCatalogMetastore,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -118,19 +118,19 @@ func tableDatabricksWorkspaceMetastore(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceMetastores(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCatalogMetastores(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_metastore.listWorkspaceMetastores", "connection_error", err)
+		logger.Error("databricks_catalog_metastore.listCatalogMetastores", "connection_error", err)
 		return nil, err
 	}
 
 	metastores, err := client.Metastores.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_metastore.listWorkspaceMetastores", "api_error", err)
+		logger.Error("databricks_catalog_metastore.listCatalogMetastores", "api_error", err)
 		return nil, err
 	}
 
@@ -147,7 +147,7 @@ func listWorkspaceMetastores(ctx context.Context, d *plugin.QueryData, h *plugin
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceMetastore(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getCatalogMetastore(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("metastore_id")
 
@@ -159,13 +159,13 @@ func getWorkspaceMetastore(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_metastore.getWorkspaceMetastore", "connection_error", err)
+		logger.Error("databricks_catalog_metastore.getCatalogMetastore", "connection_error", err)
 		return nil, err
 	}
 
 	metastore, err := client.Metastores.GetById(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_metastore.getWorkspaceMetastore", "api_error", err)
+		logger.Error("databricks_catalog_metastore.getCatalogMetastore", "api_error", err)
 		return nil, err
 	}
 	return *metastore, nil

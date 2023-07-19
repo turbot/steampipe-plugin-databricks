@@ -11,10 +11,10 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksAccountGroup(_ context.Context) *plugin.Table {
+func tableDatabricksIAMGroup(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_account_group",
-		Description: "Gets group details associated with a Databricks account.",
+		Name:        "databricks_iam_group",
+		Description: "Gets group details associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
 				{
@@ -23,11 +23,11 @@ func tableDatabricksAccountGroup(_ context.Context) *plugin.Table {
 					Operators: []string{"=", "<>"},
 				},
 			},
-			Hydrate: listAccountGroups,
+			Hydrate: listIAMGroups,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getAccountGroup,
+			Hydrate:    getIAMGroup,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -86,7 +86,7 @@ func tableDatabricksAccountGroup(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listIAMGroups(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -99,9 +99,9 @@ func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_account_group.listAccountGroups", "connection_error", err)
+		logger.Error("databricks_iam_group.listIAMGroups", "connection_error", err)
 		return nil, err
 	}
 
@@ -110,7 +110,7 @@ func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	}
 	filter := buildQueryFilterFromQuals(filterQuals, d.Quals)
 
-	request := iam.ListAccountGroupsRequest{
+	request := iam.ListGroupsRequest{
 		Count:      int(maxLimit),
 		StartIndex: 1,
 		Filter:     filter,
@@ -119,7 +119,7 @@ func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	for {
 		groups, err := client.Groups.ListAll(ctx, request)
 		if err != nil {
-			logger.Error("databricks_account_group.listAccountGroups", "api_error", err)
+			logger.Error("databricks_iam_group.listIAMGroups", "api_error", err)
 			return nil, err
 		}
 
@@ -142,7 +142,7 @@ func listAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 //// HYDRATE FUNCTIONS
 
-func getAccountGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getIAMGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 
@@ -152,15 +152,15 @@ func getAccountGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_account_group.getAccountGroup", "connection_error", err)
+		logger.Error("databricks_iam_group.getIAMGroup", "connection_error", err)
 		return nil, err
 	}
 
 	group, err := client.Groups.GetById(ctx, id)
 	if err != nil {
-		logger.Error("databricks_account_group.getAccountGroup", "api_error", err)
+		logger.Error("databricks_iam_group.getIAMGroup", "api_error", err)
 		return nil, err
 	}
 	return *group, nil

@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
+func tableDatabricksJobsJobRun(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_job_run",
+		Name:        "databricks_jobs_job_run",
 		Description: "Gets details for all the job runs.",
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.OptionalColumns([]string{"job_id", "run_type"}),
-			Hydrate:    listWorkspaceJobRuns,
+			Hydrate:    listJobsJobRuns,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("run_id"),
-			Hydrate:    getWorkspaceJobRun,
+			Hydrate:    getJobsJobRun,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -177,7 +177,7 @@ func tableDatabricksWorkspaceJobRun(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listJobsJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -203,14 +203,14 @@ func listWorkspaceJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_job_run.listWorkspaceJobRuns", "connection_error", err)
+		logger.Error("databricks_jobs_job_run.listJobsJobRuns", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Jobs.Impl().ListRuns(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_job_run.listWorkspaceJobRuns", "api_error", err)
+			logger.Error("databricks_jobs_job_run.listJobsJobRuns", "api_error", err)
 			return nil, err
 		}
 
@@ -233,7 +233,7 @@ func listWorkspaceJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getJobsJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQuals["run_id"].GetInt64Value()
 
@@ -245,7 +245,7 @@ func getWorkspaceJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_job_run.getWorkspaceJobRun", "connection_error", err)
+		logger.Error("databricks_jobs_job_run.getJobsJobRun", "connection_error", err)
 		return nil, err
 	}
 
@@ -255,7 +255,7 @@ func getWorkspaceJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 
 	run, err := client.Jobs.GetRun(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_job_run.getWorkspaceJobRun", "api_error", err)
+		logger.Error("databricks_jobs_job_run.getJobsJobRun", "api_error", err)
 		return nil, err
 	}
 

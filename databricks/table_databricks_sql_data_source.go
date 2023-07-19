@@ -10,16 +10,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceDataSource(_ context.Context) *plugin.Table {
+func tableDatabricksSQLDataSource(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_data_source",
+		Name:        "databricks_sql_data_source",
 		Description: "Retrieves a full list of SQL warehouses available in this workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceDataSources,
+			Hydrate: listSQLDataSources,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getWorkspaceDataSource,
+			Hydrate:    getSQLDataSource,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -81,19 +81,19 @@ func tableDatabricksWorkspaceDataSource(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceDataSources(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listSQLDataSources(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_data_source.listWorkspaceDataSources", "connection_error", err)
+		logger.Error("databricks_sql_data_source.listSQLDataSources", "connection_error", err)
 		return nil, err
 	}
 
 	dataSources, err := client.DataSources.List(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_data_source.listWorkspaceDataSources", "api_error", err)
+		logger.Error("databricks_sql_data_source.listSQLDataSources", "api_error", err)
 		return nil, err
 	}
 
@@ -111,7 +111,7 @@ func listWorkspaceDataSources(ctx context.Context, d *plugin.QueryData, h *plugi
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceDataSource(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getSQLDataSource(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -123,13 +123,13 @@ func getWorkspaceDataSource(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_data_source.getWorkspaceDataSource", "connection_error", err)
+		logger.Error("databricks_sql_data_source.getSQLDataSource", "connection_error", err)
 		return nil, err
 	}
 
 	dataSource, err := client.DataSources.GetByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_workspace_data_source.getWorkspaceDataSource", "api_error", err)
+		logger.Error("databricks_sql_data_source.getSQLDataSource", "api_error", err)
 		return nil, err
 	}
 

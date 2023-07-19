@@ -10,12 +10,12 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceInstanceProfile(_ context.Context) *plugin.Table {
+func tableDatabricksComputeInstanceProfile(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_instance_profile",
+		Name:        "databricks_compute_instance_profile",
 		Description: "List the instance profiles that the calling user can use to launch a cluster.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceInstanceProfiles,
+			Hydrate: listComputeInstanceProfiles,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -47,19 +47,19 @@ func tableDatabricksWorkspaceInstanceProfile(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceInstanceProfiles(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listComputeInstanceProfiles(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_profile.listWorkspaceInstanceProfiles", "connection_error", err)
+		logger.Error("databricks_compute_instance_profile.listComputeInstanceProfiles", "connection_error", err)
 		return nil, err
 	}
 
 	instanceProfiles, err := client.InstanceProfiles.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_workspace_instance_profile.listWorkspaceInstanceProfiles", "api_error", err)
+		logger.Error("databricks_compute_instance_profile.listComputeInstanceProfiles", "api_error", err)
 		return nil, err
 	}
 

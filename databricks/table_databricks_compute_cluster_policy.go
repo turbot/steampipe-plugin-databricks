@@ -11,16 +11,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceClusterPolicy(_ context.Context) *plugin.Table {
+func tableDatabricksComputeClusterPolicy(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_cluster_policy",
+		Name:        "databricks_compute_cluster_policy",
 		Description: "Gets an array of cluster policies.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceClusterPolicies,
+			Hydrate: listComputeClusterPolicies,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"policy_id", "name"}),
-			Hydrate:    getWorkspaceClusterPolicy,
+			Hydrate:    getComputeClusterPolicy,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -88,13 +88,13 @@ func tableDatabricksWorkspaceClusterPolicy(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceClusterPolicies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listComputeClusterPolicies(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster_policy.listWorkspaceClusterPolicies", "connection_error", err)
+		logger.Error("databricks_compute_cluster_policy.listComputeClusterPolicies", "connection_error", err)
 		return nil, err
 	}
 
@@ -102,7 +102,7 @@ func listWorkspaceClusterPolicies(ctx context.Context, d *plugin.QueryData, h *p
 
 	policies, err := client.ClusterPolicies.ListAll(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster_policy.listWorkspaceClusterPolicies", "api_error", err)
+		logger.Error("databricks_compute_cluster_policy.listComputeClusterPolicies", "api_error", err)
 		return nil, err
 	}
 
@@ -120,7 +120,7 @@ func listWorkspaceClusterPolicies(ctx context.Context, d *plugin.QueryData, h *p
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getComputeClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("policy_id")
 
@@ -132,13 +132,13 @@ func getWorkspaceClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plug
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "connection_error", err)
+		logger.Error("databricks_compute_cluster_policy.getComputeClusterPolicy", "connection_error", err)
 		return nil, err
 	}
 
 	policy, err := client.ClusterPolicies.GetByPolicyId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_cluster_policy.getWorkspaceClusterPolicy", "api_error", err)
+		logger.Error("databricks_compute_cluster_policy.getComputeClusterPolicy", "api_error", err)
 		return nil, err
 	}
 	return policy, nil

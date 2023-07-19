@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceDashboard(_ context.Context) *plugin.Table {
+func tableDatabricksSQLDashboard(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_dashboard",
+		Name:        "databricks_sql_dashboard",
 		Description: "Gets details for all the dashboards associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),
-			Hydrate:    listWorkspaceDashboards,
+			Hydrate:    listSQLDashboards,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getWorkspaceDashboard,
+			Hydrate:    getSQLDashboard,
 		},
 		Columns: []*plugin.Column{
 			{
@@ -125,7 +125,7 @@ func tableDatabricksWorkspaceDashboard(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceDashboards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listSQLDashboards(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -140,7 +140,7 @@ func listWorkspaceDashboards(ctx context.Context, d *plugin.QueryData, h *plugin
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_dashboard.listWorkspaceDashboards", "connection_error", err)
+		logger.Error("databricks_sql_dashboard.listSQLDashboards", "connection_error", err)
 		return nil, err
 	}
 
@@ -160,7 +160,7 @@ func listWorkspaceDashboards(ctx context.Context, d *plugin.QueryData, h *plugin
 	for {
 		response, err := client.Dashboards.Impl().List(ctx, request)
 		if err != nil {
-			logger.Error("databricks_workspace_dashboard.listWorkspaceDashboards", "api_error", err)
+			logger.Error("databricks_sql_dashboard.listSQLDashboards", "api_error", err)
 			return nil, err
 		}
 
@@ -184,7 +184,7 @@ func listWorkspaceDashboards(ctx context.Context, d *plugin.QueryData, h *plugin
 
 //// HYDRATE FUNCTIONS
 
-func getWorkspaceDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getSQLDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := d.EqualsQualString("id")
 
@@ -196,13 +196,13 @@ func getWorkspaceDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_dashboard.getWorkspaceDashboard", "connection_error", err)
+		logger.Error("databricks_sql_dashboard.getSQLDashboard", "connection_error", err)
 		return nil, err
 	}
 
 	dashboard, err := client.Dashboards.GetByDashboardId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_workspace_dashboard.getWorkspaceDashboard", "api_error", err)
+		logger.Error("databricks_sql_dashboard.getSQLDashboard", "api_error", err)
 		return nil, err
 	}
 
