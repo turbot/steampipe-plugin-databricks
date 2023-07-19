@@ -55,7 +55,7 @@ func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Timestamp when the alert was last updated.",
-				Type:        proto.ColumnType_INT,
+				Type:        proto.ColumnType_TIMESTAMP,
 			},
 
 			// JSON fields

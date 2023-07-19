@@ -53,6 +53,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_pipelines_pipeline_event":   tableDatabricksPipelinesPipelineEvent(ctx),
 			"databricks_pipelines_pipeline_update":  tableDatabricksPipelinesPipelineUpdate(ctx),
 			"databricks_settings_ip_access_list":    tableDatabricksSettingsIpAccessList(ctx),
+			"databricks_sharing_provider":           tableDatabricksSharingProvider(ctx),
 			"databricks_sql_alert":                  tableDatabricksSQLAlert(ctx),
 			"databricks_sql_dashboard":              tableDatabricksSQLDashboard(ctx),
 			"databricks_sql_data_source":            tableDatabricksSQLDataSource(ctx),
