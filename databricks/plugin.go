@@ -58,6 +58,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_sql_dashboard":              tableDatabricksSQLDashboard(ctx),
 			"databricks_sql_data_source":            tableDatabricksSQLDataSource(ctx),
 			"databricks_sql_query":                  tableDatabricksSQLQuery(ctx),
+			"databricks_sql_query_history":          tableDatabricksSQLQueryHistory(ctx),
 			"databricks_workspace_git_credential":   tableDatabricksWorkspaceGitCredential(ctx),
 		},
 	}
