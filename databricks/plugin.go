@@ -32,6 +32,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_catalog_external_location":  tableDatabricksCatalogExternalLocation(ctx),
 			"databricks_catalog_function":           tableDatabricksCatalogFunction(ctx),
 			"databricks_catalog_metastore":          tableDatabricksCatalogMetastore(ctx),
+			"databricks_catalog_schema":             tableDatabricksCatalogSchema(ctx),
 			"databricks_compute_cluster":            tableDatabricksComputeCluster(ctx),
 			"databricks_compute_cluster_policy":     tableDatabricksComputeClusterPolicy(ctx),
 			"databricks_compute_global_init_script": tableDatabricksComputeGlobalInitScript(ctx),
@@ -44,6 +45,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_iam_current_user":           tableDatabricksIAMCurrentUser(ctx),
 			"databricks_iam_group":                  tableDatabricksIAMGroup(ctx),
 			"databricks_iam_user":                   tableDatabricksIAMUser(ctx),
+			"databricks_iam_service_principal":      tableDatabricksIAMServicePrincipal(ctx),
 			"databricks_jobs_job":                   tableDatabricksJobsJob(ctx),
 			"databricks_jobs_job_run":               tableDatabricksJobsJobRun(ctx),
 			"databricks_ml_experiment":              tableDatabricksMLExperiment(ctx),
@@ -62,6 +64,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_sql_query_history":          tableDatabricksSQLQueryHistory(ctx),
 			"databricks_workspace_git_credential":   tableDatabricksWorkspaceGitCredential(ctx),
 			"databricks_workspace_repo":             tableDatabricksWorkspaceRepo(ctx),
+			"databricks_workspace_scope":            tableDatabricksWorkspaceScope(ctx),
 		},
 	}
 
