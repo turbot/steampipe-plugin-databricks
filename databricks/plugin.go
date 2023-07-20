@@ -70,6 +70,8 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_sql_data_source":            tableDatabricksSQLDataSource(ctx),
 			"databricks_sql_query":                  tableDatabricksSQLQuery(ctx),
 			"databricks_sql_query_history":          tableDatabricksSQLQueryHistory(ctx),
+			"databricks_sql_warehouse":              tableDatabricksSQLWarehouse(ctx),
+			"databricks_sql_warehouse_config":       tableDatabricksSQLWarehouseConfig(ctx),
 			"databricks_workspace_git_credential":   tableDatabricksWorkspaceGitCredential(ctx),
 			"databricks_workspace_repo":             tableDatabricksWorkspaceRepo(ctx),
 			"databricks_workspace_scope":            tableDatabricksWorkspaceScope(ctx),
