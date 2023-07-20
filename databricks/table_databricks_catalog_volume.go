@@ -76,11 +76,6 @@ func tableDatabricksCatalogVolume(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "schema_name",
-				Description: "The name of the schema where the volume is.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
 				Name:        "storage_location",
 				Description: "The storage location on the cloud.",
 				Type:        proto.ColumnType_STRING,
