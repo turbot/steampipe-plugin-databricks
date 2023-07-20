@@ -23,54 +23,58 @@ func tableDatabricksSettingsTokenManagement(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("token_id"),
 			Hydrate:    getSettingsTokenManagement,
 		},
-		Columns: databricksAccountColumns([]*plugin.Column{
-			{
-				Name:        "token_id",
-				Description: "ID of the token.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
-				Name:        "created_by_id",
-				Description: "User id of the user that created the token.",
-				Type:        proto.ColumnType_INT,
-			},
-			{
-				Name:        "created_by_username",
-				Description: "Username of the user that created the token.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
-				Name:        "comment",
-				Description: "Comment that describes the purpose of the token, specified by the token creator.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
-				Name:        "creation_time",
-				Description: "Timestamp when the token was created.",
-				Type:        proto.ColumnType_TIMESTAMP,
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
-			},
-			{
-				Name:        "expiry_time",
-				Description: "Timestamp when the token expires.",
-				Type:        proto.ColumnType_TIMESTAMP,
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
-			},
-			{
-				Name:        "owner_id",
-				Description: "User id of the user that owns the token.",
-				Type:        proto.ColumnType_INT,
-			},
-
-			// Standard Steampipe columns
-			{
-				Name:        "title",
-				Description: "The title of the resource.",
-				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("TokenId"),
-			},
-		}),
+		Columns: getTokenInfoColumns(),
 	}
+}
+
+func getTokenInfoColumns() []*plugin.Column {
+	return databricksAccountColumns([]*plugin.Column{
+		{
+			Name:        "token_id",
+			Description: "ID of the token.",
+			Type:        proto.ColumnType_STRING,
+		},
+		{
+			Name:        "created_by_id",
+			Description: "User id of the user that created the token.",
+			Type:        proto.ColumnType_INT,
+		},
+		{
+			Name:        "created_by_username",
+			Description: "Username of the user that created the token.",
+			Type:        proto.ColumnType_STRING,
+		},
+		{
+			Name:        "comment",
+			Description: "Comment that describes the purpose of the token, specified by the token creator.",
+			Type:        proto.ColumnType_STRING,
+		},
+		{
+			Name:        "creation_time",
+			Description: "Timestamp when the token was created.",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
+		},
+		{
+			Name:        "expiry_time",
+			Description: "Timestamp when the token expires.",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
+		},
+		{
+			Name:        "owner_id",
+			Description: "User id of the user that owns the token.",
+			Type:        proto.ColumnType_INT,
+		},
+
+		// Standard Steampipe columns
+		{
+			Name:        "title",
+			Description: "The title of the resource.",
+			Type:        proto.ColumnType_STRING,
+			Transform:   transform.FromField("TokenId"),
+		},
+	})
 }
 
 //// LIST FUNCTION

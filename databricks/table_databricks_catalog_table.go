@@ -159,6 +159,14 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 				Description: "View dependencies associated with the table.",
 				Type:        proto.ColumnType_JSON,
 			},
+
+			// Standard Steampipe columns
+			{
+				Name:        "title",
+				Description: "The title of the resource.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromField("Name"),
+			},
 		}),
 	}
 }
