@@ -66,13 +66,13 @@ func getSQLWarehouseConfig(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_sql_warehouse_config.listSQLWarehouseConfig", "connection_error", err)
+		logger.Error("databricks_sql_warehouse_config.getSQLWarehouseConfig", "connection_error", err)
 		return nil, err
 	}
 
 	config, err := client.Warehouses.GetWorkspaceWarehouseConfig(ctx)
 	if err != nil {
-		logger.Error("databricks_sql_warehouse_config.listSQLWarehouseConfig", "api_error", err)
+		logger.Error("databricks_sql_warehouse_config.getSQLWarehouseConfig", "api_error", err)
 		return nil, err
 	}
 

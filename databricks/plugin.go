@@ -75,6 +75,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_workspace_git_credential":   tableDatabricksWorkspaceGitCredential(ctx),
 			"databricks_workspace_repo":             tableDatabricksWorkspaceRepo(ctx),
 			"databricks_workspace_scope":            tableDatabricksWorkspaceScope(ctx),
+			"databricks_workspace_workspace":        tableDatabricksWorkspaceWorkspace(ctx),
 		},
 	}
 
