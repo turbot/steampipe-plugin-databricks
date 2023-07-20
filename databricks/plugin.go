@@ -35,6 +35,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_catalog_schema":             tableDatabricksCatalogSchema(ctx),
 			"databricks_catalog_storage_credential": tableDatabricksCatalogStorageCredential(ctx),
 			"databricks_catalog_system_schema":      tableDatabricksCatalogSystemSchema(ctx),
+			"databricks_catalog_table":              tableDatabricksCatalogTable(ctx),
 			"databricks_compute_cluster":            tableDatabricksComputeCluster(ctx),
 			"databricks_compute_cluster_policy":     tableDatabricksComputeClusterPolicy(ctx),
 			"databricks_compute_global_init_script": tableDatabricksComputeGlobalInitScript(ctx),
