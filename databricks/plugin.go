@@ -59,6 +59,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_pipelines_pipeline_update":  tableDatabricksPipelinesPipelineUpdate(ctx),
 			"databricks_serving_serving_endpoint":   tableDatabricksServingServingEndpoint(ctx),
 			"databricks_settings_ip_access_list":    tableDatabricksSettingsIpAccessList(ctx),
+			"databricks_settings_token_management":  tableDatabricksSettingsTokenManagement(ctx),
 			"databricks_sharing_provider":           tableDatabricksSharingProvider(ctx),
 			"databricks_sharing_recipient":          tableDatabricksSharingRecipient(ctx),
 			"databricks_sharing_share":              tableDatabricksSharingShare(ctx),
