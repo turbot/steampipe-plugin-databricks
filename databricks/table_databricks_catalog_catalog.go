@@ -3,6 +3,7 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/catalog"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -121,6 +122,13 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 				Description: "Catalog properties - A map of key-value properties attached to the securable.",
 				Type:        proto.ColumnType_JSON,
 			},
+			{
+				Name:        "workspace_bindings",
+				Description: "Array of workspace bindings.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogCatalogWorkspaceBindings,
+				Transform:   transform.FromValue(),
+			},
 
 			// Standard Steampipe columns
 			{
@@ -188,4 +196,24 @@ func getCatalogCatalog(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 
 	return *catalog, nil
+}
+
+func getCatalogCatalogWorkspaceBindings(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.CatalogInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogCatalogWorkspaceBindings", "connection_error", err)
+		return nil, err
+	}
+
+	bindings, err := client.WorkspaceBindings.GetByName(ctx, name)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogCatalogWorkspaceBindings", "api_error", err)
+		return nil, err
+	}
+
+	return *bindings, nil
 }
