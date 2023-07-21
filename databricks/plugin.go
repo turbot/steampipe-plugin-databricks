@@ -38,6 +38,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_catalog_table":              tableDatabricksCatalogTable(ctx),
 			"databricks_catalog_volume":             tableDatabricksCatalogVolume(ctx),
 			"databricks_compute_cluster":            tableDatabricksComputeCluster(ctx),
+			"databricks_compute_cluster_node_type":  tableDatabricksComputeClusterNodeType(ctx),
 			"databricks_compute_cluster_policy":     tableDatabricksComputeClusterPolicy(ctx),
 			"databricks_compute_global_init_script": tableDatabricksComputeGlobalInitScript(ctx),
 			"databricks_compute_instance_pool":      tableDatabricksComputeInstancePool(ctx),
