@@ -1,48 +1,22 @@
 package databricks
 
 import (
-	"context"
-	"math"
 	"strings"
-	"time"
 
+	"github.com/databricks/databricks-sdk-go/apierr"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 	return func(err error) bool {
-		errMsg := err.Error()
+		errMsg := err.(*apierr.APIError)
 		for _, msg := range notFoundErrors {
-			if strings.Contains(errMsg, msg) {
+			if strings.Contains(errMsg.ErrorCode, msg) {
 				return true
 			}
 		}
 		return false
 	}
-}
-
-func convertTimestamp(_ context.Context, d *transform.TransformData) (interface{}, error) {
-
-	epochTime := getEpochTime(d.Value)
-
-	if epochTime != 0 {
-		timeInSec := math.Floor(float64(epochTime) / 1000)
-		unixTimestamp := time.Unix(int64(timeInSec), 0)
-		timestampRFC3339Format := unixTimestamp.Format(time.RFC3339)
-		return timestampRFC3339Format, nil
-	}
-	return nil, nil
-}
-
-func getEpochTime(item interface{}) int64 {
-	switch item := item.(type) {
-	case int64:
-		return item
-	case int:
-		return int64(item)
-	}
-	return 0
 }
 
 func buildQueryFilterFromQuals(filterQuals []filterQualMap, equalQuals plugin.KeyColumnQualMap) string {

@@ -16,10 +16,16 @@ func tableDatabricksCatalogSystemSchema(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_system_schema",
 		Description: "Gets an array of system schemas for a metastore.",
 		List: &plugin.ListConfig{
-			Hydrate: listCatalogSystemSchemas,
-			// KeyColumns: plugin.OptionalColumns([]string{"metastore_id"}),
+			ParentHydrate: listCatalogMetastores,
+			Hydrate:       listCatalogSystemSchemas,
+			KeyColumns:    plugin.OptionalColumns([]string{"metastore_id"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
+			{
+				Name:        "metastore_id",
+				Description: "Unique identifier of parent metastore.",
+				Type:        proto.ColumnType_STRING,
+			},
 			{
 				Name:        "schema",
 				Description: "Name of the system schema.",
@@ -42,15 +48,21 @@ func tableDatabricksCatalogSystemSchema(_ context.Context) *plugin.Table {
 	}
 }
 
+type systemSchemaInfo struct {
+	catalog.SystemSchemaInfo
+	MetastoreId string
+}
+
 //// LIST FUNCTION
 
 func listCatalogSystemSchemas(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	metastoreId := h.Item.(catalog.MetastoreInfo).MetastoreId
 
-	request := catalog.ListSystemSchemasRequest{}
-	// if d.EqualsQualString("metastore_id") != "" {
-	// 	request.MetastoreId = d.EqualsQualString("metastore_id")
-	// }
+	// Return if input metastore_id is not matching with metastore_id of parent
+	if d.EqualsQualString("metastore_id") != "" && d.EqualsQualString("metastore_id") != metastoreId {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -59,14 +71,14 @@ func listCatalogSystemSchemas(ctx context.Context, d *plugin.QueryData, h *plugi
 		return nil, err
 	}
 
-	schemas, err := client.SystemSchemas.ListAll(ctx, request)
+	response, err := client.SystemSchemas.ListByMetastoreId(ctx, metastoreId)
 	if err != nil {
 		logger.Error("databricks_catalog_system_schema.listCatalogSystemSchemas", "api_error", err)
 		return nil, err
 	}
 
-	for _, item := range schemas {
-		d.StreamListItem(ctx, item)
+	for _, item := range response.Schemas {
+		d.StreamListItem(ctx, systemSchemaInfo{item, metastoreId})
 
 		// Context can be cancelled due to manual cancellation or the limit has been hit
 		if d.RowsRemaining(ctx) == 0 {

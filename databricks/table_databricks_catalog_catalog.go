@@ -19,8 +19,9 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 			Hydrate: listCatalogCatalogs,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getCatalogCatalog,
+			KeyColumns:        plugin.SingleColumn("name"),
+			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogCatalog,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -46,8 +47,8 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this catalog was created, in epoch milliseconds.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -97,8 +98,8 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this catalog was last updated, in epoch milliseconds.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "updated_by",
@@ -107,6 +108,20 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 			},
 
 			// JSON fields
+			{
+				Name:        "catalog_permissions",
+				Description: "Permissions for the catalog.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "catalog_effective_permissions",
+				Description: "Effective permissions for the catalog.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
 			{
 				Name:        "effective_auto_maintenance_flag",
 				Description: "Effective auto maintenance flag.",
@@ -216,4 +231,42 @@ func getCatalogCatalogWorkspaceBindings(ctx context.Context, d *plugin.QueryData
 	}
 
 	return *bindings, nil
+}
+
+func getCatalogPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.CatalogInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeCatalog, name)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.CatalogInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeCatalog, name)
+	if err != nil {
+		logger.Error("databricks_catalog_catalog.getCatalogEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

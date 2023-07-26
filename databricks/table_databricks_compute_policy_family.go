@@ -34,14 +34,16 @@ func tableDatabricksComputePolicyFamily(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "definition",
-				Description: "Policy definition document expressed in Databricks Cluster Policy Definition Language.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
 				Name:        "description",
 				Description: "Human-readable description of the purpose of the policy family.",
 				Type:        proto.ColumnType_STRING,
+			},
+
+			// JSON fields
+			{
+				Name:        "definition",
+				Description: "Policy definition document expressed in Databricks Cluster Policy Definition Language.",
+				Type:        proto.ColumnType_JSON,
 			},
 
 			// Standard Steampipe columns

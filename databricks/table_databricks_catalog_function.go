@@ -16,27 +16,34 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_function",
 		Description: "List functions within the specified parent catalog and schema.",
 		List: &plugin.ListConfig{
-			Hydrate:    listCatalogFunctions,
-			KeyColumns: plugin.OptionalColumns([]string{"catalog_name", "schema_name"}),
+			Hydrate:           listCatalogFunctions,
+			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
+			KeyColumns:        plugin.AllColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getCatalogFunction,
+			KeyColumns:        plugin.SingleColumn("name"),
+			ShouldIgnoreError: isNotFoundError([]string{"FUNCTION_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogFunction,
 		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "function_id",
 				Description: "Id of Function, relative to parent schema.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "name",
-				Description: "Name of function, relative to parent schema.",
+				Name:        "catalog_name",
+				Description: "Name of parent catalog.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "catalog_name",
-				Description: "Name of parent catalog.",
+				Name:        "schema_name",
+				Description: "Name of parent schema relative to its parent catalog.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "name",
+				Description: "Name of function, relative to parent schema.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -116,11 +123,6 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 			{
-				Name:        "schema_name",
-				Description: "Name of parent schema relative to its parent catalog.",
-				Type:        proto.ColumnType_STRING,
-			},
-			{
 				Name:        "security_type",
 				Description: "Security type of the function.",
 				Type:        proto.ColumnType_STRING,
@@ -154,6 +156,20 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 
 			// JSON fields
 			{
+				Name:        "function_permissions",
+				Description: "Function permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogFunctionPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "function_effective_permissions",
+				Description: "Function effective permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogFunctionEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
 				Name:        "input_params",
 				Description: "The array of __FunctionParameterInfo__ definitions of the function's parameters.",
 				Type:        proto.ColumnType_JSON,
@@ -181,7 +197,7 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 
@@ -190,12 +206,13 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 func listCatalogFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	request := catalog.ListFunctionsRequest{}
-	if d.EqualsQualString("catalog_name") != "" {
-		request.CatalogName = d.EqualsQualString("catalog_name")
+	if d.EqualsQualString("catalog_name") == "" || d.EqualsQualString("schema_name") == "" {
+		return nil, nil
 	}
-	if d.EqualsQualString("schema_name") != "" {
-		request.SchemaName = d.EqualsQualString("schema_name")
+
+	request := catalog.ListFunctionsRequest{
+		SchemaName:  d.EqualsQualString("schema_name"),
+		CatalogName: d.EqualsQualString("catalog_name"),
 	}
 
 	// Create client
@@ -247,4 +264,42 @@ func getCatalogFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 
 	return *function, nil
+}
+
+func getCatalogFunctionPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.FunctionInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_function.getCatalogFunctionPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeFunction, name)
+	if err != nil {
+		logger.Error("databricks_catalog_function.getCatalogFunctionPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogFunctionEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.FunctionInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_function.getCatalogFunctionEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeFunction, name)
+	if err != nil {
+		logger.Error("databricks_catalog_function.getCatalogFunctionEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

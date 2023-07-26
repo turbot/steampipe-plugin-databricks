@@ -16,12 +16,14 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_schema",
 		Description: "List schemas for a catalog in the metastore.",
 		List: &plugin.ListConfig{
-			Hydrate:    listCatalogSchemas,
-			KeyColumns: plugin.OptionalColumns([]string{"catalog_name"}),
+			ParentHydrate: listCatalogCatalogs,
+			Hydrate:       listCatalogSchemas,
+			KeyColumns:    plugin.OptionalColumns([]string{"catalog_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("full_name"),
-			Hydrate:    getCatalogSchema,
+			KeyColumns:        plugin.SingleColumn("full_name"),
+			ShouldIgnoreError: isNotFoundError([]string{"SCHEMA_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogSchema,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -52,8 +54,8 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this schema was created.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -88,8 +90,8 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this schema was last updated.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "updated_by",
@@ -108,6 +110,20 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 				Description: "A map of key-value properties attached to the securable.",
 				Type:        proto.ColumnType_JSON,
 			},
+			{
+				Name:        "schema_permissions",
+				Description: "Permissions of the schema.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogSchemaPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "schema_effective_permissions",
+				Description: "Effective permissions of the schema.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogSchemaEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
 
 			// Standard Steampipe columns
 			{
@@ -124,10 +140,14 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 
 func listCatalogSchemas(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.CatalogInfo).Name
 
-	request := catalog.ListSchemasRequest{}
-	if d.EqualsQualString("catalog_name") != "" {
-		request.CatalogName = d.EqualsQualString("catalog_name")
+	if d.EqualsQualString("catalog_name") != "" && d.EqualsQualString("catalog_name") != name {
+		return nil, nil
+	}
+
+	request := catalog.ListSchemasRequest{
+		CatalogName: name,
 	}
 
 	// Create client
@@ -179,4 +199,42 @@ func getCatalogSchema(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	}
 
 	return *schema, nil
+}
+
+func getCatalogSchemaPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.SchemaInfo).FullName
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_schema.getCatalogSchemaPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeSchema, name)
+	if err != nil {
+		logger.Error("databricks_catalog_schema.getCatalogSchemaPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogSchemaEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.SchemaInfo).FullName
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_schema.getCatalogSchemaEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeSchema, name)
+	if err != nil {
+		logger.Error("databricks_catalog_schema.getCatalogSchemaEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

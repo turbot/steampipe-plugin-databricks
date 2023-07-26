@@ -3,6 +3,8 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/compute"
+	"github.com/databricks/databricks-sdk-go/service/iam"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -100,10 +102,17 @@ func tableDatabricksComputeInstancePool(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 			},
 			{
+				Name:        "instance_pool_permission",
+				Description: "The permission of the instance pool.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getComputeInstancePoolPermission,
+				Transform:   transform.FromValue(),
+			},
+			{
 				Name:        "pending_instance_errors",
 				Description: "List of error messages for the failed pending instances.",
-				Transform:   transform.FromField("Status.PendingInstanceErrors"),
 				Type:        proto.ColumnType_JSON,
+				Transform:   transform.FromField("Status.PendingInstanceErrors"),
 			},
 			{
 				Name:        "preloaded_docker_images",
@@ -165,7 +174,7 @@ func listComputeInstancePools(ctx context.Context, d *plugin.QueryData, h *plugi
 
 func getComputeInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	id := d.EqualsQualString("id")
+	id := d.EqualsQualString("instance_pool_id")
 
 	// Return nil, if no input provided
 	if id == "" {
@@ -185,4 +194,38 @@ func getComputeInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.
 		return nil, err
 	}
 	return *instancePool, nil
+}
+
+func getComputeInstancePoolPermission(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := getInstancePoolId(h.Item)
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermission", "connection_error", err)
+		return nil, err
+	}
+
+	request := iam.GetPermissionRequest{
+		RequestObjectId:   id,
+		RequestObjectType: "instance-pools",
+	}
+
+	permission, err := client.Permissions.Get(ctx, request)
+	if err != nil {
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermission", "api_error", err)
+		return nil, err
+	}
+	return permission, nil
+}
+
+func getInstancePoolId(item interface{}) string {
+	switch item := item.(type) {
+	case compute.InstancePoolAndStats:
+		return item.InstancePoolId
+	case compute.GetInstancePool:
+		return item.InstancePoolId
+	}
+	return ""
 }

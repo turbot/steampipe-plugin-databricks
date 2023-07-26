@@ -35,8 +35,8 @@ func tableDatabricksComputeGlobalInitScript(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "The time the script was created.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -56,14 +56,14 @@ func tableDatabricksComputeGlobalInitScript(_ context.Context) *plugin.Table {
 			{
 				Name:        "script",
 				Description: "The Base64-encoded content of the script.",
-				Hydrate:     getComputeGlobalInitScript,
 				Type:        proto.ColumnType_STRING,
+				Hydrate:     getComputeGlobalInitScript,
 			},
 			{
 				Name:        "updated_at",
 				Description: "The time the script was last updated.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "updated_by",

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/compute"
+	"github.com/databricks/databricks-sdk-go/service/iam"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -19,7 +20,7 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			Hydrate: listComputeClusters,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.AnyColumn([]string{"cluster_id", "cluster_name"}),
+			KeyColumns: plugin.AnyColumn([]string{"cluster_id"}),
 			Hydrate:    getComputeCluster,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
@@ -96,14 +97,14 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "last_restarted_time",
 				Description: "The time when the cluster was started/restarted.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "last_state_loss_time",
 				Description: "Time when the cluster driver last lost its state (due to a restart or driver failure).",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "node_type_id",
@@ -143,8 +144,8 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "start_time",
 				Description: "The time when the cluster creation request was received.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "state",
@@ -159,8 +160,8 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "terminated_time",
 				Description: "The time when the cluster was terminated.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 
 			// JSON fields
@@ -225,6 +226,13 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 			},
 			{
+				Name:        "cluster_permissions",
+				Description: "The permissions that the cluster has on the workspace.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getComputeClusterPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
 				Name:        "spark_conf",
 				Description: "An object containing a set of optional, user-specified Spark configuration key-value pairs.",
 				Type:        proto.ColumnType_JSON,
@@ -247,16 +255,16 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "workload_type_client",
 				Description: "Defines what type of clients can use the cluster.",
-				Transform:   transform.FromField("WorkloadType.Client"),
 				Type:        proto.ColumnType_JSON,
+				Transform:   transform.FromField("WorkloadType.Client"),
 			},
 
 			// Standard Steampipe columns
 			{
 				Name:        "title",
 				Description: "The title of the resource.",
-				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("ClusterName"),
+				Type:        proto.ColumnType_STRING,
 			},
 		}),
 	}
@@ -316,5 +324,29 @@ func getComputeCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 		logger.Error("databricks_compute_cluster.getComputeCluster", "api_error", err)
 		return nil, err
 	}
-	return cluster, nil
+	return *cluster, nil
+}
+
+func getComputeClusterPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := h.Item.(compute.ClusterDetails).ClusterId
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_compute_cluster.getComputeClusterPermission", "connection_error", err)
+		return nil, err
+	}
+
+	request := iam.GetPermissionRequest{
+		RequestObjectId:   id,
+		RequestObjectType: "clusters",
+	}
+
+	permission, err := client.Permissions.Get(ctx, request)
+	if err != nil {
+		logger.Error("databricks_compute_cluster.getComputeClusterPermission", "api_error", err)
+		return nil, err
+	}
+	return permission, nil
 }

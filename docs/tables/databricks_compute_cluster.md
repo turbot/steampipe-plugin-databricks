@@ -155,3 +155,16 @@ where
   state = 'TERMINATED' and
   termination_reason ->> 'code' = 'INACTIVITY';
 ```
+
+### Get the permissions associated to each cluster
+
+```sql
+select
+  cluster_id,
+  cluster_name,
+  acl ->> 'user_name' as principal_user_name,
+  acl ->> 'group_name' as principal_group_name,
+  acl ->> 'all_permissions' as permission_level
+from
+  databricks_compute_cluster,
+  jsonb_array_elements(cluster_permissions -> 'access_control_list') as acl;

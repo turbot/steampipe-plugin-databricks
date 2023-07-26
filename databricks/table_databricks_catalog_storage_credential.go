@@ -3,6 +3,7 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/catalog"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -40,8 +41,8 @@ func tableDatabricksCatalogStorageCredential(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "Time at which this credential was created.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -66,8 +67,8 @@ func tableDatabricksCatalogStorageCredential(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "Time at which this credential was last updated.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "updated_by",
@@ -100,6 +101,20 @@ func tableDatabricksCatalogStorageCredential(_ context.Context) *plugin.Table {
 				Name:        "databricks_gcp_service_account",
 				Description: "The Databricks GCP service account configuration.",
 				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "storage_credential_permissions",
+				Description: "The storage credential permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogStorageCredentialPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "storage_credential_effective_permissions",
+				Description: "The storage credential effective permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogStorageCredentialEffectivePermissions,
+				Transform:   transform.FromValue(),
 			},
 
 			// Standard Steampipe columns
@@ -167,4 +182,42 @@ func getCatalogStorageCredential(ctx context.Context, d *plugin.QueryData, _ *pl
 	}
 
 	return cred, nil
+}
+
+func getCatalogStorageCredentialPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.StorageCredentialInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeStorageCredential, name)
+	if err != nil {
+		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogStorageCredentialEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.StorageCredentialInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeStorageCredential, name)
+	if err != nil {
+		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

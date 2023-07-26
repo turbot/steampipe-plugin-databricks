@@ -16,12 +16,14 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_table",
 		Description: "Gets an array of the available tables.",
 		List: &plugin.ListConfig{
-			Hydrate:    listCatalogTables,
-			KeyColumns: plugin.OptionalColumns([]string{"catalog_name", "schema_name"}),
+			Hydrate:           listCatalogTables,
+			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
+			KeyColumns:        plugin.AllColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("full_name"),
-			Hydrate:    getCatalogTable,
+			KeyColumns:        plugin.SingleColumn("full_name"),
+			ShouldIgnoreError: isNotFoundError([]string{"FUNCTION_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogTable,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -155,6 +157,20 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 			},
 			{
+				Name:        "table_permissions",
+				Description: "The table permissions associated with the table.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogTablePermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "table_effective_permissions",
+				Description: "The table effective permissions associated with the table.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogTableEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
 				Name:        "view_dependencies",
 				Description: "View dependencies associated with the table.",
 				Type:        proto.ColumnType_JSON,
@@ -176,6 +192,10 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 func listCatalogTables(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
+	if d.EqualsQualString("catalog_name") == "" || d.EqualsQualString("schema_name") == "" {
+		return nil, nil
+	}
+
 	// Limiting the results
 	maxLimit := 1000
 	if d.QueryContext.Limit != nil {
@@ -188,13 +208,8 @@ func listCatalogTables(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	request := catalog.ListTablesRequest{
 		MaxResults:           maxLimit,
 		IncludeDeltaMetadata: true,
-	}
-
-	if d.EqualsQualString("catalog_name") != "" {
-		request.CatalogName = d.EqualsQualString("catalog_name")
-	}
-	if d.EqualsQualString("schema_name") != "" {
-		request.SchemaName = d.EqualsQualString("schema_name")
+		CatalogName:          d.EqualsQualString("catalog_name"),
+		SchemaName:           d.EqualsQualString("schema_name"),
 	}
 
 	// Create client
@@ -256,4 +271,42 @@ func getCatalogTable(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		return nil, err
 	}
 	return *table, nil
+}
+
+func getCatalogTablePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.TableInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_table.getCatalogTablePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeTable, name)
+	if err != nil {
+		logger.Error("databricks_catalog_table.getCatalogTablePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogTableEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.TableInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_table.getCatalogTableEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeTable, name)
+	if err != nil {
+		logger.Error("databricks_catalog_table.getCatalogTableEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

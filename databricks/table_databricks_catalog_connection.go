@@ -18,10 +18,11 @@ func tableDatabricksCatalogConnection(_ context.Context) *plugin.Table {
 			Hydrate: listCatalogConnections,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getCatalogConnection,
+			KeyColumns:        plugin.SingleColumn("name"),
+			ShouldIgnoreError: isNotFoundError([]string{"CONNECTION_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogConnection,
 		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "name",
 				Description: "Name of the connection.",
@@ -45,8 +46,8 @@ func tableDatabricksCatalogConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "created_at",
 				Description: "The creation time of the connection.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "created_by",
@@ -81,8 +82,8 @@ func tableDatabricksCatalogConnection(_ context.Context) *plugin.Table {
 			{
 				Name:        "updated_at",
 				Description: "The last time the connection was updated.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "updated_by",
@@ -114,7 +115,7 @@ func tableDatabricksCatalogConnection(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("FullName"),
 			},
-		},
+		}),
 	}
 }
 

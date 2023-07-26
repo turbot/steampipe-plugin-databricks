@@ -3,6 +3,7 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/catalog"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -18,8 +19,9 @@ func tableDatabricksCatalogMetastore(_ context.Context) *plugin.Table {
 			Hydrate: listCatalogMetastores,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("metastore_id"),
-			Hydrate:    getCatalogMetastore,
+			KeyColumns:        plugin.SingleColumn("metastore_id"),
+			ShouldIgnoreError: isNotFoundError([]string{"BAD_REQUEST"}),
+			Hydrate:           getCatalogMetastore,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -105,6 +107,22 @@ func tableDatabricksCatalogMetastore(_ context.Context) *plugin.Table {
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 
+			// JSON fields
+			{
+				Name:        "metastore_permissions",
+				Description: "The metastore permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogMetastorePermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "metastore_effective_permissions",
+				Description: "The metastore effective permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogMetastoreEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
+
 			// Standard Steampipe columns
 			{
 				Name:        "title",
@@ -169,4 +187,42 @@ func getCatalogMetastore(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 		return nil, err
 	}
 	return *metastore, nil
+}
+
+func getCatalogMetastorePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.MetastoreInfo).MetastoreId
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_metastore.getCatalogMetastorePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeMetastore, name)
+	if err != nil {
+		logger.Error("databricks_catalog_metastore.getCatalogMetastorePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogMetastoreEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.MetastoreInfo).MetastoreId
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_metastore.getCatalogMetastoreEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeMetastore, name)
+	if err != nil {
+		logger.Error("databricks_catalog_metastore.getCatalogMetastoreEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }

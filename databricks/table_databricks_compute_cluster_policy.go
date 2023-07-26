@@ -19,25 +19,25 @@ func tableDatabricksComputeClusterPolicy(_ context.Context) *plugin.Table {
 			Hydrate: listComputeClusterPolicies,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.AnyColumn([]string{"policy_id", "name"}),
+			KeyColumns: plugin.SingleColumn("policy_id"),
 			Hydrate:    getComputeClusterPolicy,
 		},
-		Columns: []*plugin.Column{
-			{
-				Name:        "name",
-				Description: "Cluster Policy name requested by the user.",
-				Type:        proto.ColumnType_STRING,
-			},
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "policy_id",
 				Description: "Canonical unique identifier for the Cluster Policy.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
+				Name:        "name",
+				Description: "Cluster Policy name requested by the user.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
 				Name:        "created_at_timestamp",
 				Description: "The timestamp (in millisecond) when this Cluster Policy was created.",
-				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 				Type:        proto.ColumnType_TIMESTAMP,
+				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "creator_user_name",
@@ -47,7 +47,7 @@ func tableDatabricksComputeClusterPolicy(_ context.Context) *plugin.Table {
 			{
 				Name:        "definition",
 				Description: "Policy definition document expressed in Databricks Cluster Policy Definition Language.",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "description",
@@ -82,7 +82,7 @@ func tableDatabricksComputeClusterPolicy(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 

@@ -3,6 +3,7 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/catalog"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -18,10 +19,11 @@ func tableDatabricksCatalogExternalLocation(_ context.Context) *plugin.Table {
 			Hydrate: listCatalogExternalLocations,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getCatalogExternalLocation,
+			KeyColumns:        plugin.SingleColumn("name"),
+			ShouldIgnoreError: isNotFoundError([]string{"EXTERNAL_LOCATION_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogExternalLocation,
 		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "name",
 				Description: "Human readable name that identifies the experiment.",
@@ -85,6 +87,22 @@ func tableDatabricksCatalogExternalLocation(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 			},
 
+			// JSON fields
+			{
+				Name:        "external_location_permissions",
+				Description: "The permissions for the external location.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogExternalLocationPermissions,
+				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "external_location_effective_permissions",
+				Description: "The effective permissions for the external location.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getCatalogExternalLocationEffectivePermissions,
+				Transform:   transform.FromValue(),
+			},
+
 			// Standard Steampipe columns
 			{
 				Name:        "title",
@@ -92,7 +110,7 @@ func tableDatabricksCatalogExternalLocation(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 
@@ -150,4 +168,42 @@ func getCatalogExternalLocation(ctx context.Context, d *plugin.QueryData, _ *plu
 	}
 
 	return *el, nil
+}
+
+func getCatalogExternalLocationPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.ExternalLocationInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeExternalLocation, name)
+	if err != nil {
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
+}
+
+func getCatalogExternalLocationEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	name := h.Item.(catalog.ExternalLocationInfo).Name
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationEffectivePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeExternalLocation, name)
+	if err != nil {
+		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationEffectivePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission.PrivilegeAssignments, nil
 }
