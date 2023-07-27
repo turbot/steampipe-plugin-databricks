@@ -2,7 +2,9 @@ package databricks
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/databricks/databricks-sdk-go/service/iam"
 	"github.com/databricks/databricks-sdk-go/service/jobs"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -100,6 +102,13 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 				Description: "A list of job cluster specifications that can be shared and reused by tasks of this job.",
 				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.JobClusters"),
+			},
+			{
+				Name:        "job_permissions",
+				Description: "A list of job-level permissions.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getJobsJobPermissions,
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "notification_settings",
@@ -222,9 +231,14 @@ func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 
 //// HYDRATE FUNCTIONS
 
-func getJobsJob(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getJobsJob(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	id := d.EqualsQuals["job_id"].GetInt64Value()
+	var id int64
+	if h.Item != nil {
+		id = getJobId(h.Item)
+	} else {
+		id = d.EqualsQuals["job_id"].GetInt64Value()
+	}
 
 	// Return nil, if no input provided
 	if id == 0 {
@@ -245,4 +259,38 @@ func getJobsJob(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 	}
 
 	return *job, nil
+}
+
+func getJobsJobPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := getJobId(h.Item)
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_jobs_job.getJobsJobPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	request := iam.GetPermissionRequest{
+		RequestObjectId:   strconv.Itoa(int(id)),
+		RequestObjectType: "jobs",
+	}
+
+	permission, err := client.Permissions.Get(ctx, request)
+	if err != nil {
+		logger.Error("databricks_jobs_job.getJobsJobPermissions", "api_error", err)
+		return nil, err
+	}
+	return permission, nil
+}
+
+func getJobId(item interface{}) int64 {
+	switch item := item.(type) {
+	case jobs.Job:
+		return item.JobId
+	case jobs.BaseJob:
+		return item.JobId
+	}
+	return 0
 }

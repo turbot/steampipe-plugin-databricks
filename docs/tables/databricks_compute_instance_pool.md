@@ -163,3 +163,4 @@ select
 from
   databricks_compute_instance_pool,
   jsonb_array_elements(instance_pool_permission -> 'access_control_list') as acl;
+```

@@ -101,7 +101,7 @@ func listPipelinesPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *p
 	}
 
 	// Limiting the results
-	maxLimit := int32(1000)
+	maxLimit := int32(100)
 	if d.QueryContext.Limit != nil {
 		limit := int32(*d.QueryContext.Limit)
 		if limit < maxLimit {
@@ -135,12 +135,12 @@ func listPipelinesPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *p
 			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
-
-			if response.NextPageToken == "" {
-				return nil, nil
-			}
-			request.PageToken = response.NextPageToken
 		}
+
+		if response.NextPageToken == "" {
+			return nil, nil
+		}
+		request.PageToken = response.NextPageToken
 	}
 }
 
@@ -168,5 +168,5 @@ func getPipelinesPipelineUpdate(ctx context.Context, d *plugin.QueryData, _ *plu
 		logger.Error("databricks_pipelines_pipeline_update.getPipelinesPipelineUpdate", "api_error", err)
 		return nil, err
 	}
-	return *update, nil
+	return *update.Update, nil
 }

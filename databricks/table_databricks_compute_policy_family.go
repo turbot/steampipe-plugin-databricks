@@ -96,12 +96,11 @@ func listComputePolicyFamilies(ctx context.Context, d *plugin.QueryData, h *plug
 			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
-
-			if response.NextPageToken == "" {
-				return nil, nil
-			}
-			request.PageToken = response.NextPageToken
 		}
+		if response.NextPageToken == "" {
+			return nil, nil
+		}
+		request.PageToken = response.NextPageToken
 	}
 }
 

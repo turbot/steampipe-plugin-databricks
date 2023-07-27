@@ -168,3 +168,4 @@ select
 from
   databricks_compute_cluster,
   jsonb_array_elements(cluster_permissions -> 'access_control_list') as acl;
+```

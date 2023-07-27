@@ -167,3 +167,17 @@ from
 where
   trigger_history is not null;
 ```
+
+### Get the permissions associated to each job
+
+```sql
+select
+  job_id,
+  name,
+  acl ->> 'user_name' as principal_user_name,
+  acl ->> 'group_name' as principal_group_name,
+  acl ->> 'all_permissions' as permission_level
+from
+  databricks_jobs_job,
+  jsonb_array_elements(job_permissions -> 'access_control_list') as acl;
+```

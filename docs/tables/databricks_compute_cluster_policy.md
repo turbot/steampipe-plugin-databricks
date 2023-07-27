@@ -63,3 +63,4 @@ select
 from
   databricks_compute_cluster_policy,
   jsonb_array_elements(definition -> 'access_control_list') as acl;
+```

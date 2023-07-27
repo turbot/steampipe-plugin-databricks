@@ -101,7 +101,7 @@ func listPipelinesPipelineEvents(ctx context.Context, d *plugin.QueryData, h *pl
 	}
 
 	// Limiting the results
-	maxLimit := int32(1000)
+	maxLimit := int32(250)
 	if d.QueryContext.Limit != nil {
 		limit := int32(*d.QueryContext.Limit)
 		if limit < maxLimit {
@@ -135,11 +135,11 @@ func listPipelinesPipelineEvents(ctx context.Context, d *plugin.QueryData, h *pl
 			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
 			}
-
-			if response.NextPageToken == "" {
-				return nil, nil
-			}
-			request.PageToken = response.NextPageToken
 		}
+
+		if response.NextPageToken == "" {
+			return nil, nil
+		}
+		request.PageToken = response.NextPageToken
 	}
 }
