@@ -23,22 +23,37 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.AccountToken != nil {
-		os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
-	} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-		return nil, errors.New("account_token must be configured")
-	}
+	if databricksConfig.ConfigProfile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
+		if databricksConfig.ConfigFile != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+		}
+	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+		if databricksConfig.AccountToken != nil {
+			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
+		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
 
-	if databricksConfig.AccountHost != nil {
-		os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
-	} else if os.Getenv("DATABRICKS_HOST") == "" {
-		return nil, errors.New("account_host must be configured")
-	}
+			if databricksConfig.DataUsername != nil {
+				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+			}
+			if databricksConfig.DataPassword != nil {
+				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
+				return nil, errors.New("account_token or data_username and data_password must be configured")
+			}
+		}
 
-	if databricksConfig.AccountId != nil {
-		os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-	} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-		return nil, errors.New("account_id must be configured")
+		if databricksConfig.AccountHost != nil {
+			os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
+		} else if os.Getenv("DATABRICKS_HOST") == "" {
+			return nil, errors.New("account_host must be configured")
+		}
+
+		if databricksConfig.AccountId != nil {
+			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
+		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+			return nil, errors.New("account_id must be configured")
+		}
 	}
 
 	client, err := databricks.NewAccountClient()
@@ -65,22 +80,37 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.WorkspaceToken != nil {
-		os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
-	} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-		return nil, errors.New("workspace_token must be configured")
-	}
+	if databricksConfig.ConfigProfile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
+		if databricksConfig.ConfigFile != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+		}
+	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+		if databricksConfig.WorkspaceToken != nil {
+			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
+		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
 
-	if databricksConfig.WorkspaceHost != nil {
-		os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
-	} else if os.Getenv("DATABRICKS_HOST") == "" {
-		return nil, errors.New("workspace_host must be configured")
-	}
+			if databricksConfig.DataUsername != nil {
+				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+			}
+			if databricksConfig.DataPassword != nil {
+				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
+				return nil, errors.New("workspace_token or data_username and data_password must be configured")
+			}
+		}
 
-	if databricksConfig.AccountId != nil {
-		os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-	} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-		return nil, errors.New("account_id must be configured")
+		if databricksConfig.WorkspaceHost != nil {
+			os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
+		} else if os.Getenv("DATABRICKS_HOST") == "" {
+			return nil, errors.New("workspace_host must be configured")
+		}
+
+		if databricksConfig.AccountId != nil {
+			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
+		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+			return nil, errors.New("account_id must be configured")
+		}
 	}
 
 	client, err := databricks.NewWorkspaceClient()

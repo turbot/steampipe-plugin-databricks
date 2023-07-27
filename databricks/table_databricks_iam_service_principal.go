@@ -26,8 +26,9 @@ func tableDatabricksIAMServicePrincipal(_ context.Context) *plugin.Table {
 			Hydrate: listIAMServicePrincipals,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getIAMServicePrincipal,
+			KeyColumns:        plugin.SingleColumn("id"),
+			ShouldIgnoreError: isNotFoundError([]string{"SCIM_404"}),
+			Hydrate:           getIAMServicePrincipal,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

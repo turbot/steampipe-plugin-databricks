@@ -36,10 +36,11 @@ func tableDatabricksIAMUser(_ context.Context) *plugin.Table {
 			Hydrate: listIAMUsers,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getIAMUser,
+			KeyColumns:        plugin.SingleColumn("id"),
+			ShouldIgnoreError: isNotFoundError([]string{"SCIM_404"}),
+			Hydrate:           getIAMUser,
 		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "Databricks user ID.",
@@ -100,7 +101,7 @@ func tableDatabricksIAMUser(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("DisplayName"),
 			},
-		},
+		}),
 	}
 }
 

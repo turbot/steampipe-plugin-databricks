@@ -36,8 +36,9 @@ func tableDatabricksIAMAccountUser(_ context.Context) *plugin.Table {
 			Hydrate: listIAMAccountUsers,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getIAMAccountUser,
+			KeyColumns:        plugin.SingleColumn("id"),
+			ShouldIgnoreError: isNotFoundError([]string{"SCIM_404"}),
+			Hydrate:           getIAMAccountUser,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

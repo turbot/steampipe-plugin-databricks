@@ -26,8 +26,9 @@ func tableDatabricksIAMGroup(_ context.Context) *plugin.Table {
 			Hydrate: listIAMGroups,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getIAMGroup,
+			KeyColumns:        plugin.SingleColumn("id"),
+			ShouldIgnoreError: isNotFoundError([]string{"SCIM_404"}),
+			Hydrate:           getIAMGroup,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

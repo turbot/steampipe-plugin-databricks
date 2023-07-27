@@ -17,7 +17,7 @@ func tableDatabricksIAMCurrentUser(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: getIAMCurrentUser,
 		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "Databricks user ID.",
@@ -78,7 +78,7 @@ func tableDatabricksIAMCurrentUser(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("DisplayName"),
 			},
-		},
+		}),
 	}
 }
 

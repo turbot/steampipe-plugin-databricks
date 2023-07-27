@@ -27,9 +27,12 @@ func databricksAccountColumns(columns []*plugin.Column) []*plugin.Column {
 
 func getCommonColumns(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
-	return databricksCommonColumnData{
-		AccountId: *config.AccountId,
-	}, nil
+	if config.AccountId != nil {
+		return databricksCommonColumnData{
+			AccountId: *config.AccountId,
+		}, nil
+	}
+	return nil, nil
 }
 
 type databricksCommonColumnData struct {
