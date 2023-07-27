@@ -46,6 +46,11 @@ func tableDatabricksMLModel(_ context.Context) *plugin.Table {
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
+				Name:        "permission_level",
+				Description: "Permission level of the requesting user on the object.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
 				Name:        "user_id",
 				Description: "User ID of the user who created this model.",
 				Type:        proto.ColumnType_STRING,
