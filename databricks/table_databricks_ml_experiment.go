@@ -23,7 +23,7 @@ func tableDatabricksMLExperiment(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("experiment_id"),
 			Hydrate:    getMLExperiment,
 		},
-		Columns: databricksAccountColumns([]*plugin.Column{
+		Columns: []*plugin.Column{
 			{
 				Name:        "experiment_id",
 				Description: "Unique identifier for the experiment.",
@@ -71,7 +71,7 @@ func tableDatabricksMLExperiment(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		}),
+		},
 	}
 }
 

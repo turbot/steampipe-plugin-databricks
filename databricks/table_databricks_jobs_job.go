@@ -16,14 +16,14 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 		Name:        "databricks_jobs_job",
 		Description: "Gets details for all the jobs associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
-			Hydrate:    listJobsJobs,
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),
+			Hydrate:    listJobsJobs,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("job_id"),
 			Hydrate:    getJobsJob,
 		},
-		Columns: databricksAccountColumns([]*plugin.Column{
+		Columns: []*plugin.Column{
 			{
 				Name:        "job_id",
 				Description: "The canonical identifier for this job.",
@@ -32,14 +32,14 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 			{
 				Name:        "name",
 				Description: "The name of this job.",
-				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Settings.Name"),
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "created_time",
 				Description: "The time at which this job was created in epoch milliseconds.",
-				Type:        proto.ColumnType_TIMESTAMP,
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
+				Type:        proto.ColumnType_TIMESTAMP,
 			},
 			{
 				Name:        "creator_user_name",
@@ -49,121 +49,116 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 			{
 				Name:        "format",
 				Description: "The format of this job.",
-				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Settings.Format"),
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "max_concurrent_runs",
 				Description: "The maximum number of concurrent runs for this job.",
-				Type:        proto.ColumnType_INT,
 				Transform:   transform.FromField("Settings.MaxConcurrentRuns"),
-			},
-			{
-				Name:        "run_as_user_name",
-				Description: "The email of an active workspace user or the application ID of a service principal that the job runs as.",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_INT,
 			},
 			{
 				Name:        "timeout_seconds",
 				Description: "An optional timeout applied to each run of this job.",
-				Type:        proto.ColumnType_INT,
 				Transform:   transform.FromField("Settings.TimeoutSeconds"),
+				Type:        proto.ColumnType_INT,
 			},
 
 			// JSON fields
 			{
 				Name:        "compute",
 				Description: "A list of compute requirements that can be referenced by tasks of this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Compute"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "continuous",
 				Description: "An optional continuous property for this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Continuous"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "email_notifications",
 				Description: "An optional set of email addresses that is notified when runs of this job begin or complete as well as when this job is deleted.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.EmailNotifications"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "git_source",
 				Description: "An optional specification for a remote repository containing the notebooks used by this job's notebook tasks.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.GitSource"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "job_clusters",
 				Description: "A list of job cluster specifications that can be shared and reused by tasks of this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.JobClusters"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "notification_settings",
 				Description: "Optional notification settings that are used when sending notifications to each of the `email_notifications` and `webhook_notifications` for this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.NotificationSettings"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "parameters",
 				Description: "Job-level parameter definitions.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Parameters"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "run_as",
 				Description: "Specifies the user or service principal that the job runs as.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.RunAs"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "schedule",
 				Description: "An optional periodic schedule for this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Schedule"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "tags",
 				Description: "A map of tags associated with the job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Tags"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "tasks",
 				Description: "A list of tasks that this job executes.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Tasks"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "trigger",
 				Description: "Trigger settings for this job.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.Trigger"),
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "trigger_history",
 				Description: "History of the file arrival trigger associated with the job.",
-				Type:        proto.ColumnType_JSON,
 				Hydrate:     getJobsJob,
+				Type:        proto.ColumnType_JSON,
 			},
 			{
 				Name:        "webhook_notifications",
 				Description: "A collection of system notification IDs to notify when the run begins or completes.",
-				Type:        proto.ColumnType_JSON,
 				Transform:   transform.FromField("Settings.WebhookNotifications"),
+				Type:        proto.ColumnType_JSON,
 			},
 
 			// Standard Steampipe columns
 			{
 				Name:        "title",
 				Description: "The title of the resource.",
-				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Settings.Name"),
+				Type:        proto.ColumnType_STRING,
 			},
-		}),
+		},
 	}
 }
 
@@ -182,8 +177,7 @@ func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	}
 
 	request := jobs.ListJobsRequest{
-		ExpandTasks: true,
-		Limit:       int(maxLimit),
+		Limit: int(maxLimit),
 	}
 	if d.EqualsQualString("name") != "" {
 		request.Name = d.EqualsQualString("name")

@@ -23,7 +23,7 @@ func tableDatabricksJobsJobRun(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.SingleColumn("run_id"),
 			Hydrate:    getJobsJobRun,
 		},
-		Columns: databricksAccountColumns([]*plugin.Column{
+		Columns: []*plugin.Column{
 			{
 				Name:        "run_id",
 				Description: "The canonical identifier of the run.",
@@ -171,7 +171,7 @@ func tableDatabricksJobsJobRun(_ context.Context) *plugin.Table {
 				Transform:   transform.FromField("RunName"),
 				Type:        proto.ColumnType_STRING,
 			},
-		}),
+		},
 	}
 }
 
