@@ -19,8 +19,9 @@ func tableDatabricksSharingShare(_ context.Context) *plugin.Table {
 			Hydrate: listSharingShares,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getSharingShare,
+			KeyColumns:        plugin.SingleColumn("name"),
+			ShouldIgnoreError: isNotFoundError([]string{"SHARE_DOES_NOT_EXIST"}),
+			Hydrate:           getSharingShare,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

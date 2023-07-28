@@ -3,6 +3,8 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/iam"
+	"github.com/databricks/databricks-sdk-go/service/serving"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -49,12 +51,31 @@ func tableDatabricksServingServingEndpoint(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_TIMESTAMP,
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
+			{
+				Name:        "permission_level",
+				Description: "The permission level of the principal making the request.",
+				Type:        proto.ColumnType_STRING,
+				Hydrate:     getServingServingEndpoint,
+			},
 
 			// JSON fields
 			{
 				Name:        "config",
 				Description: "The config that is currently being served by the endpoint.",
 				Type:        proto.ColumnType_JSON,
+			},
+			{
+				Name:        "pending_config",
+				Description: "The config that the endpoint is attempting to update to.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getServingServingEndpoint,
+			},
+			{
+				Name:        "serving_endpoint_permissions",
+				Description: "The permissions of the principal making the request.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getServingServingEndpointPermissions,
+				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "state",
@@ -104,9 +125,14 @@ func listServingServingEndpoints(ctx context.Context, d *plugin.QueryData, h *pl
 
 //// HYDRATE FUNCTIONS
 
-func getServingServingEndpoint(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getServingServingEndpoint(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := d.EqualsQualString("name")
+	var name string
+	if h.Item != nil {
+		name = getEndpoint(h.Item).Name
+	} else {
+		name = d.EqualsQualString("name")
+	}
 
 	// Return nil, if no input provided
 	if name == "" {
@@ -126,4 +152,43 @@ func getServingServingEndpoint(ctx context.Context, d *plugin.QueryData, _ *plug
 		return nil, err
 	}
 	return endpoint, nil
+}
+
+func getServingServingEndpointPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := getEndpoint(h.Item).Id
+
+	request := iam.GetPermissionRequest{
+		RequestObjectId:   id,
+		RequestObjectType: "serving-endpoints",
+	}
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_serving_serving_endpoint.getServingServingEndpointPermissions", "connection_error", err)
+		return nil, err
+	}
+
+	permissions, err := client.Permissions.Get(ctx, request)
+	if err != nil {
+		logger.Error("databricks_serving_serving_endpoint.getServingServingEndpointPermissions", "api_error", err)
+		return nil, err
+	}
+	return permissions, nil
+}
+
+func getEndpoint(item interface{}) *endpointInfo {
+	switch item := item.(type) {
+	case serving.ServingEndpoint:
+		return &endpointInfo{item.Id, item.Name}
+	case serving.ServingEndpointDetailed:
+		return &endpointInfo{item.Id, item.Name}
+	}
+	return nil
+}
+
+type endpointInfo struct {
+	Id   string
+	Name string
 }

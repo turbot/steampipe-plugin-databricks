@@ -16,8 +16,9 @@ func tableDatabricksSharingRecipient(_ context.Context) *plugin.Table {
 		Name:        "databricks_sharing_recipient",
 		Description: "Gets an array of all share recipients within the current metastore.",
 		List: &plugin.ListConfig{
-			Hydrate:    listSharingRecipients,
-			KeyColumns: plugin.OptionalColumns([]string{"data_recipient_global_metastore_id"}),
+			Hydrate:           listSharingRecipients,
+			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"data_recipient_global_metastore_id"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"name"}),
@@ -70,7 +71,6 @@ func tableDatabricksSharingRecipient(_ context.Context) *plugin.Table {
 				Description: "User who created the recipient.",
 				Type:        proto.ColumnType_STRING,
 			},
-
 			{
 				Name:        "metastore_id",
 				Description: "UUID of the recipient's Unity Catalog metastore.",
@@ -89,6 +89,11 @@ func tableDatabricksSharingRecipient(_ context.Context) *plugin.Table {
 			{
 				Name:        "region",
 				Description: "Cloud region of the recipient's Unity Catalog metastore.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "sharing_code",
+				Description: "The one-time sharing code provided by the data recipient.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
@@ -120,6 +125,11 @@ func tableDatabricksSharingRecipient(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_JSON,
 				Hydrate:     getSharingRecipientPermissions,
 				Transform:   transform.FromValue(),
+			},
+			{
+				Name:        "tokens",
+				Description: "This field is only present when the __authentication_type__ is **TOKEN**.",
+				Type:        proto.ColumnType_JSON,
 			},
 
 			// Standard Steampipe columns

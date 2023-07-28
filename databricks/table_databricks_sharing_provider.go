@@ -16,8 +16,9 @@ func tableDatabricksSharingProvider(_ context.Context) *plugin.Table {
 		Name:        "databricks_sharing_provider",
 		Description: "Gets an array of available authentication providers.",
 		List: &plugin.ListConfig{
-			Hydrate:    listSharingProviders,
-			KeyColumns: plugin.OptionalColumns([]string{"data_provider_global_metastore_id"}),
+			Hydrate:           listSharingProviders,
+			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"data_provider_global_metastore_id"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"name"}),

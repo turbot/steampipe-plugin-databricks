@@ -15,18 +15,13 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		Name:             pluginName,
 		DefaultTransform: transform.FromCamel().Transform(transform.NullIfZeroValue),
 		DefaultGetConfig: &plugin.GetConfig{
-			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE", "RESOURCE_DOES_NOT_EXIST"}),
+			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE", "RESOURCE_DOES_NOT_EXIST", "DOES_NOT_EXIST"}),
 		},
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 			Schema:      ConfigSchema,
 		},
 		TableMap: map[string]*plugin.Table{
-			"databricks_account_budget":                 tableDatabricksAccountBudget(ctx),
-			"databricks_account_credential":             tableDatabricksAccountCredential(ctx),
-			"databricks_account_custom_app_integration": tableDatabricksAccountCustomAppIntegration(ctx),
-			"databricks_account_encryption_key":         tableDatabricksAccountEncryptionKey(ctx),
-
 			"databricks_catalog_catalog":            tableDatabricksCatalogCatalog(ctx),
 			"databricks_catalog_connection":         tableDatabricksCatalogConnection(ctx),
 			"databricks_catalog_external_location":  tableDatabricksCatalogExternalLocation(ctx),

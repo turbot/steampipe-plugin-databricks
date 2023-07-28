@@ -140,5 +140,5 @@ func getSettingsIpAccessList(ctx context.Context, d *plugin.QueryData, _ *plugin
 		logger.Error("databricks_settings_ip_access_list.getSettingsIpAccessList", "api_error", err)
 		return nil, err
 	}
-	return *list, nil
+	return *list.IpAccessList, nil
 }

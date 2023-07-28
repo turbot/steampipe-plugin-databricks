@@ -160,7 +160,6 @@ where
   development;
 ```
 
-
 ### Get the permissions associated to each pipeline
 
 ```sql
