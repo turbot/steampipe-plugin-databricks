@@ -17,11 +17,7 @@ func tableDatabricksSQLDataSource(_ context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listSQLDataSources,
 		},
-		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("name"),
-			Hydrate:    getSQLDataSource,
-		},
-		Columns: []*plugin.Column{
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "The unique identifier for this data source / SQL warehouse.",
@@ -75,7 +71,7 @@ func tableDatabricksSQLDataSource(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 
@@ -107,31 +103,4 @@ func listSQLDataSources(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	return nil, nil
-}
-
-//// HYDRATE FUNCTIONS
-
-func getSQLDataSource(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	logger := plugin.Logger(ctx)
-	name := d.EqualsQualString("name")
-
-	// Return nil, if no input provided
-	if name == "" {
-		return nil, nil
-	}
-
-	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
-	if err != nil {
-		logger.Error("databricks_sql_data_source.getSQLDataSource", "connection_error", err)
-		return nil, err
-	}
-
-	dataSource, err := client.DataSources.GetByName(ctx, name)
-	if err != nil {
-		logger.Error("databricks_sql_data_source.getSQLDataSource", "api_error", err)
-		return nil, err
-	}
-
-	return *dataSource, nil
 }

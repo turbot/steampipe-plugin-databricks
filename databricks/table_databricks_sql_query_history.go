@@ -15,7 +15,8 @@ func tableDatabricksSQLQueryHistory(_ context.Context) *plugin.Table {
 		Name:        "databricks_sql_query_history",
 		Description: "List the history of queries through SQL warehouses.",
 		List: &plugin.ListConfig{
-			Hydrate: listSQLQueryHistory,
+			Hydrate:    listSQLQueryHistory,
+			KeyColumns: plugin.OptionalColumns([]string{"warehouse_id", "user_id", "status"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -56,7 +57,7 @@ func tableDatabricksSQLQueryHistory(_ context.Context) *plugin.Table {
 			{
 				Name:        "executed_as_user_name",
 				Description: "The email address or username of the user whose credentials were used to run the query.",
-				Type:        proto.ColumnType_BOOL,
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "execution_end_time_ms",
@@ -71,7 +72,7 @@ func tableDatabricksSQLQueryHistory(_ context.Context) *plugin.Table {
 			{
 				Name:        "lookup_key",
 				Description: "A key that can be used to look up query details.",
-				Type:        proto.ColumnType_INT,
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "plans_state",
@@ -150,14 +151,24 @@ func listSQLQueryHistory(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 
 	request := sql.ListQueryHistoryRequest{
 		MaxResults: maxLimit,
+		FilterBy:   &sql.QueryFilter{},
 	}
 	if d.EqualsQualString("warehouse_id") != "" {
+		if request.FilterBy.WarehouseIds == nil {
+			request.FilterBy.WarehouseIds = make([]string, 0)
+		}
 		request.FilterBy.WarehouseIds = append(request.FilterBy.WarehouseIds, d.EqualsQualString("warehouse_id"))
 	}
-	if d.EqualsQualString("user_id") != "" {
+	if d.EqualsQuals["user_id"] != nil {
+		if request.FilterBy.UserIds == nil {
+			request.FilterBy.UserIds = make([]int, 0)
+		}
 		request.FilterBy.UserIds = append(request.FilterBy.UserIds, int(d.EqualsQuals["user_id"].GetInt64Value()))
 	}
 	if d.EqualsQualString("status") != "" {
+		if request.FilterBy.WarehouseIds == nil {
+			request.FilterBy.Statuses = make([]sql.QueryStatus, 0)
+		}
 		request.FilterBy.Statuses = append(request.FilterBy.Statuses, sql.QueryStatus(d.EqualsQualString("status")))
 	}
 

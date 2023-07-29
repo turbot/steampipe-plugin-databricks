@@ -3,6 +3,7 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/service/iam"
 	"github.com/databricks/databricks-sdk-go/service/sql"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -120,6 +121,13 @@ func tableDatabricksSQLWarehouse(_ context.Context) *plugin.Table {
 				Description: "A set of key-value pairs that will be tagged on all resources associated with the warehouse.",
 				Type:        proto.ColumnType_JSON,
 			},
+			{
+				Name:        "warehouse_permissions",
+				Description: "Permissions for the warehouse.",
+				Type:        proto.ColumnType_JSON,
+				Hydrate:     getSQLWarehousePermissions,
+				Transform:   transform.FromValue(),
+			},
 
 			// Standard Steampipe columns
 			{
@@ -185,5 +193,39 @@ func getSQLWarehouse(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 		logger.Error("databricks_sql_warehouse.getSQLWarehouse", "api_error", err)
 		return nil, err
 	}
-	return warehouse, nil
+	return *warehouse, nil
+}
+
+func getSQLWarehousePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+	id := getWarehouseId(h.Item)
+
+	// Create client
+	client, err := connectDatabricksWorkspace(ctx, d)
+	if err != nil {
+		logger.Error("databricks_sql_warehouse.getSQLWarehousePermissions", "connection_error", err)
+		return nil, err
+	}
+
+	request := iam.GetPermissionRequest{
+		RequestObjectId:   id,
+		RequestObjectType: "warehouses",
+	}
+
+	permission, err := client.Permissions.Get(ctx, request)
+	if err != nil {
+		logger.Error("databricks_sql_warehouse.getSQLWarehousePermissions", "api_error", err)
+		return nil, err
+	}
+	return permission, nil
+}
+
+func getWarehouseId(item interface{}) string {
+	switch item := item.(type) {
+	case sql.GetWarehouseResponse:
+		return item.Id
+	case sql.EndpointInfo:
+		return item.Id
+	}
+	return ""
 }

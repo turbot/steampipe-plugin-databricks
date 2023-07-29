@@ -1,6 +1,7 @@
 package databricks
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/databricks/databricks-sdk-go/apierr"
@@ -12,6 +13,8 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 		errMsg := err.(*apierr.APIError)
 		for _, msg := range notFoundErrors {
 			if strings.Contains(errMsg.ErrorCode, msg) {
+				return true
+			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
 				return true
 			}
 		}

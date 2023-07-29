@@ -225,5 +225,5 @@ func getSQLQuery(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 		logger.Error("databricks_sql_query.getSQLQuery", "api_error", err)
 		return nil, err
 	}
-	return query, nil
+	return *query, nil
 }

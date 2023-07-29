@@ -16,7 +16,9 @@ func tableDatabricksWorkspaceWorkspace(_ context.Context) *plugin.Table {
 		Name:        "databricks_workspace_workspace",
 		Description: "Lists all secret workspaces available in the workspace.",
 		List: &plugin.ListConfig{
-			Hydrate: listWorkspaceWorkspaces,
+			Hydrate:           listWorkspaceWorkspaces,
+			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST"}),
+			KeyColumns:        plugin.OptionalColumns([]string{"path"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -72,8 +74,15 @@ func tableDatabricksWorkspaceWorkspace(_ context.Context) *plugin.Table {
 
 func listWorkspaceWorkspaces(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	path := "/"
 
-	request := workspace.ListWorkspaceRequest{}
+	if d.EqualsQualString("path") != "" {
+		path = d.EqualsQualString("path")
+	}
+
+	request := workspace.ListWorkspaceRequest{
+		Path: path,
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)

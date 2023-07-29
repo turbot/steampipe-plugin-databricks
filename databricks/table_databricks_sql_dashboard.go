@@ -19,11 +19,11 @@ func tableDatabricksSQLDashboard(_ context.Context) *plugin.Table {
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),
 			Hydrate:    listSQLDashboards,
 		},
-		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("id"),
-			Hydrate:    getSQLDashboard,
-		},
-		Columns: []*plugin.Column{
+		// Get: &plugin.GetConfig{
+		// 	KeyColumns: plugin.SingleColumn("id"),
+		// 	Hydrate:    getSQLDashboard,
+		// },
+		Columns: databricksAccountColumns([]*plugin.Column{
 			{
 				Name:        "id",
 				Description: "Databricks dashboard ID.",
@@ -119,7 +119,7 @@ func tableDatabricksSQLDashboard(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_STRING,
 				Transform:   transform.FromField("Name"),
 			},
-		},
+		}),
 	}
 }
 
@@ -184,27 +184,31 @@ func listSQLDashboards(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 //// HYDRATE FUNCTIONS
 
-func getSQLDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	logger := plugin.Logger(ctx)
-	id := d.EqualsQualString("id")
+// func getSQLDashboard(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+// 	logger := plugin.Logger(ctx)
+// 	id := d.EqualsQualString("id")
 
-	// Return nil, if no input provided
-	if id == "" {
-		return nil, nil
-	}
+// 	// Return nil, if no input provided
+// 	if id == "" {
+// 		return nil, nil
+// 	}
 
-	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
-	if err != nil {
-		logger.Error("databricks_sql_dashboard.getSQLDashboard", "connection_error", err)
-		return nil, err
-	}
+// 	request := sql.GetDashboardRequest{
+// 		DashboardId: id,
+// 	}
 
-	dashboard, err := client.Dashboards.GetByDashboardId(ctx, id)
-	if err != nil {
-		logger.Error("databricks_sql_dashboard.getSQLDashboard", "api_error", err)
-		return nil, err
-	}
+// 	// Create client
+// 	client, err := connectDatabricksWorkspace(ctx, d)
+// 	if err != nil {
+// 		logger.Error("databricks_sql_dashboard.getSQLDashboard", "connection_error", err)
+// 		return nil, err
+// 	}
 
-	return *dashboard, nil
-}
+// 	dashboard, err := client.Dashboards.Impl().Get(ctx, request)
+// 	if err != nil {
+// 		logger.Error("databricks_sql_dashboard.getSQLDashboard", "api_error", err)
+// 		return nil, err
+// 	}
+
+// 	return *dashboard, nil
+// }

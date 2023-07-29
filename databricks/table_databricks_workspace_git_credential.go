@@ -43,7 +43,7 @@ func tableDatabricksWorkspaceGitCredential(_ context.Context) *plugin.Table {
 				Name:        "title",
 				Description: "The title of the resource.",
 				Type:        proto.ColumnType_STRING,
-				Transform:   transform.FromField("GitUsername"),
+				Transform:   transform.FromField("CredentialId"),
 			},
 		}),
 	}

@@ -18,8 +18,9 @@ func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 			Hydrate: listSQLAlerts,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.AnyColumn([]string{"id", "name"}),
-			Hydrate:    getSQLAlert,
+			KeyColumns:        plugin.AnyColumn([]string{"id"}),
+			ShouldIgnoreError: isNotFoundError([]string{"400"}),
+			Hydrate:           getSQLAlert,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -124,7 +125,7 @@ func listSQLAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 func getSQLAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	id := d.EqualsQualString("alert_id")
+	id := d.EqualsQualString("id")
 
 	// Return nil, if no input provided
 	if id == "" {

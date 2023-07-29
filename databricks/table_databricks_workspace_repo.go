@@ -17,7 +17,7 @@ func tableDatabricksWorkspaceRepo(_ context.Context) *plugin.Table {
 		Description: "Returns repos that the calling user has Manage permissions on.",
 		List: &plugin.ListConfig{
 			Hydrate:    listWorkspaceRepos,
-			KeyColumns: plugin.AnyColumn([]string{"path"}),
+			KeyColumns: plugin.OptionalColumns([]string{"path"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"id"}),
@@ -31,7 +31,7 @@ func tableDatabricksWorkspaceRepo(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "path",
-				Description: "Desired path for the repo in the workspace.",
+				Description: "Path for the repo in the workspace.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{
