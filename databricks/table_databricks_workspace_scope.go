@@ -32,23 +32,16 @@ func tableDatabricksWorkspaceScope(_ context.Context) *plugin.Table {
 
 			// JSON fields
 			{
-				Name:        "acl",
+				Name:        "acls",
 				Description: "The access control list for the secret scope.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getWorkspaceScopeACLs,
+				Hydrate:     getWorkspaceScopeAcls,
 				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "keyvault_metadata",
 				Description: "The metadata for the secret scope if the type is `AZURE_KEYVAULT`.",
 				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "secrets",
-				Description: "The secrets in the scope.",
-				Type:        proto.ColumnType_JSON,
-				Hydrate:     getWorkspaceScopeSecrets,
-				Transform:   transform.FromValue(),
 			},
 
 			// Standard Steampipe columns
@@ -92,42 +85,22 @@ func listWorkspaceScopes(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	return nil, nil
 }
 
-func getWorkspaceScopeSecrets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getWorkspaceScopeAcls(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	scope := h.Item.(workspace.SecretScope).Name
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_scope.getWorkspaceScopeSecrets", "connection_error", err)
+		logger.Error("databricks_workspace_scope.getWorkspaceScopeAcls", "connection_error", err)
 		return nil, err
 	}
 
-	response, err := client.Secrets.ListSecretsByScope(ctx, scope)
+	acls, err := client.Secrets.ListAclsByScope(ctx, scope)
 	if err != nil {
-		logger.Error("databricks_workspace_scope.getWorkspaceScopeSecrets", "api_error", err)
+		logger.Error("databricks_workspace_scope.getWorkspaceScopeAcls", "api_error", err)
 		return nil, err
 	}
 
-	return response.Secrets, nil
-}
-
-func getWorkspaceScopeACLs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	logger := plugin.Logger(ctx)
-	scope := h.Item.(workspace.SecretScope).Name
-
-	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
-	if err != nil {
-		logger.Error("databricks_workspace_scope.getWorkspaceScopeACLs", "connection_error", err)
-		return nil, err
-	}
-
-	response, err := client.Secrets.ListAclsByScope(ctx, scope)
-	if err != nil {
-		logger.Error("databricks_workspace_scope.getWorkspaceScopeACLs", "api_error", err)
-		return nil, err
-	}
-
-	return response.Items, nil
+	return acls.Items, nil
 }
