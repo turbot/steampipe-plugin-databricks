@@ -1,9 +1,3 @@
-## v0.0.2 [2023-06-29]
-
-_Bug fixes_
-
-- Fixed the incorrect table document references in the plugin to correctly render the example queries on the hub. ([#2](https://github.com/turbot/steampipe-plugin-databricks/pull/2))
-
 ## v0.0.1 [2023-06-29]
 
 _What's new?_

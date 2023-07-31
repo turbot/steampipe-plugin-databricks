@@ -35,7 +35,7 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Type:     schema.TypeString,
 	},
 	"account_id": {
-		Required: false,
+		Required: true,
 		Type:     schema.TypeString,
 	},
 	"config_profile": {
