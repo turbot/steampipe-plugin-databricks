@@ -12,8 +12,9 @@ const pluginName = "steampipe-plugin-databricks"
 // Plugin creates this (databricks) plugin
 func Plugin(ctx context.Context) *plugin.Plugin {
 	p := &plugin.Plugin{
-		Name:             pluginName,
-		DefaultTransform: transform.FromCamel().Transform(transform.NullIfZeroValue),
+		Name:               pluginName,
+		DefaultTransform:   transform.FromCamel().Transform(transform.NullIfZeroValue),
+		DefaultRetryConfig: &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError([]string{"429"})},
 		DefaultGetConfig: &plugin.GetConfig{
 			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE", "RESOURCE_DOES_NOT_EXIST", "DOES_NOT_EXIST", "404"}),
 		},

@@ -1,6 +1,7 @@
 package databricks
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
@@ -15,6 +16,22 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 			if strings.Contains(errMsg.ErrorCode, msg) {
 				return true
 			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+func shouldRetryError(retryErrors []string) plugin.ErrorPredicateWithContext {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData, err error) bool {
+		errMsg := err.(*apierr.APIError)
+		for _, msg := range retryErrors {
+			if strings.Contains(errMsg.ErrorCode, msg) {
+				plugin.Logger(ctx).Error("jira_errors.shouldRetryError", "rate_limit_error", err)
+				return true
+			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
+				plugin.Logger(ctx).Error("jira_errors.shouldRetryError", "rate_limit_error", err)
 				return true
 			}
 		}
@@ -48,18 +65,8 @@ func buildQueryFilterFromQuals(filterQuals []filterQualMap, equalQuals plugin.Ke
 							if filters != "" {
 								filters += " and "
 							}
-							filters += filterQualItem.PropertyPath + GcpFilterOperatorMap[qual.Operator] + value.GetStringValue()
+							filters += filterQualItem.PropertyPath + DatabricksCompositeFilterOperatorMap[qual.Operator] + value.GetStringValue()
 						}
-						// case "boolean":
-						// 	boolValue := value.GetBoolValue()
-						// 	switch qual.Operator {
-						// 	case "<>":
-						// 		filters += filterQualItem.PropertyPath + GcpFilterOperatorMap[qual.Operator] + !boolValue
-						// 		filters = append(filters, fmt.Sprintf("(%s = %t)", filterQualItem.PropertyPath, !boolValue))
-						// 	case "=":
-						// 		filters = append(filters, fmt.Sprintf("(%s = %t)", filterQualItem.PropertyPath, boolValue))
-						// 	}
-						// }
 					}
 				}
 			}
@@ -75,7 +82,7 @@ type filterQualMap struct {
 	Type         string
 }
 
-var GcpFilterOperatorMap = map[string]string{
+var DatabricksCompositeFilterOperatorMap = map[string]string{
 	"=":  " eq ",
 	"<>": " ne ",
 	"!=": " ne ",
