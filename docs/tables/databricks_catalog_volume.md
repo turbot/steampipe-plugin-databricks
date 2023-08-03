@@ -4,7 +4,7 @@ Volumes are a Unity Catalog (UC) capability for accessing, storing, governing, o
 
 The `databricks_catalog_volume` table can be used to query information about any volume, and **you must specify the catalog name and schema name** in the where or join clause using the `catalog_name` and `schema_name` columns.
 
-**Note** To query a volume, users must have the SELECT permission on the volume, and they must have the USE_CATALOG permission on its parent catalog and the USE_SCHEMA permission on its parent schema.
+**Note** To query a volume, the user must have the **USE_CATALOG** privilege on the catalog and the **USE_SCHEMA** privilege on the schema, and the output list contains only volumes for which either the user has the **EXECUTE** privilege or the user is the owner
 
 ## Examples
 

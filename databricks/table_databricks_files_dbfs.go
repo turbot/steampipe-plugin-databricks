@@ -16,14 +16,21 @@ func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 		Name:        "databricks_files_dbfs",
 		Description: "List the contents of a directory, or details of the file.",
 		List: &plugin.ListConfig{
-			Hydrate:    listFilesDbfs,
-			KeyColumns: plugin.SingleColumn("path"),
+			Hydrate:           listFilesDbfs,
+			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST", "INVALID_PARAMETER_VALUE"}),
+			KeyColumns:        plugin.AnyColumn([]string{"path", "path_prefix"}),
 		},
 		Columns: []*plugin.Column{
 			{
 				Name:        "path",
 				Description: "The path of the file or directory.",
 				Type:        proto.ColumnType_STRING,
+			},
+			{
+				Name:        "path_prefix",
+				Description: "The path prefix of the file or directory.",
+				Type:        proto.ColumnType_STRING,
+				Transform:   transform.FromQual("path_prefix"),
 			},
 			{
 				Name:        "file_size",
@@ -66,12 +73,17 @@ func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 
 func listFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
+	path := d.EqualsQualString("path")
+	pathPrefix := d.EqualsQualString("path_prefix")
 
-	if d.EqualsQualString("path") == "" {
+	request := files.ListDbfsRequest{}
+
+	if path != "" {
+		request.Path = path
+	} else if pathPrefix != "" {
+		request.Path = pathPrefix
+	} else {
 		return nil, nil
-	}
-	request := files.ListDbfsRequest{
-		Path: d.EqualsQualString("path"),
 	}
 
 	// Create client
@@ -103,7 +115,11 @@ func listFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 func getFilesDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	path := h.Item.(files.FileInfo).Path
+	file := h.Item.(files.FileInfo)
+
+	if file.IsDir {
+		return nil, nil
+	}
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -113,7 +129,7 @@ func getFilesDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	request := files.ReadDbfsRequest{
-		Path: path,
+		Path: file.Path,
 	}
 
 	content, err := client.Dbfs.Read(ctx, request)

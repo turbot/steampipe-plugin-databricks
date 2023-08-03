@@ -22,7 +22,7 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns:        plugin.SingleColumn("full_name"),
-			ShouldIgnoreError: isNotFoundError([]string{"FUNCTION_DOES_NOT_EXIST"}),
+			ShouldIgnoreError: isNotFoundError([]string{"TABLE_DOES_NOT_EXIST", "CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
 			Hydrate:           getCatalogTable,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
@@ -275,7 +275,7 @@ func getCatalogTable(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 
 func getCatalogTablePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := h.Item.(catalog.TableInfo).Name
+	name := h.Item.(catalog.TableInfo).FullName
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -294,7 +294,7 @@ func getCatalogTablePermissions(ctx context.Context, d *plugin.QueryData, h *plu
 
 func getCatalogTableEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := h.Item.(catalog.TableInfo).Name
+	name := h.Item.(catalog.TableInfo).FullName
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)

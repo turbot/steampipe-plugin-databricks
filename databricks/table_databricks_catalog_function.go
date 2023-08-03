@@ -21,8 +21,8 @@ func tableDatabricksCatalogFunction(_ context.Context) *plugin.Table {
 			KeyColumns:        plugin.AllColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.SingleColumn("name"),
-			ShouldIgnoreError: isNotFoundError([]string{"FUNCTION_DOES_NOT_EXIST"}),
+			KeyColumns:        plugin.SingleColumn("full_name"),
+			ShouldIgnoreError: isNotFoundError([]string{"FUNCTION_DOES_NOT_EXIST", "CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
 			Hydrate:           getCatalogFunction,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
@@ -243,7 +243,7 @@ func listCatalogFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 func getCatalogFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := d.EqualsQualString("name")
+	name := d.EqualsQualString("full_name")
 
 	// Return nil, if no input provided
 	if name == "" {
@@ -268,7 +268,7 @@ func getCatalogFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 
 func getCatalogFunctionPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := h.Item.(catalog.FunctionInfo).Name
+	name := h.Item.(catalog.FunctionInfo).FullName
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
@@ -287,7 +287,7 @@ func getCatalogFunctionPermissions(ctx context.Context, d *plugin.QueryData, h *
 
 func getCatalogFunctionEffectivePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
-	name := h.Item.(catalog.FunctionInfo).Name
+	name := h.Item.(catalog.FunctionInfo).FullName
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)

@@ -16,21 +16,14 @@ func tableDatabricksCatalogVolume(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_volume",
 		Description: "Gets an array of the available volumes.",
 		List: &plugin.ListConfig{
-			Hydrate: listCatalogVolumes,
-			KeyColumns: []*plugin.KeyColumn{
-				{
-					Name:    "catalog_name",
-					Require: plugin.Required,
-				},
-				{
-					Name:    "schema_name",
-					Require: plugin.Optional,
-				},
-			},
+			Hydrate:           listCatalogVolumes,
+			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
+			KeyColumns:        plugin.AllColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns: plugin.SingleColumn("full_name"),
-			Hydrate:    getCatalogVolume,
+			KeyColumns:        plugin.SingleColumn("full_name"),
+			ShouldIgnoreError: isNotFoundError([]string{"VOLUME_DOES_NOT_EXIST", "CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
+			Hydrate:           getCatalogVolume,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -122,18 +115,16 @@ func tableDatabricksCatalogVolume(_ context.Context) *plugin.Table {
 func listCatalogVolumes(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	catalogName := d.EqualsQualString("catalog_name")
+	schemaName := d.EqualsQualString("schema_name")
 
 	// Return nil, if no input provided
-	if catalogName == "" {
+	if catalogName == "" || schemaName == "" {
 		return nil, nil
 	}
 
 	request := catalog.ListVolumesRequest{
 		CatalogName: catalogName,
-	}
-
-	if d.EqualsQualString("schema_name") != "" {
-		request.SchemaName = d.EqualsQualString("schema_name")
+		SchemaName:  schemaName,
 	}
 
 	// Create client
