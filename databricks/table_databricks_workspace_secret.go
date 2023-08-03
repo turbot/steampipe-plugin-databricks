@@ -11,13 +11,13 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceScopeSecret(_ context.Context) *plugin.Table {
+func tableDatabricksWorkspaceSecret(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_scope_secret",
+		Name:        "databricks_workspace_secret",
 		Description: "Lists the secret keys that are stored.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listWorkspaceScopes,
-			Hydrate:       listWorkspaceScopeSecrets,
+			Hydrate:       listWorkspaceSecrets,
 			KeyColumns:    plugin.OptionalColumns([]string{"scope_name"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
@@ -56,7 +56,7 @@ type secretScopeInfo struct {
 
 //// LIST FUNCTION
 
-func listWorkspaceScopeSecrets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listWorkspaceSecrets(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	scope := h.Item.(workspace.SecretScope).Name
 
@@ -67,13 +67,13 @@ func listWorkspaceScopeSecrets(ctx context.Context, d *plugin.QueryData, h *plug
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_scope_secret.listWorkspaceScopeSecrets", "connection_error", err)
+		logger.Error("databricks_workspace_secret.listWorkspaceSecrets", "connection_error", err)
 		return nil, err
 	}
 
 	secrets, err := client.Secrets.ListSecretsByScope(ctx, scope)
 	if err != nil {
-		logger.Error("databricks_workspace_scope_secret.listWorkspaceScopeSecrets", "api_error", err)
+		logger.Error("databricks_workspace_secret.listWorkspaceSecrets", "api_error", err)
 		return nil, err
 	}
 

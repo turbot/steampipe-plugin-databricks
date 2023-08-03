@@ -52,7 +52,7 @@ select
 from
   databricks_catalog_catalog
 where
-  enable_auto_maintenance;
+  enable_auto_maintenance = 'ENABLE';
 ```
 
 ### List catalogs that are not isolated to the workspace

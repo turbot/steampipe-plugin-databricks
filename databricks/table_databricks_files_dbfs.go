@@ -15,8 +15,8 @@ func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_files_dbfs",
 		Description: "List the contents of a directory, or details of the file.",
-		Get: &plugin.GetConfig{
-			Hydrate:    getFilesDbfs,
+		List: &plugin.ListConfig{
+			Hydrate:    listFilesDbfs,
 			KeyColumns: plugin.SingleColumn("path"),
 		},
 		Columns: []*plugin.Column{
@@ -64,7 +64,7 @@ func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func getFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	if d.EqualsQualString("path") == "" {

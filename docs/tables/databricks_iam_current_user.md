@@ -1,6 +1,6 @@
 # Table: databricks_iam_current_user
 
-Information about currently authenticated user or service principal
+Information about currently authenticated user or service principal.
 
 ## Examples
 

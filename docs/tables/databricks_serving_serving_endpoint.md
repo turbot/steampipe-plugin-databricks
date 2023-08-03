@@ -50,7 +50,7 @@ where
   permission_level = 'CAN_MANAGE';
 ```
 
-### List endpoints which failed update
+### List endpoints with failed config updates
 
 ```sql
 select

@@ -87,10 +87,10 @@ group by
 select
   id,
   name,
-  odbc_parameters ->> 'hostname' as odbc_hostname,
-  odbc_parameters ->> 'port' as odbc_port,
-  odbc_parameters ->> 'path' as odbc_path,
-  odbc_parameters ->> 'protocol' as odbc_protocol,
+  odbc_params ->> 'hostname' as odbc_hostname,
+  odbc_params ->> 'port' as odbc_port,
+  odbc_params ->> 'path' as odbc_path,
+  odbc_params ->> 'protocol' as odbc_protocol,
   account_id
 from
   databricks_sql_warehouse;

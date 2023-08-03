@@ -114,9 +114,9 @@ from
 select
   instance_pool_id,
   instance_pool_name,
-  fleet_attributes ->> 'fleet_on_demand_option' as fleet_on_demand_option,
-  fleet_attributes ->> 'fleet_spot_option' as fleet_spot_option,
-  fleet_attributes ->> 'launch_template_overrides' as launch_template_overrides,
+  instance_pool_fleet_attributes ->> 'fleet_on_demand_option' as fleet_on_demand_option,
+  instance_pool_fleet_attributes ->> 'fleet_spot_option' as fleet_spot_option,
+  instance_pool_fleet_attributes ->> 'launch_template_overrides' as launch_template_overrides,
   account_id
 from
   databricks_compute_instance_pool;
@@ -132,7 +132,7 @@ select
   p ->> 'url' as docker_image_url,
   account_id
 from
-  databricks_compute_instance_pool
+  databricks_compute_instance_pool,
   jsonb_array_elements(preloaded_docker_images) as p;
 ```
 

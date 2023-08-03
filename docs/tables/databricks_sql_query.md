@@ -52,7 +52,7 @@ where
   is_archived;
 ```
 
-### List queries in draft
+### List queries that are in draft
 
 ```sql
 select

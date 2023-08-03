@@ -29,18 +29,6 @@ where
   backend_type = 'AZURE_KEYVAULT';
 ```
 
-### List total secrets per scope
-
-```sql
-select
-  name,
-  count(*) as total_secrets
-from
-  databricks_workspace_scope_secret
-group by
-  name;
-```
-
 ### List acls for each scope
 
 ```sql

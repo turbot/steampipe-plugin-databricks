@@ -18,7 +18,7 @@ from
   databricks_sql_data_source;
 ```
 
-### List all view only data sources
+### List view only data sources
 
 ```sql
 select

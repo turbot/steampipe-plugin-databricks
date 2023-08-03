@@ -54,6 +54,11 @@ func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 				Type:        proto.ColumnType_INT,
 			},
 			{
+				Name:        "state",
+				Description: "State of the alert.",
+				Type:        proto.ColumnType_STRING,
+			},
+			{
 				Name:        "updated_at",
 				Description: "Timestamp when the alert was last updated.",
 				Type:        proto.ColumnType_TIMESTAMP,
@@ -68,11 +73,6 @@ func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 			{
 				Name:        "query",
 				Description: "Query associated with the alert.",
-				Type:        proto.ColumnType_JSON,
-			},
-			{
-				Name:        "state",
-				Description: "State of the alert.",
 				Type:        proto.ColumnType_JSON,
 			},
 			{

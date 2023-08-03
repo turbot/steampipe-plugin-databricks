@@ -18,7 +18,7 @@ from
   databricks_pipelines_pipeline_update;
 ```
 
-### List updated caused by an api call
+### List updates caused by an API call
 
 ```sql
 select
@@ -50,7 +50,7 @@ where
   state = 'FAILED';
 ```
 
-### List all pipelines requiring full refresh before each run
+### List all pipelines that require full refresh before each run
 
 ```sql
 select

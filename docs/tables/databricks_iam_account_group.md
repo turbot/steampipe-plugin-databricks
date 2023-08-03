@@ -29,7 +29,7 @@ from
   databricks_iam_account_group g,
   jsonb_array_elements(g.members) m
 where
-  g.display_name = 'dev'
+  g.display_name = 'dev';
 ```
 
 ### List all members that are users in a specific group
@@ -47,7 +47,7 @@ from
   jsonb_array_elements(g.members) m
 where
   g.display_name = 'dev'
-  and m ->> '$ref' like 'User%'
+  and m ->> '$ref' like 'User%';
 ```
 
 ### List all members that are groups in a specific group
@@ -65,5 +65,5 @@ from
   jsonb_array_elements(g.members) m
 where
   g.display_name = 'dev'
-  and m ->> '$ref' like 'Group%'
+  and m ->> '$ref' like 'Group%';
 ```

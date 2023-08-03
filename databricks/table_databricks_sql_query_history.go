@@ -36,7 +36,7 @@ func tableDatabricksSQLQueryHistory(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "duration",
-				Description: "Total execution time of the query from the client’s point of view.",
+				Description: "Total execution time of the query from the client's point of view.",
 				Type:        proto.ColumnType_INT,
 			},
 			{

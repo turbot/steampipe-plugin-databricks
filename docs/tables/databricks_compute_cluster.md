@@ -65,7 +65,7 @@ from
   databricks_compute_cluster;
 ```
 
-### Get aws attributes associated with each cluster
+### Get AWS attributes associated with each cluster
 
 ```sql
 select
@@ -88,7 +88,7 @@ where
   aws_attributes is not null;
 ```
 
-### Get azure attributes associated with each cluster
+### Get Azure attributes associated with each cluster
 
 ```sql
 select
@@ -106,7 +106,7 @@ where
   azure_attributes is not null;
 ```
 
-### Get azure attributes associated with each cluster
+### Get GCP attributes associated with each cluster
 
 ```sql
 select
@@ -123,22 +123,6 @@ where
   gcp_attributes is not null;
 ```
 
-### List clusters that support port forwarding
-  
-```sql
-select
-  cluster_id,
-  cluster_name,
-  creator_user_name,
-  start_time,
-  state,
-  account_id
-from
-  databricks_compute_cluster
-where
-  port_forwarding ->> 'enabled' = 'true';
-```
-
 ### List clusters terminated due to inactivity
 
 ```sql
@@ -152,8 +136,8 @@ select
 from
   databricks_compute_cluster
 where
-  state = 'TERMINATED' and
-  termination_reason ->> 'code' = 'INACTIVITY';
+  state = 'TERMINATED'
+  and termination_reason ->> 'code' = 'INACTIVITY';
 ```
 
 ### Get the permissions associated to each cluster

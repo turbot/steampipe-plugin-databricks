@@ -36,7 +36,7 @@ where
   timestamp between '2023-07-27T02:00:00' and '2023-07-27T22:00:00';
 ```
 
-### List all error events
+### List all events that are errors
 
 ```sql
 select

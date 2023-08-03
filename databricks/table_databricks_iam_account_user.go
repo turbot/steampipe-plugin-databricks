@@ -68,13 +68,6 @@ func tableDatabricksIAMAccountUser(_ context.Context) *plugin.Table {
 			},
 
 			// JSON fields
-			// {
-			// 	Name:        "access_control_assignable_roles",
-			// 	Description: "All the roles that can be assigned to the Databricks user.",
-			// 	Hydrate:     getAccessControlAssignableRoles,
-			// 	Transform:   transform.FromField("Roles"),
-			// 	Type:        proto.ColumnType_JSON,
-			// },
 			{
 				Name:        "emails",
 				Description: "All the emails associated with the Databricks user.",
@@ -197,31 +190,3 @@ func getIAMAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 
 	return *user, nil
 }
-
-// func getAccessControlAssignableRoles(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-// 	logger := plugin.Logger(ctx)
-// 	id := h.Item.(*iam.User).Id
-
-// 	// Return nil, if no input provided
-// 	if id == "" {
-// 		return nil, nil
-// 	}
-
-// 	// Create client
-// 	client, err := connectDatabricksAccount(ctx, d)
-// 	if err != nil {
-// 		logger.Error("databricks_iam_account_user.getUser", "connection_error", err)
-// 		return nil, err
-// 	}
-
-// 	request := iam.GetAssignableRolesForResourceRequest{
-// 		Resource: id,
-// 	}
-
-// 	role, err := client.AccessControl.GetAssignableRolesForResource(ctx, request)
-// 	if err != nil {
-// 		logger.Error("databricks_iam_account_user.getUser", "api_error", err)
-// 		return nil, err
-// 	}
-// 	return role, nil
-// }

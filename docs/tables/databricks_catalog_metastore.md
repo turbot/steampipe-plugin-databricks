@@ -18,7 +18,7 @@ from
   databricks_catalog_metastore;
 ```
 
-### List metastores cloud provider configuration
+### List cloud provider configuration for the metastores
 
 ```sql
 select
@@ -59,7 +59,6 @@ select
   cloud,
   owner,
   updated_at,
-  updated_by,
   account_id
 from
   databricks_catalog_metastore

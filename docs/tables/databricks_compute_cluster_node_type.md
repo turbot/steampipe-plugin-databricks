@@ -48,7 +48,7 @@ where
   is_encrypted_in_transit;
 ```
 
-### List node types with I/O caching
+### List node types with I/O caching enabled
 
 ```sql
 select

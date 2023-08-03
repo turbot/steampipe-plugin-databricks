@@ -4,6 +4,8 @@ Functions implement User-Defined Functions (UDFs) in Unity Catalog. The function
 
 The `databricks_catalog_function` table can be used to query information about any function, and **you must specify the catalog name and schema name** in the where or join clause using the `catalog_name` and `schema_name` columns.
 
+**Note** To query a table, the user must have the **USE_CATALOG** privilege on the catalog and the **USE_SCHEMA** privilege on the schema, and the output list contains only functions for which either the user has the **EXECUTE** privilege or the user is the owner
+
 ## Examples
 
 ### Basic info
@@ -100,7 +102,7 @@ where
   and schema_name = 'schema';
 ```
 
-### List all EXTERNAL functions
+### List all external functions
 
 ```sql
 select
@@ -145,7 +147,7 @@ from
   databricks_catalog_function,
   jsonb_array_elements(function_effective_permissions) p
 where
-  and catalog_name = 'catalog'
+  catalog_name = 'catalog'
   and schema_name = 'schema';
 ```
 

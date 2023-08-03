@@ -185,13 +185,13 @@ func getSharingProviderShares(ctx context.Context, d *plugin.QueryData, h *plugi
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_sharing_provider.getSharingProvider", "connection_error", err)
+		logger.Error("databricks_sharing_provider.getSharingProviderShares", "connection_error", err)
 		return nil, err
 	}
 
 	shares, err := client.Providers.ListSharesByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_sharing_provider.getSharingProvider", "api_error", err)
+		logger.Error("databricks_sharing_provider.getSharingProviderShares", "api_error", err)
 		return nil, err
 	}
 	return shares.Shares, nil

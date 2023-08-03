@@ -52,7 +52,7 @@ func tableDatabricksComputeCluster(_ context.Context) *plugin.Table {
 			{
 				Name:        "cluster_source",
 				Description: "Determines whether the cluster was created by a user through the UI, created by the Databricks Jobs Scheduler, or through an API request.",
-				Type:        proto.ColumnType_JSON,
+				Type:        proto.ColumnType_STRING,
 			},
 			{
 				Name:        "creator_user_name",

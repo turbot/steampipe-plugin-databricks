@@ -46,7 +46,7 @@ select
   account_id
 from
   databricks_sharing_share,
-  jsonb_array_elements(objects) as o
+  jsonb_array_elements(objects) as o;
 ```
 
 ### Get permissions for each share

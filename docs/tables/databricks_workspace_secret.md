@@ -1,4 +1,4 @@
-# Table: databricks_workspace_scope_secret
+# Table: databricks_workspace_secret
 
 Sometimes accessing data requires that you authenticate to external data sources through JDBC. Instead of directly entering your credentials into a notebook, use Databricks secrets to store your credentials and reference them in notebooks and jobs.
 
@@ -13,7 +13,7 @@ select
   last_updated_timestamp,
   account_id
 from
-  databricks_workspace_scope_secret;
+  databricks_workspace_secret;
 ```
 
 ### List all secrets updated in the past 7 days
@@ -25,7 +25,7 @@ select
   last_updated_timestamp,
   account_id
 from
-  databricks_workspace_scope_secret
+  databricks_workspace_secret
 where
   last_updated_timestamp > now() - interval '7' day;
 ```
@@ -37,7 +37,7 @@ select
   scope_name,
   count(*) as total_secrets
 from
-  databricks_workspace_scope_secret
+  databricks_workspace_secret
 group by
   scope_name;
 ```
@@ -51,7 +51,7 @@ select
   last_updated_timestamp,
   account_id
 from
-  databricks_workspace_scope_secret
+  databricks_workspace_secret
 where
   scope_name = 'my_scope';
 ```

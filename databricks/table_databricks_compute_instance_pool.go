@@ -37,7 +37,7 @@ func tableDatabricksComputeInstancePool(_ context.Context) *plugin.Table {
 			{
 				Name:        "enable_elastic_disk",
 				Description: "Autoscaling Local Storage: when enabled, this instances in this pool will dynamically acquire additional disk space when its Spark workers are running low on disk space.",
-				Type:        proto.ColumnType_STRING,
+				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "idle_instance_autotermination_minutes",
@@ -105,7 +105,7 @@ func tableDatabricksComputeInstancePool(_ context.Context) *plugin.Table {
 				Name:        "instance_pool_permission",
 				Description: "The permission of the instance pool.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getComputeInstancePoolPermission,
+				Hydrate:     getComputeInstancePoolPermissions,
 				Transform:   transform.FromValue(),
 			},
 			{
@@ -196,14 +196,14 @@ func getComputeInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	return *instancePool, nil
 }
 
-func getComputeInstancePoolPermission(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getComputeInstancePoolPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := getInstancePoolId(h.Item)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermission", "connection_error", err)
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermissions", "connection_error", err)
 		return nil, err
 	}
 
@@ -214,7 +214,7 @@ func getComputeInstancePoolPermission(ctx context.Context, d *plugin.QueryData, 
 
 	permission, err := client.Permissions.Get(ctx, request)
 	if err != nil {
-		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermission", "api_error", err)
+		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermissions", "api_error", err)
 		return nil, err
 	}
 	return permission, nil

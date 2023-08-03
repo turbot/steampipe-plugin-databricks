@@ -28,10 +28,10 @@ func shouldRetryError(retryErrors []string) plugin.ErrorPredicateWithContext {
 		errMsg := err.(*apierr.APIError)
 		for _, msg := range retryErrors {
 			if strings.Contains(errMsg.ErrorCode, msg) {
-				plugin.Logger(ctx).Error("jira_errors.shouldRetryError", "rate_limit_error", err)
+				plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
 				return true
 			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
-				plugin.Logger(ctx).Error("jira_errors.shouldRetryError", "rate_limit_error", err)
+				plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
 				return true
 			}
 		}

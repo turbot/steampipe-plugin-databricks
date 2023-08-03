@@ -1,6 +1,6 @@
 # Table: databricks_workspace_workspace
 
-Workspace manages the notebooks and folders in databricks. A notebook is a web-based interface to a document that contains runnable code, visualizations, and explanatory text
+Workspace manages the notebooks and folders in databricks. A notebook is a web-based interface to a document that contains runnable code, visualizations, and explanatory text.
 
 ## Examples
 

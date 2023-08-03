@@ -29,7 +29,7 @@ from
   databricks_iam_group g,
   jsonb_array_elements(g.members) m
 where
-  g.display_name = 'dev'
+  g.display_name = 'dev';
 ```
 
 ### List all groups in a specific group

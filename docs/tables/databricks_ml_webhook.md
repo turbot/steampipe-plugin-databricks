@@ -1,6 +1,6 @@
 # Table: databricks_ml_webhook
 
-MLflow Model Registry is a centralized model repository and a UI and set of APIs that enable you to manage the full lifecycle of MLflow Models. Webhooks are a way to get notified when an event happens in the Model Registry. You can use webhooks to integrate Model Registry with other systems.
+Webhooks enable you to listen for Model Registry events so your integrations can automatically trigger actions. You can use webhooks to automate and integrate your machine learning pipeline with existing CI/CD tools and workflows. For example, you can trigger CI builds when a new model version is created or notify your team members through Slack each time a model transition to production is requested.
 
 ## Examples
 

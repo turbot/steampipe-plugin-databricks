@@ -4,7 +4,7 @@ A table resides in the third layer of Unity Catalog’s three-level namespace. I
 
 The `databricks_catalog_table` table can be used to query information about any table, and **you must specify the catalog name and schema name** in the where or join clause using the `catalog_name` and `schema_name` columns.
 
-**Note** To query a table, users must have the SELECT permission on the table, and they must have the USE_CATALOG permission on its parent catalog and the USE_SCHEMA permission on its parent schema.
+**Note** To query a table, users must have the **SELECT** permission on the table, and they must have the **USE_CATALOG** permission on its parent catalog and the **USE_SCHEMA** permission on its parent schema.
 
 ## Examples
 
@@ -45,7 +45,7 @@ where
   and schema_name = 'schema';
 ```
 
-### List all views
+### List all view type tables
 
 ```sql
 select
@@ -59,24 +59,6 @@ from
   databricks_catalog_table
 where
   table_type = 'VIEW'
-  and catalog_name = 'catalog'
-  and schema_name = 'schema';
-```
-
-### List all tables having auto maintenance enabled
-
-```sql
-select
-  table_id,
-  name,
-  comment,
-  effective_auto_maintenance_flag,
-  metastore_id,
-  account_id
-from
-  databricks_catalog_table
-where
-  enabled_auto_maintenance
   and catalog_name = 'catalog'
   and schema_name = 'schema';
 ```
@@ -100,7 +82,7 @@ where
   and schema_name = 'schema';
 ```
 
-### List all EXTERNAL tables
+### List all external tables
 
 ```sql
 select
@@ -129,7 +111,7 @@ select
   account_id
 from
   databricks_catalog_table,
-  jsonb_array_elements(table_constraints ->> 'table_constraints') as c
+  jsonb_array_elements(table_constraints -> 'table_constraints') as c
 where
   catalog_name = 'catalog'
   and schema_name = 'schema';
@@ -146,7 +128,7 @@ from
   databricks_catalog_table,
   jsonb_array_elements(table_effective_permissions) p
 where
-  and catalog_name = 'catalog'
+  catalog_name = 'catalog'
   and schema_name = 'schema';
 ```
 
