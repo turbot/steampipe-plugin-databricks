@@ -30,7 +30,7 @@ select
   metastore_id,
   url,
   account_id
-from  
+from
   databricks_catalog_external_location
 where
   updated_at >= now() - interval '7 days';
@@ -47,7 +47,7 @@ select
   metastore_id,
   url,
   account_id
-from  
+from
   databricks_catalog_external_location
 where
   read_only;
@@ -64,7 +64,7 @@ select
   c.id,
   c.aws_iam_role as credential_aws_iam_role,
   l.account_id
-from  
+from
   databricks_catalog_external_location l,
   databricks_catalog_storage_credential c
 where
@@ -82,4 +82,30 @@ select
 from
   databricks_catalog_external_location,
   jsonb_array_elements(external_location_effective_permissions) p;
+```
+
+### Count the number of external locations per account ID
+
+```sql
+select
+  account_id,
+  count(*) AS location_count
+from
+  databricks_catalog_external_location
+group by
+  account_id;
+```
+
+### List users who created the most external locations
+
+```sql
+select
+  created_by,
+  count(*) as location_count
+from
+  databricks_catalog_external_location
+group by
+  created_by
+order by
+  location_count desc;
 ```

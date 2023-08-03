@@ -78,3 +78,43 @@ from
   databricks_catalog_metastore,
   jsonb_array_elements(metastore_effective_permissions) p;
 ```
+
+### List metastores with the highest number of effective permissions
+
+```sql
+select
+  name,
+  cloud,
+  jsonb_array_length(metastore_effective_permissions) as permission_count
+from
+  databricks_catalog_metastore
+order by
+  permission_count desc
+limit 10;
+```
+
+### Find the most recently updated metastores
+
+```sql
+select
+  name,
+  cloud,
+  updated_at
+from
+  databricks_catalog_metastore
+order by
+  updated_at desc
+limit 10;
+```
+
+### Count the number of metastores per cloud
+
+```sql
+select
+  cloud,
+  count(*) as metastore_count
+from
+  databricks_catalog_metastore
+group by
+  cloud;
+```

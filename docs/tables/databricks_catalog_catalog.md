@@ -95,3 +95,30 @@ from
 group by
   catalog_type;
 ```
+
+### List the most recently updated catalog
+
+```sql
+select
+  name,
+  catalog_type,
+  updated_at
+from
+  databricks_catalog_catalog
+order by
+  updated_at desc
+limit 1;
+```
+
+### Count the number of catalogs created by each user, including a percentage of their ownership
+
+```sql
+select
+  owner,
+  count(*) as total_catalogs,
+  (count(*) * 100.0 / sum(count(*)) over ()) as ownership_percentage
+from
+  databricks_catalog_catalog
+group by
+  owner;
+```
