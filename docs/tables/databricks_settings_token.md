@@ -18,6 +18,22 @@ from
   databricks_settings_token;
 ```
 
+### List tokens created in the last 30 days
+
+```sql
+select
+  token_id,
+  comment,
+  created_by_username,
+  creation_time,
+  expiry_time,
+  account_id
+from
+  databricks_settings_token
+where
+  creation_time >= now() - interval '30' day;
+```
+
 ### List all tokens expiring in the next 7 days
 
 ```sql
@@ -46,4 +62,20 @@ from
   databricks_settings_token
 order by
   days_remaining desc;
+```
+
+### List the owner in order of the number of tokens
+
+```sql
+select
+  owner_id,
+  created_by_username,
+  count(*) as token_count
+from
+  databricks_settings_token
+group by
+  owner_id,
+  created_by_username
+order by
+  token_count desc;
 ```

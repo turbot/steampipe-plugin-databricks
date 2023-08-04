@@ -21,7 +21,7 @@ where
   path = '/Users/user@turbot.com/NotebookDev';
 ```
 
-### List all objects in workspace modified in the past 7 days
+### List all objects in workspace created in the past 7 days
 
 ```sql
 select
@@ -35,7 +35,24 @@ select
 from
   databricks_workspace_workspace
 where
-  modified_at > now() - interval '7' day;
+  created_at >= now() - interval '7' day;
+```
+
+### List all objects in workspace modified in the past 30 days
+
+```sql
+select
+  object_id,
+  modified_at,
+  language,
+  object_type,
+  path,
+  size,
+  account_id
+from
+  databricks_workspace_workspace
+where
+  modified_at >= now() - interval '30' day;
 ```
 
 ### List total objects per type in workspace

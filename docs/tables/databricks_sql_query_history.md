@@ -49,6 +49,34 @@ where
   status = 'FAILED';
 ```
 
+### List queries with no more expected updates
+
+```sql
+select
+  query_id,
+  query_text,
+  error_message,
+  account_id
+from
+  databricks_sql_query_history
+where
+  is_final;
+```
+
+### List queries that have existing plans
+
+```sql
+select
+  query_id,
+  query_text,
+  error_message,
+  account_id
+from
+  databricks_sql_query_history
+where
+  plans_state = 'EXISTS';
+```
+
 ### List query history by order of duration
 
 ```sql

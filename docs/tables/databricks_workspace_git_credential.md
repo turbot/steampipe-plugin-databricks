@@ -29,3 +29,17 @@ from
 where
   git_provider = 'gitHub';
 ```
+
+### List the account in order of git credentials
+
+```sql
+select
+  account_id,
+  count(*) as git_cred_count
+from
+  databricks_workspace_git_credential
+group by
+  account_id
+order by
+  git_cred_count desc;
+```

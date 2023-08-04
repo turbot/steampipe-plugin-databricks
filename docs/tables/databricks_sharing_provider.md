@@ -1,6 +1,6 @@
 # Table: databricks_sharing_provider
 
-A share is a container instantiated with Shares/Create. Once created you can iteratively register a collection of existing data assets defined within the metastore using Shares/Update. A data provider is an object representing the organization in the real world who shares the data
+A share is a container instantiated with Shares/Create. Once created you can iteratively register a collection of existing data assets defined within the metastore using Shares/Update. A data provider is an object representing the organization in the real world who shares the data.
 
 ## Examples
 
@@ -17,6 +17,23 @@ select
   account_id
 from
   databricks_sharing_provider;
+```
+
+### List providers created in the last 7 days
+
+```sql
+select
+  name,
+  comment,
+  data_provider_global_metastore_id,
+  metastore_id
+  created_at,
+  created_by,
+  account_id
+from
+  databricks_sharing_provider
+where
+  created_at >= now() - interval '7' day;
 ```
 
 ### List providers authenticated by Databricks
@@ -61,4 +78,18 @@ from
   databricks_sharing_provider
 where
   authentication_type = 'TOKEN';
+```
+
+### List the owner in order of the number of providers
+
+```sql
+select
+  owner,
+  count(*) as provider_count
+from
+  databricks_sharing_provider
+group by
+  owner
+order by
+  provider_count desc;
 ```

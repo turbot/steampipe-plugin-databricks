@@ -67,3 +67,17 @@ where
   g.display_name = 'dev'
   and m ->> '$ref' like 'Group%';
 ```
+
+### List all the entitlements associated to a particular account group
+
+```sql
+select
+  id,
+  display_name,
+  account_id,
+  jsonb_pretty(entitlements) as entitlements
+from
+  databricks_iam_account_group
+where
+  display_name = 'dev';
+```

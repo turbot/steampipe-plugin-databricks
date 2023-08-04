@@ -164,3 +164,35 @@ from
   databricks_compute_instance_pool,
   jsonb_array_elements(instance_pool_permission -> 'access_control_list') as acl;
 ```
+
+### List instance pools capable of autoscaling local storage
+
+```sql
+select
+  instance_pool_id,
+  instance_pool_name,
+  idle_instance_autotermination_minutes,
+  max_capacity,
+  min_idle_instances,
+  node_type_id
+from
+  databricks_compute_instance_pool
+where
+  enable_elastic_disk;
+```
+
+### List instance pools having no pending instance errors
+
+```sql
+select
+  instance_pool_id,
+  instance_pool_name,
+  idle_instance_autotermination_minutes,
+  max_capacity,
+  min_idle_instances,
+  node_type_id
+from
+  databricks_compute_instance_pool
+where
+  jsonb_array_length(pending_instance_errors) = 0;
+```

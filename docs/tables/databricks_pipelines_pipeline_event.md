@@ -89,3 +89,35 @@ from
 where
   event_type = 'user_action';
 ```
+
+### List all events having stable maturity level
+
+```sql
+select
+  id,
+  pipeline_id,
+  event_type,
+  level,
+  maturity_level,
+  message,
+  account_id
+from
+  databricks_pipelines_pipeline_event
+where
+  maturity_level = 'STABLE';
+```
+
+### Find the account with the most pipeline events
+
+```sql
+select
+  account_id,
+  count(*) as event_count
+from
+  databricks_pipelines_pipeline_event
+group by
+  account_id
+order by
+  event_count desc
+limit 1;
+```

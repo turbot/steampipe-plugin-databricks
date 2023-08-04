@@ -33,7 +33,7 @@ where
 ```
 
 ### List users and their primary emails
-  
+
 ```sql
 select
   id,
@@ -50,7 +50,7 @@ where
 ```
 
 ### List users and their work emails
-  
+
 ```sql
 select
   id,
@@ -125,4 +125,19 @@ select
 from
   databricks_iam_user u,
   jsonb_array_elements(entitlements) as r;
+```
+
+### Find the account with the most users
+
+```sql
+select
+  account_id,
+  count(*) as user_count
+from
+  databricks_iam_user
+group by
+  account_id
+order by
+  user_count desc
+limit 1;
 ```

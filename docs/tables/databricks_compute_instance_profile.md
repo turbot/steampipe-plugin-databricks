@@ -16,6 +16,20 @@ from
   databricks_compute_instance_profile;
 ```
 
+### List all valid instance profiles
+
+```sql
+select
+  instance_profile_arn,
+  iam_role_arn,
+  is_meta_instance_profile,
+  account_id
+from
+  databricks_compute_instance_profile
+where
+  is_meta_instance_profile;
+```
+
 ### List instance profiles associated with clusters
 
 ```sql

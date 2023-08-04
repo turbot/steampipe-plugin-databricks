@@ -19,7 +19,7 @@ from
   databricks_ml_webhook;
 ```
 
-### List models modified in the last 7 days
+### List models created in the last 7 days
 
 ```sql
 select
@@ -33,8 +33,26 @@ select
 from
   databricks_ml_webhook
 where
-  last_updated_timestamp > now() - interval '7' day;
+  creation_timestamp >= now() - interval '7' day;
 ```
+
+### List models that have not been modified in the last 90 days
+
+```sql
+select
+  id,
+  model_name,
+  creation_timestamp,
+  description,
+  last_updated_timestamp,
+  status,
+  account_id
+from
+  databricks_ml_webhook
+where
+  last_updated_timestamp <= now() - interval '90' day;
+```
+
 
 ### List events that can trigger a webhook
 
@@ -107,4 +125,19 @@ select
   account_id
 from
   databricks_ml_webhook;
+```
+
+### Get details of the model associated to a particular webhook
+
+```sql
+select
+  w.id as webhook_id,
+  m.name as model_name,
+  m.creation_timestamp model_create_time,
+  m.description as model_description,
+  m.last_updated_timestamp as model_update_time,
+  m.account_id as model_account_id
+from
+  databricks_ml_webhook as w
+  left join databricks_ml_model as m on w.model_name = m.name;
 ```

@@ -30,7 +30,7 @@ select
   created_by,
   metastore_id,
   account_id
-from  
+from
   databricks_catalog_storage_credential
 where
   updated_at >= now() - interval '7 days';
@@ -47,7 +47,7 @@ select
   created_by,
   metastore_id,
   account_id
-from  
+from
   databricks_catalog_storage_credential
 where
   read_only;
@@ -64,7 +64,7 @@ select
   created_by,
   metastore_id,
   account_id
-from  
+from
   databricks_catalog_storage_credential
 where
   used_for_managed_storage;
@@ -81,7 +81,7 @@ select
   aws_iam_role ->> 'role_arn' aws_iam_role_arn,
   aws_iam_role ->> 'unity_catalog_iam_arn' as aws_unity_catalog_iam_arn,
   account_id
-from  
+from
   databricks_catalog_storage_credential;
 ```
 
@@ -99,7 +99,7 @@ select
   azure_service_principal ->> 'client_secret' as azure_service_principal_client_secret,
   azure_service_principal ->> 'directory_id' as azure_service_principal_directory_id,
   account_id
-from  
+from
   databricks_catalog_storage_credential;
 ```
 
@@ -113,7 +113,7 @@ select
   databricks_gcp_service_account ->> 'credential_id' as credential_id,
   databricks_gcp_service_account ->> 'email' as gcp_service_account_email,
   account_id
-from  
+from
   databricks_catalog_storage_credential;
 ```
 
@@ -127,4 +127,19 @@ select
 from
   databricks_catalog_storage_credential,
   jsonb_array_elements(storage_credential_effective_permissions) p;
+```
+
+### Find the account with the most entries
+
+```sql
+select
+  account_id,
+  count(*) as entry_count
+from
+  databricks_catalog_storage_credential
+group by
+  account_id
+order by
+  entry_count desc
+limit 1;
 ```

@@ -92,3 +92,96 @@ select
 from
   databricks_compute_cluster_node_type;
 ```
+
+### List hidden node types
+
+```sql
+select
+  node_type_id,
+  category,
+  description,
+  memory_mb
+  num_cores,
+  account_id
+from
+  databricks_compute_cluster_node_type
+where
+  is_hidden;
+```
+
+### List gravition node types
+
+```sql
+select
+  node_type_id,
+  category,
+  description,
+  memory_mb
+  num_cores,
+  account_id
+from
+  databricks_compute_cluster_node_type
+where
+  is_graviton;
+```
+
+### List all non-deprecated node types
+
+```sql
+select
+  node_type_id,
+  category,
+  description,
+  memory_mb
+  num_cores,
+  account_id
+from
+  databricks_compute_cluster_node_type
+where
+  not is_deprecated;
+```
+
+### List node types having more than one GPUs
+
+```sql
+select
+  node_type_id,
+  category,
+  description,
+  memory_mb
+  num_cores,
+  account_id
+from
+  databricks_compute_cluster_node_type
+where
+  num_gpus > 1;
+```
+
+### List node types that support EBS volumes
+
+```sql
+select
+  node_type_id,
+  category,
+  description,
+  memory_mb
+  num_cores,
+  account_id
+from
+  databricks_compute_cluster_node_type
+where
+  support_ebs_volumes;
+```
+
+### List node types in order of available memory
+
+```sql
+select
+  node_type_id,
+  category,
+  memory_mb
+from
+  databricks_compute_cluster_node_type
+order by
+  memory_mb desc;
+```

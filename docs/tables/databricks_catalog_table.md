@@ -63,7 +63,7 @@ where
   and schema_name = 'schema';
 ```
 
-### List all tables with source as CSV 
+### List all tables with source as CSV
 
 ```sql
 select
@@ -145,6 +145,24 @@ select
   account_id
 from
   databricks_catalog_table
+where
+  full_name = '__catalog_name__.__schema_name__.__table_name__';
+```
+
+### List details of the parent catalog for a particular table
+
+```sql
+select
+  t.name as table_name,
+  c.name as catalog_name,
+  c.catalog_type,
+  c.created_at as catalog_create_time,
+  c.created_by as catalog_created_by,
+  c.metastore_id,
+  c.account_id
+from
+  databricks_catalog_table as t
+  left join databricks_catalog_catalog as c on t.catalog_name = c.name
 where
   full_name = '__catalog_name__.__schema_name__.__table_name__';
 ```

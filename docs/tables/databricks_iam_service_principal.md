@@ -87,3 +87,18 @@ from
   databricks_iam_service_principal u,
   jsonb_array_elements(entitlements) as r;
 ```
+
+### Find the account with the most service principals
+
+```sql
+select
+  account_id,
+  count(*) as service_principal_count
+from
+  databricks_iam_service_principal
+group by
+  account_id
+order by
+  service_principal_count desc
+limit 1;
+```

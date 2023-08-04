@@ -18,7 +18,7 @@ from
   databricks_serving_serving_endpoint;
 ```
 
-### List endpoints modified in the last 7 days
+### List endpoints created in the last 7 days
 
 ```sql
 select
@@ -31,11 +31,27 @@ select
 from
   databricks_serving_serving_endpoint
 where
-  last_updated_timestamp > now() - interval '7' day;
+  creation_timestamp >= now() - interval '7' day;
+```
+
+### List endpoints that have not been modified in the last 10 days
+
+```sql
+select
+  id,
+  name,
+  creation_timestamp,
+  creator,
+  permission_level,
+  account_id
+from
+  databricks_serving_serving_endpoint
+where
+  last_updated_timestamp <= now() - interval '10' day;
 ```
 
 ### List endpoints you can manage
-  
+
 ```sql
 select
   id,

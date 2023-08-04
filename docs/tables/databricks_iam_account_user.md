@@ -32,8 +32,22 @@ where
   not active;
 ```
 
+### List all the entitlements associated to a particular user
+
+```sql
+select
+  id,
+  display_name,
+  account_id,
+  jsonb_pretty(entitlements) as entitlements
+from
+  databricks_iam_account_user
+where
+  display_name = 'abc-user';
+```
+
 ### List users and their primary emails
-  
+
 ```sql
 select
   id,
@@ -50,7 +64,7 @@ where
 ```
 
 ### List users and their work emails
-  
+
 ```sql
 select
   id,
@@ -114,4 +128,35 @@ from
   databricks_iam_account_user
 where
   user_name = 'user@turbot.com';
+```
+
+### Find the account with the most users
+
+```sql
+select
+  account_id,
+  count(*) as user_count
+from
+  databricks_iam_account_user
+group by
+  account_id
+order by
+  user_count desc
+limit 1;
+```
+
+### List users with multiple email IDs
+
+```sql
+select
+  id,
+  user_name,
+  display_name,
+  active,
+  account_id,
+  jsonb_pretty(emails) as email_ids
+from
+  databricks_iam_account_user
+where
+  jsonb_array_length(emails) > 1;
 ```

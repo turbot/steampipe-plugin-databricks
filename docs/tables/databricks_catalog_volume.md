@@ -26,7 +26,7 @@ where
   and schema_name = 'schema';
 ```
 
-### List volumes modified in the last 7 days
+### List volumes not modified in the last 90 days
 
 ```sql
 select
@@ -40,7 +40,26 @@ select
 from
   databricks_catalog_volume
 where
-  updated_at >= now() - interval '7 days'
+  updated_at <= now() - interval '90 days'
+  and catalog_name = 'catalog'
+  and schema_name = 'schema';
+```
+
+### List volumes created in the last 7 days
+
+```sql
+select
+  volume_id,
+  name,
+  comment,
+  created_at,
+  created_by,
+  metastore_id,
+  account_id
+from
+  databricks_catalog_volume
+where
+  created_at >= now() - interval '7 days'
   and catalog_name = 'catalog'
   and schema_name = 'schema';
 ```
@@ -77,4 +96,19 @@ from
   databricks_catalog_volume
 where
   full_name = '__catalog_name__.__schema_name__.__volume_name__';
+```
+
+### Count the number of volumes in a particular catalog
+
+```sql
+select
+  catalog_name,
+  count(*) as volume_count
+from
+  databricks_catalog_volume
+where
+  catalog_name = 'catalog'
+  and schema_name = 'schema'
+group by
+  catalog_name;
 ```

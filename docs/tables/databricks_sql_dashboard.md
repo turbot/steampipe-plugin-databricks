@@ -17,6 +17,21 @@ from
   databricks_sql_dashboard;
 ```
 
+### List dashboards created in the last 7 days
+
+```sql
+select
+  id,
+  name,
+  created_at,
+  slug,
+  account_id
+from
+  databricks_sql_dashboard
+where
+  created_at >= now() - interval '7' day;
+```
+
 ### List dashboards that are editable
 
 ```sql
@@ -45,6 +60,36 @@ from
   databricks_sql_dashboard
 where
   is_archived;
+```
+
+### List dashboards that are marked as favourite
+
+```sql
+select
+  id,
+  name,
+  created_at,
+  slug,
+  account_id
+from
+  databricks_sql_dashboard
+where
+  is_favorite;
+```
+
+### List dashboards that have filters enabled
+
+```sql
+select
+  id,
+  name,
+  created_at,
+  slug,
+  account_id
+from
+  databricks_sql_dashboard
+where
+  dashboard_filters_enabled;
 ```
 
 ### List dashboards that are in draft

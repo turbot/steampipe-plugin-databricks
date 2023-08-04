@@ -21,7 +21,7 @@ from
 ```
 
 ### Get total runs per job
-  
+
 ```sql
 select
   job_id,
@@ -67,7 +67,6 @@ order by
 limit 1;
 ```
 
-
 ### Get task details for each job run
 
 ```sql
@@ -90,4 +89,41 @@ from
   jsonb_array_elements(tasks) as t
 where
   tasks is not null;
+```
+
+### List jobs that are waiting for retry
+
+```sql
+select
+  run_id,
+  run_name,
+  job_id,
+  original_attempt_run_id,
+  attempt_number,
+  creator_user_name,
+  run_duration as run_duration_ms,
+  account_id
+from
+  databricks_jobs_job_run
+where
+  state ->> 'life_cycle_state' = 'WAITING_FOR_RETRY';
+```
+
+### List retry job runs for a particular job
+
+```sql
+select
+  run_id,
+  run_name,
+  job_id,
+  original_attempt_run_id,
+  attempt_number,
+  creator_user_name,
+  run_duration as run_duration_ms,
+  account_id
+from
+  databricks_jobs_job_run
+where
+  job_id = '572473586420586'
+  and original_attempt_run_id <> run_id;
 ```

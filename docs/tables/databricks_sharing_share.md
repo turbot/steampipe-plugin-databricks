@@ -60,3 +60,33 @@ from
   databricks_sharing_share,
   jsonb_array_elements(permissions) p;
 ```
+
+### List objects shared by a particular owner
+
+```sql
+select
+  name,
+  comment,
+  created_at,
+  created_by,
+  account_id
+from
+  databricks_sharing_share
+where
+  owner = 'owner-username';
+```
+
+### Find the account that has the most objects shared
+
+```sql
+select
+  account_id,
+  count(*) as object_sharing_count
+from
+  databricks_sharing_share
+group by
+  account_id
+order by
+  object_sharing_count desc
+limit 1;
+```

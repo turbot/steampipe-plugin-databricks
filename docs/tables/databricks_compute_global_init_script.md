@@ -17,6 +17,21 @@ from
   databricks_compute_global_init_script;
 ```
 
+### List scripts created in the last 7 days
+
+```sql
+select
+  script_id,
+  name,
+  created_at,
+  created_by,
+  account_id
+from
+  databricks_compute_global_init_script
+where
+  created_at >= now() - interval '7' day;;
+```
+
 ### List scripts that are disabled
 
 ```sql
@@ -32,7 +47,7 @@ where
   not enabled;
 ```
 
-### List scripts modified in last 1 week
+### List scripts that have not been modified in last 90 days
 
 ```sql
 select
@@ -44,7 +59,7 @@ select
 from
   databricks_compute_global_init_script
 where
-  updated_at >= now() - interval '7' day;
+  updated_at <= now() - interval '90' day;
 ```
 
 ### Get script details for a given script id
@@ -61,4 +76,19 @@ from
   databricks_compute_global_init_script
 where
   script_id = 'script_id';
+```
+
+### Find the account with the most global init scripts
+
+```sql
+select
+  account_id,
+  count(*) as script_count
+from
+  databricks_compute_global_init_script
+group by
+  account_id
+order by
+  script_count desc
+limit 1;
 ```

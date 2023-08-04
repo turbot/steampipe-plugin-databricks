@@ -74,3 +74,32 @@ from
 where
   meta ->> 'resourceType' = 'WorkspaceGroup';
 ```
+
+### Find the account with the most groups
+
+```sql
+select
+  account_id,
+  count(*) as group_count
+from
+  databricks_iam_group
+group by
+  account_id
+order by
+  group_count desc
+limit 1;
+```
+
+### List groups assigned with multiple roles
+
+```sql
+select
+  id,
+  display_name,
+  account_id,
+  jsonb_pretty(roles) as iam_group_roles
+from
+  databricks_iam_group
+where
+  jsonb_array_length(roles) > 1;
+```

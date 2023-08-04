@@ -29,3 +29,35 @@ from
 where
   state = 'UNAVAILABLE';
 ```
+
+### Give details of the parent merastore associated to a particular schema
+
+```sql
+select
+  s.title as system_schema_name,
+  m.metastore_id,
+  m.name as metastore_name,
+  m.created_at as metastore_create_time,
+  m.owner as metastore_owner,
+  m.account_id as metastore_account_id
+from
+  databricks_catalog_system_schema as s
+  left join databricks_catalog_metastore as m on s.metastore_id = m.metastore_id
+where
+  s.title = 'operational_data';
+```
+
+### Find the account with the most schemas
+
+```sql
+select
+  account_id,
+  count(*) as schema_count
+from
+  databricks_catalog_system_schema
+group by
+  account_id
+order by
+  schema_count desc
+limit 1;
+```

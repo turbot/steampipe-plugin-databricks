@@ -58,3 +58,16 @@ from
 where
   wt ->> 'enabled' = 'true';
 ```
+
+### Get details of thew instance profile used to pass IAM role to the cluster
+
+```sql
+select
+  c.google_service_account,
+  i.iam_role_arn,
+  i.is_meta_instance_profile,
+  i.account_id
+from
+  databricks_sql_warehouse_config as c
+  left join databricks_compute_instance_profile as i on c.instance_profile_arn = i.instance_profile_arn;
+```

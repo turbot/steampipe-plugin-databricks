@@ -153,3 +153,67 @@ from
   databricks_compute_cluster,
   jsonb_array_elements(cluster_permissions -> 'access_control_list') as acl;
 ```
+
+### List clusters having elastic disks enabled
+
+```sql
+select
+  cluster_id,
+  cluster_name,
+  creator_user_name,
+  start_time,
+  state,
+  account_id
+from
+  databricks_compute_cluster
+where
+  enable_elastic_disk;
+```
+
+### List clusters that will automatically terminate within 1 hour of inactivity
+
+```sql
+select
+  cluster_id,
+  cluster_name,
+  creator_user_name,
+  start_time,
+  state,
+  account_id
+from
+  databricks_compute_cluster
+where
+  autotermination_minutes < 60;
+```
+
+### List clusters created by the Databricks Jobs Scheduler
+
+```sql
+select
+  cluster_id,
+  cluster_name,
+  creator_user_name,
+  start_time,
+  state,
+  account_id
+from
+  databricks_compute_cluster
+where
+  cluster_source = 'JOB';
+```
+
+### List clusters that can be accessed by a single user
+
+```sql
+select
+  cluster_id,
+  cluster_name,
+  creator_user_name,
+  start_time,
+  state,
+  account_id
+from
+  databricks_compute_cluster
+where
+  data_security_mode = 'SINGLE_USER';
+```

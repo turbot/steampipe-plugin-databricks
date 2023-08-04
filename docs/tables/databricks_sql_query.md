@@ -52,6 +52,22 @@ where
   is_archived;
 ```
 
+### List queries marked as favourite
+
+```sql
+select
+  id,
+  name,
+  created_at,
+  description,
+  query,
+  account_id
+from
+  databricks_sql_query
+where
+  is_favorite;
+```
+
 ### List queries that are in draft
 
 ```sql
@@ -120,7 +136,7 @@ from
 ```
 
 ### List all queries that are not editable
-  
+
 ```sql
 select
   id,
@@ -133,4 +149,24 @@ from
   databricks_sql_query
 where
   not can_edit;
+```
+
+### List visualizations associated to the queries
+
+```sql
+select
+  id,
+  name,
+  created_at,
+  query,
+  account_id,
+  visualizations ->> 'CreatedAt' as visualization_create_time,
+  visualizations ->> 'Id' as visualization_id,
+  visualizations ->> 'Name' as visualization_name,
+  visualizations ->> 'Type' as visualization_type,
+  visualizations ->> 'UpdatedAt' as visualization_update_time
+from
+  databricks_sql_query
+where
+  visualizations is not null;
 ```

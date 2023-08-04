@@ -181,3 +181,29 @@ from
   databricks_jobs_job,
   jsonb_array_elements(job_permissions -> 'access_control_list') as acl;
 ```
+
+### Find the account with the most jobs
+
+```sql
+select
+  account_id,
+  count(*) as job_count
+from
+  databricks_jobs_job
+group by
+  account_id
+order by
+  job_count desc
+limit 1;
+```
+
+### List the collection of system notification IDs associated to a particular job
+
+```sql
+select
+  job_id,
+  name,
+  jsonb_pretty(webhook_notifications) as notification_ids
+from
+  databricks_jobs_job;
+```

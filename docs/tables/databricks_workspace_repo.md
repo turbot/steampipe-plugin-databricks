@@ -19,6 +19,40 @@ from
   databricks_workspace_repo;
 ```
 
+### List the master repositories
+
+```sql
+select
+  id,
+  path,
+  branch,
+  provider,
+  head_commit_id,
+  url,
+  account_id
+from
+  databricks_workspace_repo
+where
+  branch = 'master';
+```
+
+### List repositories for github provider
+
+```sql
+select
+  id,
+  path,
+  branch,
+  provider,
+  head_commit_id,
+  url,
+  account_id
+from
+  databricks_workspace_repo
+where
+  provider = 'gitHub';
+```
+
 ### List patterns included for sparse checkout
 
 ```sql

@@ -18,6 +18,22 @@ from
   databricks_compute_cluster_policy;
 ```
 
+### List clusters created in the last 7 days
+
+```sql
+select
+  name,
+  policy_id,
+  created_at_timestamp,
+  creator_user_name,
+  description,
+  account_id
+from
+  databricks_compute_cluster_policy
+where
+  created_at_timestamp >= now() - interval '7 days';
+```
+
 ### List all default policies
 
 ```sql
@@ -63,4 +79,19 @@ select
 from
   databricks_compute_cluster_policy,
   jsonb_array_elements(definition -> 'access_control_list') as acl;
+```
+
+### Find the account with the most cluster policies
+
+```sql
+select
+  account_id,
+  count(*) as policy_count
+from
+  databricks_compute_cluster_policy
+group by
+  account_id
+order by
+  policy_count desc
+limit 1;
 ```

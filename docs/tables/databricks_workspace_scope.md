@@ -15,6 +15,19 @@ from
   databricks_workspace_scope;
 ```
 
+### List scopes of a desired backend type
+
+```sql
+select
+  name,
+  backend_type,
+  account_id
+from
+  databricks_workspace_scope
+where
+  backend_type = 'DATABRICKS';
+```
+
 ### List scopes using the azure keyvault
 
 ```sql
@@ -40,4 +53,18 @@ select
 from
   databricks_workspace_scope,
   jsonb_array_elements(acls) as acl;
+```
+
+### Find the account with the maximum workspace scopes
+
+```sql
+select
+  account_id,
+  count(*) as scope_count
+from
+  databricks_workspace_scope
+group by
+  account_id
+order by
+  scope_count desc;
 ```

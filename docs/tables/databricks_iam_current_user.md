@@ -64,3 +64,34 @@ from
   databricks_iam_current_user u,
   jsonb_array_elements(entitlements) as r;
 ```
+
+### Find the account with the most users
+
+```sql
+select
+  account_id,
+  count(*) as user_count
+from
+  databricks_iam_current_user
+group by
+  account_id
+order by
+  user_count desc
+limit 1;
+```
+
+### List users with multiple email IDs
+
+```sql
+select
+  id,
+  user_name,
+  display_name,
+  active,
+  account_id,
+  jsonb_pretty(emails) as email_ids
+from
+  databricks_iam_current_user
+where
+  jsonb_array_length(emails) > 1;
+```

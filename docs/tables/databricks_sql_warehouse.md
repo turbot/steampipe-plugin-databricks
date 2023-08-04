@@ -52,6 +52,55 @@ where
   state = 'STOPPED';
 ```
 
+### List warehouses that have serverless compute enabled
+
+```sql
+select
+  id,
+  name,
+  cluster_size,
+  creator_name,
+  jdbc_url,
+  account_id
+from
+  databricks_sql_warehouse
+where
+  enable_serverless_compute;
+```
+
+### List warehouses with multiple ctive sessions
+
+```sql
+select
+  id,
+  name,
+  cluster_size,
+  num_clusters
+  creator_name,
+  jdbc_url,
+  account_id
+from
+  databricks_sql_warehouse
+where
+  num_active_sessions > 1;
+```
+
+### List warehouses that use photon optimized clusters
+
+```sql
+select
+  id,
+  name,
+  cluster_size,
+  creator_name,
+  jdbc_url,
+  account_id
+from
+  databricks_sql_warehouse
+where
+  enable_photon;
+```
+
 ### List unhealthy warehouse objects
 
 ```sql

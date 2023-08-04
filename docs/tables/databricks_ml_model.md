@@ -59,3 +59,24 @@ from
 where
   permission_level = 'CAN_MANAGE';
 ```
+
+### List details of version for each model
+
+```sql
+select
+  name,
+  user_id,
+  permission_level,
+  account_id,
+  v ->> 'Version' as version,
+  v ->> 'CreationTimestamp' as creation_time,
+  v ->> 'Name' as version_name,
+  v ->> 'RunId' as run_id,
+  v ->> 'Status' as version_status,
+  v ->> 'UserId' as user_id,
+  v ->> 'Source' as version_source,
+  v ->> 'CurrentStage' as current_version_stage
+from
+  databricks_ml_model,
+  jsonb_array_elements(latest_versions) as v;
+```

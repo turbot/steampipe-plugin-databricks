@@ -34,3 +34,18 @@ where
   f.policy_family_id = p.policy_family_id
   and f.account_id = p.account_id;
 ```
+
+### Find the account with the most policy families
+
+```sql
+select
+  account_id,
+  count(*) as policy_family_count
+from
+  databricks_compute_policy_family
+group by
+  account_id
+order by
+  policy_family_count desc
+limit 1;
+```
