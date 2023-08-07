@@ -2,7 +2,7 @@
 
 A Databricks cluster is a set of computation resources and configurations on which you run data engineering, data science, and data analytics workloads, such as production ETL pipelines, streaming analytics, ad-hoc analytics, and machine learning.
 
-**Note**: Databricks retains cluster configuration information for up to 200 all-purpose clusters terminated in the last 30 days and up to 30 job clusters recently terminated by the job scheduler
+**Note**: Databricks retains cluster configuration information for up to 200 all-purpose clusters terminated in the last 30 days and up to 30 job clusters recently terminated by the job scheduler.
 
 ## Examples
 
