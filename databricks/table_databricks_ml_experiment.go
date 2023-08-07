@@ -14,7 +14,7 @@ import (
 func tableDatabricksMLExperiment(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_ml_experiment",
-		Description: "Gets details for all the experiments associated with a Databricks workspace.",
+		Description: "Get details for all the experiments associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			Hydrate:    listMLExperiments,
 			KeyColumns: plugin.OptionalColumns([]string{"lifecycle_stage"}),

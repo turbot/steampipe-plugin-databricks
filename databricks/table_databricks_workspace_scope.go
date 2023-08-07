@@ -14,7 +14,7 @@ import (
 func tableDatabricksWorkspaceScope(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_workspace_scope",
-		Description: "Lists all secret scopes available in the workspace.",
+		Description: "List all secret scopes available in the workspace.",
 		List: &plugin.ListConfig{
 			Hydrate: listWorkspaceScopes,
 		},

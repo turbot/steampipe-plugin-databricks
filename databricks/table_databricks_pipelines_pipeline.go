@@ -15,7 +15,7 @@ import (
 func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_pipelines_pipeline",
-		Description: "Lists pipelines defined in the Delta Live Tables system.",
+		Description: "List pipelines defined in the Delta Live Tables system.",
 		List: &plugin.ListConfig{
 			Hydrate: listPipelinesPipelines,
 		},
@@ -100,7 +100,7 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "photon",
-				Description: "Whether Photon is enabled for this pipeline.",
+				Description: "Whether photon is enabled for this pipeline.",
 				Type:        proto.ColumnType_BOOL,
 				Hydrate:     getPipelinesPipeline,
 				Transform:   transform.FromField("Spec.Photon"),

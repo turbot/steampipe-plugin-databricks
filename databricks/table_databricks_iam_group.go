@@ -14,7 +14,7 @@ import (
 func tableDatabricksIAMGroup(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_iam_group",
-		Description: "Gets group details associated with a Databricks workspace.",
+		Description: "List group details associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
 				{

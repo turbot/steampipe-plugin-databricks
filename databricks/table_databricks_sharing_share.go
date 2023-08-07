@@ -14,7 +14,7 @@ import (
 func tableDatabricksSharingShare(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_sharing_share",
-		Description: "Lists all data object shares from the metastore.",
+		Description: "List all data object shares from the metastore.",
 		List: &plugin.ListConfig{
 			Hydrate: listSharingShares,
 		},

@@ -14,7 +14,7 @@ import (
 func tableDatabricksSettingsTokenManagement(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_settings_token_management",
-		Description: "Lists all tokens associated with the specified workspace or user.",
+		Description: "List all tokens associated with the specified workspace or user.",
 		List: &plugin.ListConfig{
 			Hydrate:    listSettingsTokenManagement,
 			KeyColumns: plugin.OptionalColumns([]string{"created_by_id", "created_by_username"}),

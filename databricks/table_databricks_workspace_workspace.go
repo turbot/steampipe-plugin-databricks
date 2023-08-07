@@ -14,7 +14,7 @@ import (
 func tableDatabricksWorkspaceWorkspace(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_workspace_workspace",
-		Description: "Lists all secret workspaces available in the workspace.",
+		Description: "List all secret workspaces available in the workspace.",
 		List: &plugin.ListConfig{
 			Hydrate:           listWorkspaceWorkspaces,
 			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST"}),

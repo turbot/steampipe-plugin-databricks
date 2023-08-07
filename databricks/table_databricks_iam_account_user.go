@@ -14,7 +14,7 @@ import (
 func tableDatabricksIAMAccountUser(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_iam_account_user",
-		Description: "Gets details for all the users associated with a Databricks account.",
+		Description: "List details for all the users associated with a Databricks account.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
 				{

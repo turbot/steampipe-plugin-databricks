@@ -64,7 +64,7 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "enable_auto_maintenance",
-				Description: "Whether auto maintenance should be enabled for this object and objects under it",
+				Description: "Whether auto maintenance should be enabled for this object and objects under it.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{

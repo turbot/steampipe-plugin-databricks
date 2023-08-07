@@ -14,7 +14,7 @@ import (
 func tableDatabricksIAMAccountGroup(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_iam_account_group",
-		Description: "Gets group details associated with a Databricks account.",
+		Description: "List group details associated with a Databricks account.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
 				{

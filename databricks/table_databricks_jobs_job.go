@@ -16,7 +16,7 @@ import (
 func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_jobs_job",
-		Description: "Gets details for all the jobs associated with a Databricks workspace.",
+		Description: "Get details for all the jobs associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			Hydrate:    listJobsJobs,
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),

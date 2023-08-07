@@ -14,7 +14,7 @@ import (
 func tableDatabricksJobsJobRun(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_jobs_job_run",
-		Description: "Gets details for all the job runs.",
+		Description: "List details for all the job runs.",
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.OptionalColumns([]string{"job_id", "run_type"}),
 			Hydrate:    listJobsJobRuns,

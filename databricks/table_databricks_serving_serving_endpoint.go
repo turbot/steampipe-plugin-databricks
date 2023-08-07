@@ -15,7 +15,7 @@ import (
 func tableDatabricksServingServingEndpoint(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_serving_serving_endpoint",
-		Description: "Lists all serving endpoints.",
+		Description: "List all serving endpoints.",
 		List: &plugin.ListConfig{
 			Hydrate: listServingServingEndpoints,
 		},

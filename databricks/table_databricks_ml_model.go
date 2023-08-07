@@ -14,7 +14,7 @@ import (
 func tableDatabricksMLModel(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_ml_model",
-		Description: "Lists all available registered models.",
+		Description: "List all available registered models.",
 		List: &plugin.ListConfig{
 			Hydrate: listMLModels,
 		},

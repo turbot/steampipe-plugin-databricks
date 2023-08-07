@@ -14,7 +14,7 @@ import (
 func tableDatabricksWorkspaceSecret(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_workspace_secret",
-		Description: "Lists the secret keys that are stored.",
+		Description: "List the secret keys that are stored.",
 		List: &plugin.ListConfig{
 			ParentHydrate: listWorkspaceScopes,
 			Hydrate:       listWorkspaceSecrets,

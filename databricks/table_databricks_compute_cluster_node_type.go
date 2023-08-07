@@ -85,12 +85,12 @@ func tableDatabricksComputeClusterNodeType(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "photon_driver_capable",
-				Description: "Photon driver capable.",
+				Description: "Indicates whether this node type is capable of being a Photon driver.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{
 				Name:        "photon_worker_capable",
-				Description: "Photon worker capable.",
+				Description: "Indicates whether this node type is capable of being a Photon worker.",
 				Type:        proto.ColumnType_BOOL,
 			},
 			{

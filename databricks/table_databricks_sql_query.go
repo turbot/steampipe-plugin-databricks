@@ -80,7 +80,7 @@ func tableDatabricksSQLQuery(_ context.Context) *plugin.Table {
 			},
 			{
 				Name:        "latest_query_data_id",
-				Description: "If there is a cached result for this query and user, this field includes the query result ID",
+				Description: "If there is a cached result for this query and user, this field includes the query result ID.",
 				Type:        proto.ColumnType_STRING,
 			},
 			{

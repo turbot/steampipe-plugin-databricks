@@ -14,7 +14,7 @@ import (
 func tableDatabricksMLWebhook(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_ml_webhook",
-		Description: "Lists all registry webhooks.",
+		Description: "List all registry webhooks.",
 		List: &plugin.ListConfig{
 			Hydrate:    listMLWebhooks,
 			KeyColumns: plugin.OptionalColumns([]string{"events", "model_name"}),

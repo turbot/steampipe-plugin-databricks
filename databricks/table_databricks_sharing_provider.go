@@ -96,7 +96,7 @@ func tableDatabricksSharingProvider(_ context.Context) *plugin.Table {
 			// JSON fields
 			{
 				Name:        "recipient_profile",
-				Description: "The recipient profile",
+				Description: "The recipient profile description.",
 				Type:        proto.ColumnType_JSON,
 			},
 			{

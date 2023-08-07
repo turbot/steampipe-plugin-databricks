@@ -14,7 +14,7 @@ import (
 func tableDatabricksIAMServicePrincipal(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_iam_service_principal",
-		Description: "Lists the set of service principals associated with a Databricks workspace.",
+		Description: "List the set of service principals associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
 			KeyColumns: []*plugin.KeyColumn{
 				{

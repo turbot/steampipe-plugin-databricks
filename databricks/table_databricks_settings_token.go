@@ -11,7 +11,7 @@ import (
 func tableDatabricksSettingsToken(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_settings_token",
-		Description: "Lists all the valid tokens for a user-workspace pair.",
+		Description: "List all the valid tokens for a user-workspace pair.",
 		List: &plugin.ListConfig{
 			Hydrate: listSettingsToken,
 		},

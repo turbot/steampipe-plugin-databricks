@@ -13,7 +13,7 @@ import (
 func tableDatabricksComputeGlobalInitScript(_ context.Context) *plugin.Table {
 	return &plugin.Table{
 		Name:        "databricks_compute_global_init_script",
-		Description: "Get a list of all global init scripts for this workspace.",
+		Description: "Gets a list of all global init scripts for this workspace.",
 		List: &plugin.ListConfig{
 			Hydrate: listComputeGlobalInitScripts,
 		},
