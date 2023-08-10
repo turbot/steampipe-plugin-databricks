@@ -57,11 +57,11 @@ connection "databricks" {
 
   # The Databricks username part of basic authentication. Only possible when Host is *.cloud.databricks.com (AWS).
   # This can also be set via the `DATABRICKS_USERNAME` environment variable.
-  # data_username = "user@turbot.com"
+  # username = "user@turbot.com"
 
   # The Databricks password part of basic authentication. Only possible when Host is *.cloud.databricks.com (AWS).
   # This can also be set via the `DATABRICKS_PASSWORD` environment variable.
-  # data_password = "password"
+  # password = "password"
 
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.

@@ -102,17 +102,80 @@ connection "databricks" {
 
   # The Databricks username part of basic authentication. Only possible when Host is *.cloud.databricks.com (AWS).
   # This can also be set via the `DATABRICKS_USERNAME` environment variable.
-  # data_username = "user@turbot.com"
+  # username = "user@turbot.com"
 
   # The Databricks password part of basic authentication. Only possible when Host is *.cloud.databricks.com (AWS).
   # This can also be set via the `DATABRICKS_PASSWORD` environment variable.
-  # data_password = "password"
+  # password = "password"
 
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
   # config_file = "/Users/username/.databrickscfg"
 }
 ```
+
+By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple regions](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials)
+
+## Multi-Account Connections
+
+You may create multiple databricks connections:
+```hcl
+connection "databricks_dev" {
+  plugin  = "databricks"
+  profile = "databricks_dev"
+  account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
+}
+
+connection "databricks_qa" {
+  plugin  = "databricks"
+  profile = "databricks_qa"
+  account_id = wxyzd0f81-9be0-4425-9e29-3a7d96782373
+}
+
+connection "databricks_prod" {
+  plugin  = "databricks"
+  profile = "databricks_prod"
+  account_id = pqrsd0f81-9be0-4425-9e29-3a7d96782373
+}
+```
+
+Each connection is implemented as a distinct [Postgres schema](https://www.postgresql.org/docs/current/ddl-schemas.html). As such, you can use qualified table names to query a specific connection:
+
+```sql
+select * from databricks_dev.databricks_iam_account_user;
+```
+
+You can create a multi-account connection by using an [**aggregator** connection](https://steampipe.io/docs/using-steampipe/managing-connections#using-aggregators). Aggregators allow you to query data from multiple connections for a plugin as if they are a single connection. 
+
+```hcl
+connection "databricks_all" {
+  plugin      = "databricks"
+  type        = "aggregator"
+  connections = ["databricks_dev", "databricks_qa", "databricks_prod"]
+}
+```
+
+Querying tables from this connection will return results from the `databricks_dev`, `databricks_qa`, and `databricks_prod` connections:
+```sql
+select * from databricks_all.databricks_iam_account_user;
+```
+
+Alternatively, can use an unqualified name and it will be resolved according to the [Search Path](https://steampipe.io/docs/guides/search-path). It's a good idea to name your aggregator first alphbetically, so that it is the first connection in the search path (i.e. `databricks_all` comes before `databricks_dev`):
+```sql
+select * from databricks_iam_account_user;
+```
+
+Steampipe supports the `*` wildcard in the connection names. For example, to aggregate all the Databricks plugin connections whose names begin with `databricks_`:
+
+```hcl
+connection "databricks_all" {
+  type        = "aggregator"
+  plugin      = "databricks"
+  connections = ["databricks_*"]
+}
+```
+
+## Configuring Databricks Credentials
 
 ### Databricks Profile Credentials
 
@@ -126,15 +189,15 @@ host       = https://accounts.cloud.databricks.com
 token      = dsapi5c72c067b40df73ccb6be3b085d3ba
 account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 
+[user1-workspace]
+host       = https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/
+token      = dapia865b9d1d41389ed883455032d090ee
+account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
+
 [user1-basic]
 host       = https://accounts.cloud.databricks.com
 username   = user1@turbot.com
 password   = Pass****word
-account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
-
-[user1-workspace]
-host       = https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/
-token      = dapia865b9d1d41389ed883455032d090ee
 account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 ```
 
@@ -147,16 +210,82 @@ connection "databricks_user1-account" {
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 
+connection "databricks_user1-workspace" {
+  plugin  = "databricks"
+  profile = "user1-workspace"
+  account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+}
+
 connection "databricks_user1-basic" {
   plugin  = "databricks"
   profile = "user1-basic"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
+```
 
+### Databricks Account Credentials
+
+Configuration to query Databricks account.
+
+#### databricks credential file:
+
+```ini
+[user1-account]
+host       = https://accounts.cloud.databricks.com
+token      = dsapi5c72c067b40df73ccb6be3b085d3ba
+account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
+```
+
+#### databricks.spc:
+
+```hcl
 connection "databricks_user1-account" {
+  plugin  = "databricks"
+  profile = "user1-account"
+  account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+}
+```
+
+### Databricks Wokspace Credentials
+
+Configuration to query Databricks workspace.
+
+#### databricks credential file:
+
+```ini
+[user1-workspace]
+host       = https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/
+token      = dapia865b9d1d41389ed883455032d090ee
+account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
+```
+
+#### databricks.spc:
+
+```hcl
+connection "databricks_user1-workspace" {
   plugin  = "databricks"
   profile = "user1-workspace"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+}
+```
+
+### Databricks Account and Workspace Credentials
+
+Configuration to query Databricks workspace and account using the same connection.
+
+#### databricks.spc:
+
+```hcl
+connection "databricks_user1-workspace" {
+  plugin  = "databricks"
+  
+  account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+
+  account_host = "https://accounts.cloud.databricks.com/"
+  account_token = "dsapi5c72c067b40df73ccb6be3b085d3ba"
+
+  workspace_host = "https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/"
+  workspace_token = "dapia865b9d1d41389ed883455032d090ee"
 }
 ```
 
