@@ -114,7 +114,7 @@ connection "databricks" {
 }
 ```
 
-By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple regions](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials)
+By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple regions](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
 
 ## Multi-Account Connections
 
@@ -145,7 +145,7 @@ Each connection is implemented as a distinct [Postgres schema](https://www.postg
 select * from databricks_dev.databricks_iam_account_user;
 ```
 
-You can create a multi-account connection by using an [**aggregator** connection](https://steampipe.io/docs/using-steampipe/managing-connections#using-aggregators). Aggregators allow you to query data from multiple connections for a plugin as if they are a single connection. 
+You can create a multi-account connection by using an [**aggregator** connection](https://steampipe.io/docs/using-steampipe/managing-connections#using-aggregators). Aggregators allow you to query data from multiple connections for a plugin as if they are a single connection.
 
 ```hcl
 connection "databricks_all" {
@@ -160,7 +160,7 @@ Querying tables from this connection will return results from the `databricks_de
 select * from databricks_all.databricks_iam_account_user;
 ```
 
-Alternatively, can use an unqualified name and it will be resolved according to the [Search Path](https://steampipe.io/docs/guides/search-path). It's a good idea to name your aggregator first alphbetically, so that it is the first connection in the search path (i.e. `databricks_all` comes before `databricks_dev`):
+Alternatively, can use an unqualified name and it will be resolved according to the [Search Path](https://steampipe.io/docs/guides/search-path). It's a good idea to name your aggregator first alphabetically, so that it is the first connection in the search path (i.e. `databricks_all` comes before `databricks_dev`):
 ```sql
 select * from databricks_iam_account_user;
 ```
@@ -278,7 +278,7 @@ Configuration to query Databricks workspace and account using the same connectio
 ```hcl
 connection "databricks_user1-workspace" {
   plugin  = "databricks"
-  
+
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 
   account_host = "https://accounts.cloud.databricks.com/"
