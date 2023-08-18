@@ -23,7 +23,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			Schema:      ConfigSchema,
 		},
 		TableMap: map[string]*plugin.Table{
-			"databricks_catalog_catalog":            tableDatabricksCatalogCatalog(ctx),
+			"databricks_catalog":                    tableDatabricksCatalog(ctx),
 			"databricks_catalog_connection":         tableDatabricksCatalogConnection(ctx),
 			"databricks_catalog_external_location":  tableDatabricksCatalogExternalLocation(ctx),
 			"databricks_catalog_function":           tableDatabricksCatalogFunction(ctx),
@@ -73,7 +73,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"databricks_workspace_repo":             tableDatabricksWorkspaceRepo(ctx),
 			"databricks_workspace_scope":            tableDatabricksWorkspaceScope(ctx),
 			"databricks_workspace_secret":           tableDatabricksWorkspaceSecret(ctx),
-			"databricks_workspace_workspace":        tableDatabricksWorkspaceWorkspace(ctx),
+			"databricks_workspace":                  tableDatabricksWorkspace(ctx),
 		},
 	}
 

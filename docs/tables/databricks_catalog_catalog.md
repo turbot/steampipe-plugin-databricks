@@ -1,4 +1,4 @@
-# Table: databricks_catalog_catalog
+# Table: databricks_catalog
 
 A catalog is the first layer of Unity Catalog’s three-level namespace. It’s used to organize your data assets.
 
@@ -18,7 +18,7 @@ select
   metastore_id,
   account_id
 from
-  databricks_catalog_catalog;
+  databricks_catalog;
 ```
 
 ### List catalogs modified in the last 7 days
@@ -33,7 +33,7 @@ select
   metastore_id,
   account_id
 from
-  databricks_catalog_catalog
+  databricks_catalog
 where
   updated_at >= now() - interval '7 days';
 ```
@@ -50,7 +50,7 @@ select
   metastore_id,
   account_id
 from
-  databricks_catalog_catalog
+  databricks_catalog
 where
   enable_auto_maintenance = 'ENABLE';
 ```
@@ -67,7 +67,7 @@ select
   metastore_id,
   account_id
 from
-  databricks_catalog_catalog
+  databricks_catalog
 where
   isolation_mode = 'OPEN';
 ```
@@ -80,7 +80,7 @@ select
   p ->> 'principal' as principal_name,
   p ->> 'privileges' as permissions
 from
-  databricks_catalog_catalog,
+  databricks_catalog,
   jsonb_array_elements(catalog_effective_permissions) p;
 ```
 
@@ -91,7 +91,7 @@ select
   catalog_type,
   count(*) as total_catalogs
 from
-  databricks_catalog_catalog
+  databricks_catalog
 group by
   catalog_type;
 ```
@@ -104,7 +104,7 @@ select
   catalog_type,
   updated_at
 from
-  databricks_catalog_catalog
+  databricks_catalog
 order by
   updated_at desc
 limit 1;
@@ -118,7 +118,7 @@ select
   count(*) as total_catalogs,
   (count(*) * 100.0 / sum(count(*)) over ()) as ownership_percentage
 from
-  databricks_catalog_catalog
+  databricks_catalog
 group by
   owner;
 ```

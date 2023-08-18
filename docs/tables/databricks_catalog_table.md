@@ -162,7 +162,7 @@ select
   c.account_id
 from
   databricks_catalog_table as t
-  left join databricks_catalog_catalog as c on t.catalog_name = c.name
+  left join databricks_catalog as c on t.catalog_name = c.name
 where
   full_name = '__catalog_name__.__schema_name__.__table_name__';
 ```

@@ -11,12 +11,12 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksWorkspaceWorkspace(_ context.Context) *plugin.Table {
+func tableDatabricksWorkspace(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_workspace_workspace",
+		Name:        "databricks_workspace",
 		Description: "List all secret workspaces available in the workspace.",
 		List: &plugin.ListConfig{
-			Hydrate:           listWorkspaceWorkspaces,
+			Hydrate:           listWorkspaces,
 			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST"}),
 			KeyColumns:        plugin.OptionalColumns([]string{"path"}),
 		},
@@ -72,7 +72,7 @@ func tableDatabricksWorkspaceWorkspace(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listWorkspaceWorkspaces(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listWorkspaces(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	path := "/"
 
@@ -87,13 +87,13 @@ func listWorkspaceWorkspaces(ctx context.Context, d *plugin.QueryData, h *plugin
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_workspace_workspace.listWorkspaceWorkspaces", "connection_error", err)
+		logger.Error("databricks_workspace.listWorkspaces", "connection_error", err)
 		return nil, err
 	}
 
 	workspaces, err := client.Workspace.ListAll(ctx, request)
 	if err != nil {
-		logger.Error("databricks_workspace_workspace.listWorkspaceWorkspaces", "api_error", err)
+		logger.Error("databricks_workspace.listWorkspaces", "api_error", err)
 		return nil, err
 	}
 
