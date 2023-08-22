@@ -11,12 +11,14 @@ import (
 
 func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 	return func(err error) bool {
-		errMsg := err.(*apierr.APIError)
-		for _, msg := range notFoundErrors {
-			if strings.Contains(errMsg.ErrorCode, msg) {
-				return true
-			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
-				return true
+		switch err := err.(type) {
+		case *apierr.APIError:
+			for _, msg := range notFoundErrors {
+				if strings.Contains(err.ErrorCode, msg) {
+					return true
+				} else if strings.Contains(strconv.Itoa(err.StatusCode), msg) {
+					return true
+				}
 			}
 		}
 		return false
@@ -25,14 +27,16 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 
 func shouldRetryError(retryErrors []string) plugin.ErrorPredicateWithContext {
 	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData, err error) bool {
-		errMsg := err.(*apierr.APIError)
-		for _, msg := range retryErrors {
-			if strings.Contains(errMsg.ErrorCode, msg) {
-				plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
-				return true
-			} else if strings.Contains(strconv.Itoa(errMsg.StatusCode), msg) {
-				plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
-				return true
+		switch err := err.(type) {
+		case *apierr.APIError:
+			for _, msg := range retryErrors {
+				if strings.Contains(err.ErrorCode, msg) {
+					plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
+					return true
+				} else if strings.Contains(strconv.Itoa(err.StatusCode), msg) {
+					plugin.Logger(ctx).Error("databricks_errors.shouldRetryError", "rate_limit_error", err)
+					return true
+				}
 			}
 		}
 		return false
