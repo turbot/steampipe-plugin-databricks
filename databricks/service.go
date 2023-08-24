@@ -32,13 +32,17 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 		if databricksConfig.AccountToken != nil {
 			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-
-			if databricksConfig.DataUsername != nil {
-				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
-			}
-			if databricksConfig.DataPassword != nil {
-				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-			}
+                        if databricksConfig.ClientId != nil {
+                                os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
+                                os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
+                        } else {
+                                if databricksConfig.DataUsername != nil {
+                                        os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+                                }
+                                if databricksConfig.DataPassword != nil {
+                                        os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+                                }
+                        }
 		}
 
 		if databricksConfig.AccountHost != nil {
@@ -85,13 +89,17 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 		if databricksConfig.WorkspaceToken != nil {
 			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-
-			if databricksConfig.DataUsername != nil {
-				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
-			}
-			if databricksConfig.DataPassword != nil {
-				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-			}
+                        if databricksConfig.ClientId != nil {
+                                os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
+                                os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
+                        } else {
+                                if databricksConfig.DataUsername != nil {
+                                        os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+                                }
+                                if databricksConfig.DataPassword != nil {
+                                        os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+                                }
+                        }
 		}
 
 		if databricksConfig.WorkspaceHost != nil {

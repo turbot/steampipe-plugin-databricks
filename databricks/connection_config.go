@@ -15,6 +15,8 @@ type databricksConfig struct {
 	ConfigFilePath *string `cty:"config_file_path"`
 	DataUsername   *string `cty:"username"`
 	DataPassword   *string `cty:"password"`
+        ClientId       *string `cty:"client_id"`
+        ClientSecret   *string `cty:"client_secret"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
@@ -54,6 +56,14 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Required: false,
 		Type:     schema.TypeString,
 	},
+        "client_id": {
+                Required: false,
+                Type:     schema.TypeString,
+        },
+        "client_secret": {
+                Required: false,
+                Type:     schema.TypeString,
+        },
 }
 
 func ConfigInstance() interface{} {
