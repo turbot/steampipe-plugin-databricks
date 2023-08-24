@@ -40,4 +40,12 @@ connection "databricks" {
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
   # config_file_path = "/Users/username/.databrickscfg"
+  
+  # OAuth secret client ID of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_ID` environment variable.
+  # client_id = 123-456-789
+
+  # OAuth secret value of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_SECRET` environment variable.
+  # client_secret = dose1234567789abcde
 }
