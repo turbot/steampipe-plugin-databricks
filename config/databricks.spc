@@ -39,5 +39,5 @@ connection "databricks" {
 
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
-  # config_file = "/Users/username/.databrickscfg"
+  # config_file_path = "/Users/username/.databrickscfg"
 }

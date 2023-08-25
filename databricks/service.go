@@ -23,10 +23,10 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.ConfigProfile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
-		if databricksConfig.ConfigFile != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+	if databricksConfig.Profile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		if databricksConfig.ConfigFilePath != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.AccountToken != nil {
@@ -76,10 +76,10 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.ConfigProfile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
-		if databricksConfig.ConfigFile != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+	if databricksConfig.Profile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		if databricksConfig.ConfigFilePath != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.WorkspaceToken != nil {
