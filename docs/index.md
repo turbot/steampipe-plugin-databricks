@@ -74,9 +74,9 @@ connection "databricks" {
 
   # A connection profile specified within .databrickscfg to use instead of DEFAULT.
   # This can also be set via the `DATABRICKS_CONFIG_PROFILE` environment variable.
-  # config_profile = "databricks-dev"
+  # profile = "databricks-dev"
 
-  # The target Databricks account ID. Required.
+  # The target Databricks account ID.
   # This can also be set via the `DATABRICKS_ACCOUNT_ID` environment variable.
   # See Locate your account ID: https://docs.databricks.com/administration-guide/account-settings/index.html#account-id.
   # account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
@@ -114,7 +114,7 @@ connection "databricks" {
 }
 ```
 
-You can customize your experience using configuration options for [querying multiple accounts](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
+By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple accounts](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
 
 ## Multi-Account Connections
 
@@ -122,19 +122,19 @@ You may create multiple databricks connections:
 ```hcl
 connection "databricks_dev" {
   plugin  = "databricks"
-  config_profile = "databricks_dev"
+  profile = "databricks_dev"
   account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 }
 
 connection "databricks_qa" {
   plugin  = "databricks"
-  config_profile = "databricks_qa"
+  profile = "databricks_qa"
   account_id = wxyzd0f81-9be0-4425-9e29-3a7d96782373
 }
 
 connection "databricks_prod" {
   plugin  = "databricks"
-  config_profile = "databricks_prod"
+  profile = "databricks_prod"
   account_id = pqrsd0f81-9be0-4425-9e29-3a7d96782373
 }
 ```
@@ -206,19 +206,19 @@ account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 ```hcl
 connection "databricks_user1-account" {
   plugin  = "databricks"
-  config_profile = "user1-account"
+  profile = "user1-account"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 
 connection "databricks_user1-workspace" {
   plugin  = "databricks"
-  config_profile = "user1-workspace"
+  profile = "user1-workspace"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 
 connection "databricks_user1-basic" {
   plugin  = "databricks"
-  config_profile = "user1-basic"
+  profile = "user1-basic"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 ```
@@ -241,7 +241,7 @@ account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 ```hcl
 connection "databricks_user1-account" {
   plugin  = "databricks"
-  config_profile = "user1-account"
+  profile = "user1-account"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 ```
@@ -264,7 +264,7 @@ account_id = abcdd0f81-9be0-4425-9e29-3a7d96782373
 ```hcl
 connection "databricks_user1-workspace" {
   plugin  = "databricks"
-  config_profile = "user1-workspace"
+  profile = "user1-workspace"
   account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
 }
 ```
@@ -291,7 +291,7 @@ connection "databricks_user1-workspace" {
 
 ### Credentials from Environment Variables
 
-Alternatively, you can also use the standard Databricks environment variables to obtain credentials **only if other argument (`config_profile`, `account_id`, `account_token`/`account_host`/`workspace_token`/`workspace_host`) is not specified** in the connection:
+Alternatively, you can also use the standard Databricks environment variables to obtain credentials **only if other argument (`profile`, `account_id`, `account_token`/`account_host`/`workspace_token`/`workspace_host`) is not specified** in the connection:
 
 ```sh
 export DATABRICKS_CONFIG_PROFILE=user1-test

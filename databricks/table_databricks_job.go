@@ -13,17 +13,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
+func tableDatabricksJob(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_jobs_job",
+		Name:        "databricks_job",
 		Description: "Get details for all the jobs associated with a Databricks workspace.",
 		List: &plugin.ListConfig{
-			Hydrate:    listJobsJobs,
+			Hydrate:    listJobs,
 			KeyColumns: plugin.OptionalColumns([]string{"name"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("job_id"),
-			Hydrate:    getJobsJob,
+			Hydrate:    getJob,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -107,7 +107,7 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 				Name:        "job_permissions",
 				Description: "A list of job-level permissions.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getJobsJobPermissions,
+				Hydrate:     getJobPermissions,
 				Transform:   transform.FromValue(),
 			},
 			{
@@ -156,7 +156,7 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 				Name:        "trigger_history",
 				Description: "History of the file arrival trigger associated with the job.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getJobsJob,
+				Hydrate:     getJob,
 			},
 			{
 				Name:        "webhook_notifications",
@@ -178,7 +178,7 @@ func tableDatabricksJobsJob(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -201,14 +201,14 @@ func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_jobs_job.listJobsJobs", "connection_error", err)
+		logger.Error("databricks_job.listJobs", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Jobs.Impl().List(ctx, request)
 		if err != nil {
-			logger.Error("databricks_jobs_job.listJobsJobs", "api_error", err)
+			logger.Error("databricks_job.listJobs", "api_error", err)
 			return nil, err
 		}
 
@@ -231,7 +231,7 @@ func listJobsJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 
 //// HYDRATE FUNCTIONS
 
-func getJobsJob(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getJob(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	var id int64
 	if h.Item != nil {
@@ -248,27 +248,27 @@ func getJobsJob(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData)
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_jobs_job.getJobsJob", "connection_error", err)
+		logger.Error("databricks_job.getJob", "connection_error", err)
 		return nil, err
 	}
 
 	job, err := client.Jobs.GetByJobId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_jobs_job.getJobsJob", "api_error", err)
+		logger.Error("databricks_job.getJob", "api_error", err)
 		return nil, err
 	}
 
 	return *job, nil
 }
 
-func getJobsJobPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getJobPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := getJobId(h.Item)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_jobs_job.getJobsJobPermissions", "connection_error", err)
+		logger.Error("databricks_job.getJobPermissions", "connection_error", err)
 		return nil, err
 	}
 
@@ -279,7 +279,7 @@ func getJobsJobPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.H
 
 	permission, err := client.Permissions.Get(ctx, request)
 	if err != nil {
-		logger.Error("databricks_jobs_job.getJobsJobPermissions", "api_error", err)
+		logger.Error("databricks_job.getJobPermissions", "api_error", err)
 		return nil, err
 	}
 	return permission, nil

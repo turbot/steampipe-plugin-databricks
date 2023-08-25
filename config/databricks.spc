@@ -3,9 +3,9 @@ connection "databricks" {
 
   # A connection profile specified within .databrickscfg to use instead of DEFAULT.
   # This can also be set via the `DATABRICKS_CONFIG_PROFILE` environment variable.
-  # config_profile = "databricks-dev"
+  # profile = "databricks-dev"
 
-  # The target Databricks account ID. Required.
+  # The target Databricks account ID.
   # This can also be set via the `DATABRICKS_ACCOUNT_ID` environment variable.
   # See Locate your account ID: https://docs.databricks.com/administration-guide/account-settings/index.html#account-id.
   # account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"

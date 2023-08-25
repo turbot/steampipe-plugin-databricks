@@ -11,7 +11,7 @@ type databricksConfig struct {
 	WorkspaceToken *string `cty:"workspace_token"`
 	WorkspaceHost  *string `cty:"workspace_host"`
 	AccountId      *string `cty:"account_id"`
-	ConfigProfile  *string `cty:"config_profile"`
+	ConfigProfile  *string `cty:"profile"`
 	ConfigFile     *string `cty:"config_file"`
 	DataUsername   *string `cty:"username"`
 	DataPassword   *string `cty:"password"`
@@ -35,10 +35,10 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Type:     schema.TypeString,
 	},
 	"account_id": {
-		Required: true,
+		Required: false,
 		Type:     schema.TypeString,
 	},
-	"config_profile": {
+	"profile": {
 		Required: false,
 		Type:     schema.TypeString,
 	},

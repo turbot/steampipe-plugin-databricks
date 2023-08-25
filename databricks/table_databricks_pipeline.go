@@ -12,16 +12,16 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
+func tableDatabricksPipeline(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_pipelines_pipeline",
+		Name:        "databricks_pipeline",
 		Description: "List pipelines defined in the Delta Live Tables system.",
 		List: &plugin.ListConfig{
-			Hydrate: listPipelinesPipelines,
+			Hydrate: listPipelines,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.SingleColumn("pipeline_id"),
-			Hydrate:    getPipelinesPipeline,
+			Hydrate:    getPipeline,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -38,20 +38,20 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "catalog",
 				Description: "A catalog in Unity Catalog to publish data from this pipeline to.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Catalog"),
 			},
 			{
 				Name:        "cause",
 				Description: "An optional message detailing the cause of the pipeline state.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 			},
 			{
 				Name:        "channel",
 				Description: "DLT Release Channel that specifies which version to use.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Channel"),
 			},
 			{
@@ -63,7 +63,7 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "continuous",
 				Description: "Whether the pipeline is continuous or triggered.",
 				Type:        proto.ColumnType_BOOL,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Continuous"),
 			},
 			{
@@ -75,34 +75,34 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "development",
 				Description: "Whether the pipeline is in Development mode.",
 				Type:        proto.ColumnType_BOOL,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Development"),
 			},
 			{
 				Name:        "edition",
 				Description: "Pipeline product edition.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Edition"),
 			},
 			{
 				Name:        "health",
 				Description: "The health of the pipeline.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 			},
 			{
 				Name:        "last_modified",
 				Description: "The last time the pipeline settings were modified or created.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromGo().Transform(transform.UnixMsToTimestamp),
 			},
 			{
 				Name:        "photon",
 				Description: "Whether photon is enabled for this pipeline.",
 				Type:        proto.ColumnType_BOOL,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Photon"),
 			},
 			{
@@ -114,7 +114,7 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "serverless",
 				Description: "Whether serverless compute is enabled for this pipeline.",
 				Type:        proto.ColumnType_BOOL,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Serverless"),
 			},
 			{
@@ -126,14 +126,14 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "storage",
 				Description: "DBFS root directory for storing checkpoints and tables.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Storage"),
 			},
 			{
 				Name:        "target",
 				Description: "Target schema (database) to add tables in this pipeline to.",
 				Type:        proto.ColumnType_STRING,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Target"),
 			},
 
@@ -142,21 +142,21 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "clusters",
 				Description: "Cluster settings for this pipeline deployment.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Clusters"),
 			},
 			{
 				Name:        "configuration",
 				Description: "String-String configuration for this pipeline execution.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Configuration"),
 			},
 			{
 				Name:        "filters",
 				Description: "Filters on which Pipeline packages to include in the deployed graph.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Filters"),
 			},
 			{
@@ -168,21 +168,21 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 				Name:        "libraries",
 				Description: "Libraries or code needed by this deployment.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Libraries"),
 			},
 			{
 				Name:        "pipeline_permissions",
 				Description: "Permissions for this pipeline.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipelinePermissions,
+				Hydrate:     getPipelinePermissions,
 				Transform:   transform.FromValue(),
 			},
 			{
 				Name:        "trigger",
 				Description: "Which pipeline trigger to use.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getPipelinesPipeline,
+				Hydrate:     getPipeline,
 				Transform:   transform.FromField("Spec.Trigger"),
 			},
 
@@ -199,7 +199,7 @@ func tableDatabricksPipelinesPipeline(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPipelinesPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Limiting the results
@@ -218,14 +218,14 @@ func listPipelinesPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline.listPipelinesPipelines", "connection_error", err)
+		logger.Error("databricks_pipeline.listPipelines", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Pipelines.Impl().ListPipelines(ctx, request)
 		if err != nil {
-			logger.Error("databricks_pipelines_pipeline.listPipelinesPipelines", "api_error", err)
+			logger.Error("databricks_pipeline.listPipelines", "api_error", err)
 			return nil, err
 		}
 
@@ -247,7 +247,7 @@ func listPipelinesPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.
 
 //// HYDRATE FUNCTIONS
 
-func getPipelinesPipeline(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getPipeline(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	var id string
 	if h.Item != nil {
@@ -264,26 +264,26 @@ func getPipelinesPipeline(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline.getPipelinesPipeline", "connection_error", err)
+		logger.Error("databricks_pipeline.getPipeline", "connection_error", err)
 		return nil, err
 	}
 
 	pipeline, err := client.Pipelines.GetByPipelineId(ctx, id)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline.getPipelinesPipeline", "api_error", err)
+		logger.Error("databricks_pipeline.getPipeline", "api_error", err)
 		return nil, err
 	}
 	return *pipeline, nil
 }
 
-func getPipelinesPipelinePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getPipelinePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	id := getPipelineId(h.Item)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline.getPipelinesPipelinePermissions", "connection_error", err)
+		logger.Error("databricks_pipeline.getPipelinePermissions", "connection_error", err)
 		return nil, err
 	}
 
@@ -294,7 +294,7 @@ func getPipelinesPipelinePermissions(ctx context.Context, d *plugin.QueryData, h
 
 	permission, err := client.Permissions.Get(ctx, request)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline.getPipelinesPipelinePermissions", "api_error", err)
+		logger.Error("databricks_pipeline.getPipelinePermissions", "api_error", err)
 		return nil, err
 	}
 	return permission, nil

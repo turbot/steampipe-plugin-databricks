@@ -11,18 +11,18 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksPipelinesPipelineUpdate(_ context.Context) *plugin.Table {
+func tableDatabricksPipelineUpdate(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_pipelines_pipeline_update",
+		Name:        "databricks_pipeline_update",
 		Description: "List updates for an active pipeline.",
 		List: &plugin.ListConfig{
-			ParentHydrate: listPipelinesPipelines,
-			Hydrate:       listPipelinesPipelineUpdates,
+			ParentHydrate: listPipelines,
+			Hydrate:       listPipelineUpdates,
 			KeyColumns:    plugin.OptionalColumns([]string{"pipeline_id"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AllColumns([]string{"pipeline_id", "update_id"}),
-			Hydrate:    getPipelinesPipelineUpdate,
+			Hydrate:    getPipelineUpdate,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -92,7 +92,7 @@ func tableDatabricksPipelinesPipelineUpdate(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listPipelinesPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	pipelineId := h.Item.(pipelines.PipelineStateInfo).PipelineId
 
@@ -117,14 +117,14 @@ func listPipelinesPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *p
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline_update.listPipelinesPipelineUpdates", "connection_error", err)
+		logger.Error("databricks_pipeline_update.listPipelineUpdates", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Pipelines.Impl().ListUpdates(ctx, request)
 		if err != nil {
-			logger.Error("databricks_pipelines_pipeline_update.listPipelinesPipelineUpdates", "api_error", err)
+			logger.Error("databricks_pipeline_update.listPipelineUpdates", "api_error", err)
 			return nil, err
 		}
 
@@ -146,7 +146,7 @@ func listPipelinesPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *p
 
 //// HYDRATE FUNCTIONS
 
-func getPipelinesPipelineUpdate(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getPipelineUpdate(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	pipelineId := d.EqualsQualString("pipeline_id")
 	updateId := d.EqualsQualString("update_id")
@@ -159,13 +159,13 @@ func getPipelinesPipelineUpdate(ctx context.Context, d *plugin.QueryData, _ *plu
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline_update.getPipelinesPipelineUpdate", "connection_error", err)
+		logger.Error("databricks_pipeline_update.getPipelineUpdate", "connection_error", err)
 		return nil, err
 	}
 
 	update, err := client.Pipelines.GetUpdateByPipelineIdAndUpdateId(ctx, pipelineId, updateId)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline_update.getPipelinesPipelineUpdate", "api_error", err)
+		logger.Error("databricks_pipeline_update.getPipelineUpdate", "api_error", err)
 		return nil, err
 	}
 	return *update.Update, nil

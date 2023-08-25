@@ -1,4 +1,4 @@
-# Table: databricks_pipelines_pipeline
+# Table: databricks_pipeline
 
 Delta Live Tables is a framework for building reliable, maintainable, and testable data processing pipelines. You define the transformations to perform on your data, and Delta Live Tables manages task orchestration, cluster management, monitoring, data quality, and error handling.
 
@@ -16,7 +16,7 @@ select
   edition,
   account_id
 from
-  databricks_pipelines_pipeline;
+  databricks_pipeline;
 ```
 
 ### List pipelines that failed to start
@@ -30,7 +30,7 @@ select
   state,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   state = 'FAILED';
 ```
@@ -49,7 +49,7 @@ select
   c.runtime_engine,
   c.account_id
 from
-  databricks_pipelines_pipeline p,
+  databricks_pipeline p,
   databricks_compute_cluster c
 where
   p.cluster_id = c.cluster_id
@@ -68,7 +68,7 @@ select
   u ->> 'update_id' as update_id,
   account_id
 from
-  databricks_pipelines_pipeline p,
+  databricks_pipeline p,
   jsonb_array_elements(p.latest_updates) as u
 where
   u ->> 'state' = 'COMPLETED'
@@ -88,7 +88,7 @@ select
   u ->> 'update_id' as update_id,
   account_id
 from
-  databricks_pipelines_pipeline p,
+  databricks_pipeline p,
   jsonb_array_elements(p.latest_updates) as u
 where
   u ->> 'state' = 'FAILED'
@@ -108,7 +108,7 @@ select
   state,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   catalog is not null;
 ```
@@ -124,7 +124,7 @@ select
   state,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   not continuous;
 ```
@@ -140,7 +140,7 @@ select
   state,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   health = 'UNHEALTHY';
 ```
@@ -155,7 +155,7 @@ select
   state,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   development;
 ```
@@ -170,7 +170,7 @@ select
   acl ->> 'group_name' as principal_group_name,
   acl ->> 'all_permissions' as permission_level
 from
-  databricks_pipelines_pipeline,
+  databricks_pipeline,
   jsonb_array_elements(pipeline_permissions -> 'access_control_list') as acl;
 ```
 
@@ -187,7 +187,7 @@ select
   l -> 'file' ->> 'path' as file_path,
   account_id
 from
-  databricks_pipelines_pipeline,
+  databricks_pipeline,
   jsonb_array_elements(libraries) as l;
 ```
 
@@ -201,7 +201,7 @@ select
   trigger ->> 'manual' as is_manual,
   account_id
 from
-  databricks_pipelines_pipeline
+  databricks_pipeline
 where
   trigger is not null;
 ```
@@ -219,6 +219,6 @@ select
   c ->> 'policy_id' as policy_id,
   account_id
 from
-  databricks_pipelines_pipeline,
+  databricks_pipeline,
   jsonb_array_elements(clusters) as c;
 ```

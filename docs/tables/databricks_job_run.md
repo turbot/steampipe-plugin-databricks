@@ -1,4 +1,4 @@
-# Table: databricks_jobs_job_run
+# Table: databricks_job_run
 
 You can use a Databricks job to run a data processing or data analysis task in a Databricks cluster with scalable resources. Your job can consist of a single task or can be a large, multi-task workflow with complex dependencies. Job run is an instance of a job that is triggered by a scheduler or manually.
 
@@ -17,7 +17,7 @@ select
   run_duration as run_duration_ms,
   account_id
 from
-  databricks_jobs_job_run;
+  databricks_job_run;
 ```
 
 ### Get total runs per job
@@ -27,7 +27,7 @@ select
   job_id,
   count(*) as total_runs
 from
-  databricks_jobs_job_run
+  databricks_job_run
 group by
   job_id;
 ```
@@ -40,7 +40,7 @@ select
   date_trunc('day', start_time) as day,
   count(*) as total_runs
 from
-  databricks_jobs_job_run
+  databricks_job_run
 group by
   job_id,
   day
@@ -61,7 +61,7 @@ select
   state ->> 'result_state',
   account_id
 from
-  databricks_jobs_job_run
+  databricks_job_run
 order by
   attempt_number desc
 limit 1;
@@ -85,7 +85,7 @@ select
   t ->> 'state' as state,
   account_id
 from
-  databricks_jobs_job_run,
+  databricks_job_run,
   jsonb_array_elements(tasks) as t
 where
   tasks is not null;
@@ -104,7 +104,7 @@ select
   run_duration as run_duration_ms,
   account_id
 from
-  databricks_jobs_job_run
+  databricks_job_run
 where
   state ->> 'life_cycle_state' = 'WAITING_FOR_RETRY';
 ```
@@ -122,7 +122,7 @@ select
   run_duration as run_duration_ms,
   account_id
 from
-  databricks_jobs_job_run
+  databricks_job_run
 where
   job_id = '572473586420586'
   and original_attempt_run_id <> run_id;

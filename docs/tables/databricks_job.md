@@ -1,4 +1,4 @@
-# Table: databricks_jobs_job
+# Table: databricks_job
 
 You can use a Databricks job to run a data processing or data analysis task in a Databricks cluster with scalable resources. Your job can consist of a single task or can be a large, multi-task workflow with complex dependencies.
 
@@ -16,7 +16,7 @@ select
   format,
   account_id
 from
-  databricks_jobs_job;
+  databricks_job;
 ```
 
 ### Get compute requirements for each job
@@ -29,7 +29,7 @@ select
   compute ->> 'spec' as compute_spec,
   account_id
 from
-  databricks_jobs_job;
+  databricks_job;
 ```
 
 ### List all continuous jobs
@@ -42,7 +42,7 @@ select
   continuous ->> 'pause_status' as pause_status,
   account_id
 from
-  databricks_jobs_job
+  databricks_job
 where
   continuous is not null;
 ```
@@ -59,7 +59,7 @@ select
   email_notifications ->> 'no_alert_for_skipped_runs' as no_alert_for_skipped_runs,
   account_id
 from
-  databricks_jobs_job;
+  databricks_job;
 ```
 
 ### Get git settings for each job
@@ -76,7 +76,7 @@ select
   git_source ->> 'git_url' as git_url,
   account_id
 from
-  databricks_jobs_job
+  databricks_job
 where
   git_source is not null;
 ```
@@ -92,7 +92,7 @@ select
   jc -> 'new_cluster' ->> 'cluster_source' as new_cluster_source,
   account_id
 from
-  databricks_jobs_job,
+  databricks_job,
   jsonb_array_elements(job_clusters) as jc
 where
   job_clusters is not null;
@@ -109,7 +109,7 @@ select
   schedule ->> 'timezone_id' as timezone_id,
   account_id
 from
-  databricks_jobs_job
+  databricks_job
 where
   schedule is not null;
 ```
@@ -131,7 +131,7 @@ select
   t ->> 'depends_on' as depends_on,
   account_id
 from
-  databricks_jobs_job,
+  databricks_job,
   jsonb_array_elements(tasks) as t
 where
   tasks is not null;
@@ -147,7 +147,7 @@ select
   trigger ->> 'pause_status' as pause_status,
   account_id
 from
-  databricks_jobs_job
+  databricks_job
 where
   trigger is not null;
 ```
@@ -163,7 +163,7 @@ select
   trigger_history ->> 'last_triggered' as last_triggered,
   account_id
 from
-  databricks_jobs_job
+  databricks_job
 where
   trigger_history is not null;
 ```
@@ -178,7 +178,7 @@ select
   acl ->> 'group_name' as principal_group_name,
   acl ->> 'all_permissions' as permission_level
 from
-  databricks_jobs_job,
+  databricks_job,
   jsonb_array_elements(job_permissions -> 'access_control_list') as acl;
 ```
 
@@ -189,7 +189,7 @@ select
   account_id,
   count(*) as job_count
 from
-  databricks_jobs_job
+  databricks_job
 group by
   account_id
 order by
@@ -205,5 +205,5 @@ select
   name,
   jsonb_pretty(webhook_notifications) as notification_ids
 from
-  databricks_jobs_job;
+  databricks_job;
 ```

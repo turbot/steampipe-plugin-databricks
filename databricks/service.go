@@ -2,7 +2,6 @@ package databricks
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -38,21 +37,15 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 			}
 			if databricksConfig.DataPassword != nil {
 				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
-				return nil, errors.New("account_token or username and password must be configured")
 			}
 		}
 
 		if databricksConfig.AccountHost != nil {
 			os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
-		} else if os.Getenv("DATABRICKS_HOST") == "" {
-			return nil, errors.New("account_host must be configured")
 		}
 
 		if databricksConfig.AccountId != nil {
 			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
 		}
 	}
 
@@ -96,20 +89,20 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 			if databricksConfig.DataPassword != nil {
 				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
 			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
-				return nil, errors.New("workspace_token or username and password must be configured")
+				// return nil, errors.New("workspace_token or username and password must be configured")
 			}
 		}
 
 		if databricksConfig.WorkspaceHost != nil {
 			os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
 		} else if os.Getenv("DATABRICKS_HOST") == "" {
-			return nil, errors.New("workspace_host must be configured")
+			// return nil, errors.New("workspace_host must be configured")
 		}
 
 		if databricksConfig.AccountId != nil {
 			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
 		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
+			// return nil, errors.New("account_id must be configured")
 		}
 	}
 
