@@ -111,6 +111,14 @@ connection "databricks" {
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
   # config_file_path = "/Users/username/.databrickscfg"
+  
+  # OAuth secret client ID of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_ID` environment variable.
+  # client_id = "123-456-789"
+
+  # OAuth secret value of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_SECRET` environment variable.
+  # client_secret = "dose1234567789abcde"
 }
 ```
 
@@ -286,6 +294,23 @@ connection "databricks_user1-workspace" {
 
   workspace_host = "https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/"
   workspace_token = "dapia865b9d1d41389ed883455032d090ee"
+}
+```
+
+### Databricks OAuth credentials
+
+Configuration to query Databricks workspace by using [OAuth for service principals](https://docs.databricks.com/en/dev-tools/authentication-oauth.html).
+
+#### databricks.spc
+
+```hcl
+connection "databricks_user1-account" {
+  plugin  = "databricks"
+  account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+  workspace_host = "https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/"
+
+  client_id = "123-456-789"
+  client_secret = "dose1234567789abcde"
 }
 ```
 
