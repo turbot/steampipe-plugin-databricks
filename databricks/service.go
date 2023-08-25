@@ -32,7 +32,7 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 		if databricksConfig.AccountToken != nil {
 			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-                        if databricksConfig.ClientId != nil {
+                        if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
                                 os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
                                 os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
                         } else {
@@ -89,7 +89,7 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 		if databricksConfig.WorkspaceToken != nil {
 			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-                        if databricksConfig.ClientId != nil {
+                        if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
                                 os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
                                 os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
                         } else {

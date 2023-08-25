@@ -43,9 +43,9 @@ connection "databricks" {
   
   # OAuth secret client ID of a service principal
   # This can also be set via the `DATABRICKS_CLIENT_ID` environment variable.
-  # client_id = 123-456-789
+  # client_id = "123-456-789"
 
   # OAuth secret value of a service principal
   # This can also be set via the `DATABRICKS_CLIENT_SECRET` environment variable.
-  # client_secret = dose1234567789abcde
+  # client_secret = "dose1234567789abcde"
 }
