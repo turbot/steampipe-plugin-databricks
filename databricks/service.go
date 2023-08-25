@@ -2,6 +2,7 @@ package databricks
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -46,6 +47,8 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 
 		if databricksConfig.AccountId != nil {
 			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
+		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+			return nil, errors.New("account_id must be configured")
 		}
 	}
 
@@ -97,6 +100,8 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 
 		if databricksConfig.AccountId != nil {
 			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
+		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+			return nil, errors.New("account_id must be configured")
 		}
 	}
 
