@@ -74,9 +74,9 @@ connection "databricks" {
 
   # A connection profile specified within .databrickscfg to use instead of DEFAULT.
   # This can also be set via the `DATABRICKS_CONFIG_PROFILE` environment variable.
-  # config_profile = "databricks-dev"
+  # profile = "databricks-dev"
 
-  # The target Databricks account ID. Required.
+  # The target Databricks account ID.
   # This can also be set via the `DATABRICKS_ACCOUNT_ID` environment variable.
   # See Locate your account ID: https://docs.databricks.com/administration-guide/account-settings/index.html#account-id.
   # account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
@@ -110,11 +110,11 @@ connection "databricks" {
 
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
-  # config_file = "/Users/username/.databrickscfg"
+  # config_file_path = "/Users/username/.databrickscfg"
 }
 ```
 
-By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple regions](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
+By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, DEFAULT profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple accounts](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
 
 ## Multi-Account Connections
 

@@ -1,4 +1,4 @@
-# Table: databricks_workspace_workspace
+# Table: databricks_workspace
 
 Workspace manages the notebooks and folders in databricks. A notebook is a web-based interface to a document that contains runnable code, visualizations, and explanatory text.
 
@@ -16,7 +16,7 @@ select
   size,
   account_id
 from
-  databricks_workspace_workspace
+  databricks_workspace
 where
   path = '/Users/user@turbot.com/NotebookDev';
 ```
@@ -33,7 +33,7 @@ select
   size,
   account_id
 from
-  databricks_workspace_workspace
+  databricks_workspace
 where
   created_at >= now() - interval '7' day;
 ```
@@ -50,7 +50,7 @@ select
   size,
   account_id
 from
-  databricks_workspace_workspace
+  databricks_workspace
 where
   modified_at >= now() - interval '30' day;
 ```
@@ -62,7 +62,7 @@ select
   object_type,
   count(*) as total_objects
 from
-  databricks_workspace_workspace
+  databricks_workspace
 group by
   object_type;
 ```
@@ -74,7 +74,7 @@ select
   language,
   count(*) as total_notebooks
 from
-  databricks_workspace_workspace
+  databricks_workspace
 where
   object_type = 'NOTEBOOK'
 group by

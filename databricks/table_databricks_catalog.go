@@ -11,17 +11,17 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
+func tableDatabricksCatalog(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_catalog_catalog",
+		Name:        "databricks_catalog",
 		Description: "Gets an array of catalogs in the metastore.",
 		List: &plugin.ListConfig{
-			Hydrate: listCatalogCatalogs,
+			Hydrate: listCatalogs,
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns:        plugin.SingleColumn("name"),
 			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST"}),
-			Hydrate:           getCatalogCatalog,
+			Hydrate:           getCatalog,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
@@ -141,7 +141,7 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 				Name:        "workspace_bindings",
 				Description: "Array of workspace bindings.",
 				Type:        proto.ColumnType_JSON,
-				Hydrate:     getCatalogCatalogWorkspaceBindings,
+				Hydrate:     getCatalogWorkspaceBindings,
 				Transform:   transform.FromValue(),
 			},
 
@@ -158,19 +158,19 @@ func tableDatabricksCatalogCatalog(_ context.Context) *plugin.Table {
 
 //// LIST FUNCTION
 
-func listCatalogCatalogs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listCatalogs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.listCatalogCatalogs", "connection_error", err)
+		logger.Error("databricks_catalog.listCatalogs", "connection_error", err)
 		return nil, err
 	}
 
 	catalogs, err := client.Catalogs.ListAll(ctx)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.listCatalogCatalogs", "api_error", err)
+		logger.Error("databricks_catalog.listCatalogs", "api_error", err)
 		return nil, err
 	}
 
@@ -188,7 +188,7 @@ func listCatalogCatalogs(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 
 //// HYDRATE FUNCTIONS
 
-func getCatalogCatalog(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+func getCatalog(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := d.EqualsQualString("name")
 
@@ -200,33 +200,33 @@ func getCatalogCatalog(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogCatalog", "connection_error", err)
+		logger.Error("databricks_catalog.getCatalog", "connection_error", err)
 		return nil, err
 	}
 
 	catalog, err := client.Catalogs.GetByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogCatalog", "api_error", err)
+		logger.Error("databricks_catalog.getCatalog", "api_error", err)
 		return nil, err
 	}
 
 	return *catalog, nil
 }
 
-func getCatalogCatalogWorkspaceBindings(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getCatalogWorkspaceBindings(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	name := h.Item.(catalog.CatalogInfo).Name
 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogCatalogWorkspaceBindings", "connection_error", err)
+		logger.Error("databricks_catalog.getCatalogWorkspaceBindings", "connection_error", err)
 		return nil, err
 	}
 
 	bindings, err := client.WorkspaceBindings.GetByName(ctx, name)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogCatalogWorkspaceBindings", "api_error", err)
+		logger.Error("databricks_catalog.getCatalogWorkspaceBindings", "api_error", err)
 		return nil, err
 	}
 
@@ -240,13 +240,13 @@ func getCatalogPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogPermissions", "connection_error", err)
+		logger.Error("databricks_catalog.getCatalogPermissions", "connection_error", err)
 		return nil, err
 	}
 
 	permission, err := client.Grants.GetBySecurableTypeAndFullName(ctx, catalog.SecurableTypeCatalog, name)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogPermissions", "api_error", err)
+		logger.Error("databricks_catalog.getCatalogPermissions", "api_error", err)
 		return nil, err
 	}
 	return permission.PrivilegeAssignments, nil
@@ -259,13 +259,13 @@ func getCatalogEffectivePermissions(ctx context.Context, d *plugin.QueryData, h 
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogEffectivePermissions", "connection_error", err)
+		logger.Error("databricks_catalog.getCatalogEffectivePermissions", "connection_error", err)
 		return nil, err
 	}
 
 	permission, err := client.Grants.GetEffectiveBySecurableTypeAndFullName(ctx, catalog.SecurableTypeCatalog, name)
 	if err != nil {
-		logger.Error("databricks_catalog_catalog.getCatalogEffectivePermissions", "api_error", err)
+		logger.Error("databricks_catalog.getCatalogEffectivePermissions", "api_error", err)
 		return nil, err
 	}
 	return permission.PrivilegeAssignments, nil

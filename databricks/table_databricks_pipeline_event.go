@@ -11,13 +11,13 @@ import (
 
 //// TABLE DEFINITION
 
-func tableDatabricksPipelinesPipelineEvent(_ context.Context) *plugin.Table {
+func tableDatabricksPipelineEvent(_ context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "databricks_pipelines_pipeline_event",
+		Name:        "databricks_pipeline_event",
 		Description: "Retrieves events for a pipeline.",
 		List: &plugin.ListConfig{
-			ParentHydrate: listPipelinesPipelines,
-			Hydrate:       listPipelinesPipelineEvents,
+			ParentHydrate: listPipelines,
+			Hydrate:       listPipelineEvents,
 			KeyColumns:    plugin.OptionalColumns([]string{"pipeline_id"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
@@ -92,7 +92,7 @@ type pipelineEventInfo struct {
 
 //// LIST FUNCTION
 
-func listPipelinesPipelineEvents(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listPipelineEvents(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	pipelineId := h.Item.(pipelines.PipelineStateInfo).PipelineId
 
@@ -117,14 +117,14 @@ func listPipelinesPipelineEvents(ctx context.Context, d *plugin.QueryData, h *pl
 	// Create client
 	client, err := connectDatabricksWorkspace(ctx, d)
 	if err != nil {
-		logger.Error("databricks_pipelines_pipeline_event.listPipelinesPipelineEvents", "connection_error", err)
+		logger.Error("databricks_pipeline_event.listPipelineEvents", "connection_error", err)
 		return nil, err
 	}
 
 	for {
 		response, err := client.Pipelines.Impl().ListPipelineEvents(ctx, request)
 		if err != nil {
-			logger.Error("databricks_pipelines_pipeline_event.listPipelinesPipelineEvents", "api_error", err)
+			logger.Error("databricks_pipeline_event.listPipelineEvents", "api_error", err)
 			return nil, err
 		}
 

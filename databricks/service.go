@@ -23,10 +23,10 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.ConfigProfile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
-		if databricksConfig.ConfigFile != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+	if databricksConfig.Profile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		if databricksConfig.ConfigFilePath != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.AccountToken != nil {
@@ -38,15 +38,11 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 			}
 			if databricksConfig.DataPassword != nil {
 				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
-				return nil, errors.New("account_token or username and password must be configured")
 			}
 		}
 
 		if databricksConfig.AccountHost != nil {
 			os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
-		} else if os.Getenv("DATABRICKS_HOST") == "" {
-			return nil, errors.New("account_host must be configured")
 		}
 
 		if databricksConfig.AccountId != nil {
@@ -80,10 +76,10 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
-	if databricksConfig.ConfigProfile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.ConfigProfile)
-		if databricksConfig.ConfigFile != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFile)
+	if databricksConfig.Profile != nil {
+		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		if databricksConfig.ConfigFilePath != nil {
+			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.WorkspaceToken != nil {
@@ -95,15 +91,11 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 			}
 			if databricksConfig.DataPassword != nil {
 				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-			} else if os.Getenv("DATABRICKS_PASSWORD") == "" || os.Getenv("DATABRICKS_USERNAME") == "" {
-				return nil, errors.New("workspace_token or username and password must be configured")
 			}
 		}
 
 		if databricksConfig.WorkspaceHost != nil {
 			os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
-		} else if os.Getenv("DATABRICKS_HOST") == "" {
-			return nil, errors.New("workspace_host must be configured")
 		}
 
 		if databricksConfig.AccountId != nil {

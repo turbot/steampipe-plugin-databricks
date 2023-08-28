@@ -16,7 +16,7 @@ func tableDatabricksCatalogSchema(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_schema",
 		Description: "List schemas for a catalog in the metastore.",
 		List: &plugin.ListConfig{
-			ParentHydrate: listCatalogCatalogs,
+			ParentHydrate: listCatalogs,
 			Hydrate:       listCatalogSchemas,
 			KeyColumns:    plugin.OptionalColumns([]string{"catalog_name"}),
 		},

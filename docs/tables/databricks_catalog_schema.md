@@ -97,7 +97,7 @@ from (
     c.catalog_type,
     count(s.full_name) as schema_count
   from
-    databricks_catalog_catalog as c
+    databricks_catalog as c
     left join databricks_catalog_schema as s on c.name = s.catalog_name
   group by
     c.catalog_type
