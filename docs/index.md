@@ -114,7 +114,7 @@ connection "databricks" {
 }
 ```
 
-By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, default profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple accounts](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
+By default, all options are commented out in the default connection, thus Steampipe will resolve your credentials using the same mechanism as the Databricks CLI (Databricks environment variables, DEFAULT profile, etc). This provides a quick way to get started with Steampipe, but you will probably want to customize your experience using configuration options for [querying multiple accounts](#multi-account-connections), [configuring credentials](#configuring-databricks-credentials) from your [Databricks Profiles](#databricks-profile-credentials).
 
 ## Multi-Account Connections
 
