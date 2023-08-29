@@ -2,10 +2,10 @@
 
 _Breaking changes_
 
-- Renamed config args: ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
+- The following configuration arguments have been renamed for better consistency: ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
   - `config_file` to `config_file_path`
   - `config_profile` to `profile`
-- Renamed table names:
+- The following tables have been renamed to remove redundant wording: ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
   - `databricks_catalog_catalog` -> `databricks_catalog`
   - `databricks_jobs_job` -> `databricks_job`
   - `databricks_jobs_job_run` -> `databricks_job_run`
