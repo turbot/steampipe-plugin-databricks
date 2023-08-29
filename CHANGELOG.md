@@ -1,3 +1,24 @@
+## v0.1.0 [2023-08-28]
+
+_Breaking changes_
+
+- The following configuration arguments have been renamed for better consistency: ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
+  - `config_file` to `config_file_path`
+  - `config_profile` to `profile`
+- The following tables have been renamed to remove redundant wording: ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
+  - `databricks_catalog_catalog` -> `databricks_catalog`
+  - `databricks_jobs_job` -> `databricks_job`
+  - `databricks_jobs_job_run` -> `databricks_job_run`
+  - `databricks_pipelines_pipeline` -> `databricks_pipeline`
+  - `databricks_pipelines_pipeline_event` -> `databricks_pipeline_event`
+  - `databricks_pipelines_pipeline_update` -> `databricks_pipeline_update`
+  - `databricks_workspace_workspace` -> `databricks_workspace`
+
+_Bug fixes_
+
+- Fixed the plugin to correctly return an empty row instead of an error in cases where the tables lack resources available for querying. ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
+- Fixed the configuration argument validation by eliminating the necessity of setting account_host, account_token/username/password, and workspace host configuration arguments/environment variables in certain scenarios. ([#4](https://github.com/turbot/steampipe-plugin-databricks/pull/4))
+
 ## v0.0.1 [2023-08-17]
 
 _What's new?_
