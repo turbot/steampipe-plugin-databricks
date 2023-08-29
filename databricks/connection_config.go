@@ -13,8 +13,8 @@ type databricksConfig struct {
 	AccountId      *string `cty:"account_id"`
 	Profile        *string `cty:"profile"`
 	ConfigFilePath *string `cty:"config_file_path"`
-	DataUsername   *string `cty:"username"`
-	DataPassword   *string `cty:"password"`
+	Username       *string `cty:"username"`
+	Password       *string `cty:"password"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{

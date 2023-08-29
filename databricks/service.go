@@ -19,42 +19,41 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 	}
 
 	databricksConfig := GetConfig(d.Connection)
+	config := &databricks.Config{}
 
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
 	if databricksConfig.Profile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		config.Profile = *databricksConfig.Profile
 		if databricksConfig.ConfigFilePath != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
+			config.ConfigFile = *databricksConfig.ConfigFilePath
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.AccountToken != nil {
-			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
+			config.Token = *databricksConfig.AccountToken
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-
-			if databricksConfig.DataUsername != nil {
-				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+			if databricksConfig.Username != nil {
+				config.Username = *databricksConfig.Username
 			}
-			if databricksConfig.DataPassword != nil {
-				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+			if databricksConfig.Password != nil {
+				config.Password = *databricksConfig.Password
 			}
 		}
-
 		if databricksConfig.AccountHost != nil {
-			os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
-		}
-
-		if databricksConfig.AccountId != nil {
-			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
+			config.Host = *databricksConfig.AccountHost
 		}
 	}
 
-	client, err := databricks.NewAccountClient()
+	if databricksConfig.AccountId != nil {
+		config.AccountID = *databricksConfig.AccountId
+	} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+		return nil, errors.New("account_id must be configured")
+	}
+
+	client, err := databricks.NewAccountClient(config)
 	if err != nil {
-		fmt.Println("Unable to initialize client:", err)
+		fmt.Println("Unable to initialize account client:", err.Error())
 		return nil, err
 	}
 
@@ -72,42 +71,41 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
 	}
 
 	databricksConfig := GetConfig(d.Connection)
+	config := &databricks.Config{}
 
 	// Default to using env vars (#2)
 	// But prefer the config (#1)
 
 	if databricksConfig.Profile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
+		config.Profile = *databricksConfig.Profile
 		if databricksConfig.ConfigFilePath != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
+			config.ConfigFile = *databricksConfig.ConfigFilePath
 		}
 	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		if databricksConfig.WorkspaceToken != nil {
-			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
+			config.Token = *databricksConfig.WorkspaceToken
 		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-
-			if databricksConfig.DataUsername != nil {
-				os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
+			if databricksConfig.Username != nil {
+				config.Username = *databricksConfig.Username
 			}
-			if databricksConfig.DataPassword != nil {
-				os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
+			if databricksConfig.Password != nil {
+				config.Password = *databricksConfig.Password
 			}
 		}
-
 		if databricksConfig.WorkspaceHost != nil {
-			os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
-		}
-
-		if databricksConfig.AccountId != nil {
-			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
+			config.Host = *databricksConfig.WorkspaceHost
 		}
 	}
 
-	client, err := databricks.NewWorkspaceClient()
+	if databricksConfig.AccountId != nil {
+		config.AccountID = *databricksConfig.AccountId
+	} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+		return nil, errors.New("account_id must be configured")
+	}
+
+	client, err := databricks.NewWorkspaceClient(config)
 	if err != nil {
-		fmt.Println("Unable to initialize client:", err)
+		fmt.Println("Unable to initialize workspace client:", err.Error())
 		return nil, err
 	}
 
