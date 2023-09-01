@@ -3,11 +3,16 @@ package databricks
 import (
 	"context"
 
+	"github.com/databricks/databricks-sdk-go/useragent"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 const pluginName = "steampipe-plugin-databricks"
+
+func init() {
+	useragent.WithProduct(pluginName, "0.1.0")
+}
 
 // Plugin creates this (databricks) plugin
 func Plugin(ctx context.Context) *plugin.Plugin {
