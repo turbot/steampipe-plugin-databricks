@@ -39,7 +39,7 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 		config.ConfigFile = *databricksConfig.ConfigFilePath
 	}
 
-	// If not using a profile and config file, check for token
+	// Next check for a token
 	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 		// Account host is required but can be set in the profile config
 		if databricksConfig.AccountHost != nil {
