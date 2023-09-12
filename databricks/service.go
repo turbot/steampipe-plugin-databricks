@@ -21,18 +21,37 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 	databricksConfig := GetConfig(d.Connection)
 	config := &databricks.Config{}
 
-	// Default to using env vars (#2)
-	// But prefer the config (#1)
+	// Account ID is required for a common column
+	if databricksConfig.AccountId != nil {
+		config.AccountID = *databricksConfig.AccountId
+	}
 
+	if config.AccountID == "" && os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+		return nil, errors.New("account_id must be configured")
+	}
+
+	// Check for profile and config file first
 	if databricksConfig.Profile != nil {
 		config.Profile = *databricksConfig.Profile
-		if databricksConfig.ConfigFilePath != nil {
-			config.ConfigFile = *databricksConfig.ConfigFilePath
+	}
+
+	if databricksConfig.ConfigFilePath != nil {
+		config.ConfigFile = *databricksConfig.ConfigFilePath
+	}
+
+	// If not using a profile and config file, check for token
+	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+		// Account host is required but can be set in the profile config
+		if databricksConfig.AccountHost != nil {
+			config.Host = *databricksConfig.AccountHost
 		}
-	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+
 		if databricksConfig.AccountToken != nil {
 			config.Token = *databricksConfig.AccountToken
-		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
+		}
+
+		// Finally, check for a username and password
+		if config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
 			if databricksConfig.Username != nil {
 				config.Username = *databricksConfig.Username
 			}
@@ -40,15 +59,6 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
 				config.Password = *databricksConfig.Password
 			}
 		}
-		if databricksConfig.AccountHost != nil {
-			config.Host = *databricksConfig.AccountHost
-		}
-	}
-
-	if databricksConfig.AccountId != nil {
-		config.AccountID = *databricksConfig.AccountId
-	} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-		return nil, errors.New("account_id must be configured")
 	}
 
 	client, err := databricks.NewAccountClient(config)
