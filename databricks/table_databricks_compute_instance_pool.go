@@ -147,7 +147,7 @@ func listComputeInstancePools(ctx context.Context, d *plugin.QueryData, h *plugi
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_instance_pool.listComputeInstancePools", "connection_error", err)
 		return nil, err
@@ -182,7 +182,7 @@ func getComputeInstancePool(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_instance_pool.getComputeInstancePool", "connection_error", err)
 		return nil, err
@@ -201,7 +201,7 @@ func getComputeInstancePoolPermissions(ctx context.Context, d *plugin.QueryData,
 	id := getInstancePoolId(h.Item)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_instance_pool.getComputeInstancePoolPermissions", "connection_error", err)
 		return nil, err

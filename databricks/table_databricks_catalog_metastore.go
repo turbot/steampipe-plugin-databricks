@@ -140,7 +140,7 @@ func listCatalogMetastores(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_metastore.listCatalogMetastores", "connection_error", err)
 		return nil, err
@@ -175,7 +175,7 @@ func getCatalogMetastore(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_metastore.getCatalogMetastore", "connection_error", err)
 		return nil, err
@@ -194,7 +194,7 @@ func getCatalogMetastorePermissions(ctx context.Context, d *plugin.QueryData, h 
 	name := h.Item.(catalog.MetastoreInfo).MetastoreId
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_metastore.getCatalogMetastorePermissions", "connection_error", err)
 		return nil, err
@@ -213,7 +213,7 @@ func getCatalogMetastoreEffectivePermissions(ctx context.Context, d *plugin.Quer
 	name := h.Item.(catalog.MetastoreInfo).MetastoreId
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_metastore.getCatalogMetastoreEffectivePermissions", "connection_error", err)
 		return nil, err

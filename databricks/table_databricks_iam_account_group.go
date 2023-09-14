@@ -100,7 +100,7 @@ func listIAMAccountGroups(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := getAccountClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_account_group.listIAMAccountGroups", "connection_error", err)
 		return nil, err
@@ -153,7 +153,7 @@ func getIAMAccountGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := getAccountClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_account_group.getIAMAccountGroup", "connection_error", err)
 		return nil, err

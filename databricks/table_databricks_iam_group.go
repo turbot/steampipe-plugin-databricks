@@ -100,7 +100,7 @@ func listIAMGroups(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_group.listIAMGroups", "connection_error", err)
 		return nil, err
@@ -153,7 +153,7 @@ func getIAMGroup(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_group.getIAMGroup", "connection_error", err)
 		return nil, err

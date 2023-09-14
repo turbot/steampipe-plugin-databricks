@@ -51,7 +51,7 @@ func listComputeInstanceProfiles(ctx context.Context, d *plugin.QueryData, h *pl
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_instance_profile.listComputeInstanceProfiles", "connection_error", err)
 		return nil, err

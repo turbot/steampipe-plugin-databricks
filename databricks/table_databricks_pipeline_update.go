@@ -115,7 +115,7 @@ func listPipelineUpdates(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline_update.listPipelineUpdates", "connection_error", err)
 		return nil, err
@@ -157,7 +157,7 @@ func getPipelineUpdate(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline_update.getPipelineUpdate", "connection_error", err)
 		return nil, err

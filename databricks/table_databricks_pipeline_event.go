@@ -115,7 +115,7 @@ func listPipelineEvents(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline_event.listPipelineEvents", "connection_error", err)
 		return nil, err

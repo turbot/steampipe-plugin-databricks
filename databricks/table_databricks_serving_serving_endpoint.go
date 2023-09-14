@@ -100,7 +100,7 @@ func listServingServingEndpoints(ctx context.Context, d *plugin.QueryData, h *pl
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_serving_serving_endpoint.listServingServingEndpoints", "connection_error", err)
 		return nil, err
@@ -140,7 +140,7 @@ func getServingServingEndpoint(ctx context.Context, d *plugin.QueryData, h *plug
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_serving_serving_endpoint.getServingServingEndpoint", "connection_error", err)
 		return nil, err
@@ -164,7 +164,7 @@ func getServingServingEndpointPermissions(ctx context.Context, d *plugin.QueryDa
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_serving_serving_endpoint.getServingServingEndpointPermissions", "connection_error", err)
 		return nil, err

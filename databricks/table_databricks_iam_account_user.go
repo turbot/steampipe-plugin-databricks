@@ -120,7 +120,7 @@ func listIAMAccountUsers(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := getAccountClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_account_user.listIAMAccountUsers", "connection_error", err)
 		return nil, err
@@ -176,7 +176,7 @@ func getIAMAccountUser(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksAccount(ctx, d)
+	client, err := getAccountClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_account_user.getIAMAccountUser", "connection_error", err)
 		return nil, err

@@ -199,7 +199,7 @@ func listJobs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_job.listJobs", "connection_error", err)
 		return nil, err
@@ -246,7 +246,7 @@ func getJob(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (in
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_job.getJob", "connection_error", err)
 		return nil, err
@@ -266,7 +266,7 @@ func getJobPermissions(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	id := getJobId(h.Item)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_job.getJobPermissions", "connection_error", err)
 		return nil, err

@@ -173,7 +173,7 @@ func listSQLQueryHistory(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_query_history.listSQLQueryHistory", "connection_error", err)
 		return nil, err
