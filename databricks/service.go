@@ -35,7 +35,7 @@ func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databr
                         if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
                                 os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
                                 os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
-                        } else if os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""{
+                        } else {
                                 if databricksConfig.DataUsername != nil {
                                         os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
                                 }
@@ -92,7 +92,7 @@ func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*data
                         if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
                                 os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
                                 os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
-                        } else if os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""{
+                        } else {
                                 if databricksConfig.DataUsername != nil {
                                         os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
                                 }
