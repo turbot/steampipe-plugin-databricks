@@ -303,7 +303,4 @@ export DATABRICKS_USERNAME=user@turbot.com
 export DATABRICKS_PASSWORD=password
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-databricks
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
