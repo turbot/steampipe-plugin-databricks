@@ -8,6 +8,7 @@ short_name: "databricks"
 description: "Steampipe plugin to query clusters, jobs, users, and more from Databricks."
 og_description: "Query Databricks with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/databricks-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Databricks + Steampipe
