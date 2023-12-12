@@ -15,7 +15,7 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 [Databricks](https://databricks.com) is a unified set of tools for building, deploying, sharing, and maintaining enterprise-grade data solutions at scale.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List details of your Databricks clusters:
 
