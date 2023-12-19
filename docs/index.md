@@ -8,13 +8,14 @@ short_name: "databricks"
 description: "Steampipe plugin to query clusters, jobs, users, and more from Databricks."
 og_description: "Query Databricks with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/databricks-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Databricks + Steampipe
 
 [Databricks](https://databricks.com) is a unified set of tools for building, deploying, sharing, and maintaining enterprise-grade data solutions at scale.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List details of your Databricks clusters:
 
@@ -327,7 +328,4 @@ export DATABRICKS_USERNAME=user@turbot.com
 export DATABRICKS_PASSWORD=password
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-databricks
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
