@@ -14,6 +14,8 @@ type databricksConfig struct {
 	ConfigFilePath *string `hcl:"config_file_path"`
 	DataUsername   *string `hcl:"username"`
 	DataPassword   *string `hcl:"password"`
+        ClientId       *string `hcl:"client_id"`
+        ClientSecret   *string `hcl:"client_secret"`
 }
 
 func ConfigInstance() interface{} {
