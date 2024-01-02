@@ -276,7 +276,7 @@ func listComputeClusters(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_cluster.listComputeClusters", "connection_error", err)
 		return nil, err
@@ -313,7 +313,7 @@ func getComputeCluster(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_cluster.getComputeCluster", "connection_error", err)
 		return nil, err
@@ -332,7 +332,7 @@ func getComputeClusterPermissions(ctx context.Context, d *plugin.QueryData, h *p
 	id := h.Item.(compute.ClusterDetails).ClusterId
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_cluster.getComputeClusterPermission", "connection_error", err)
 		return nil, err

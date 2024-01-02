@@ -87,7 +87,7 @@ func listFilesDbfs(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_files_dbfs.listFilesDbfs", "connection_error", err)
 		return nil, err
@@ -122,7 +122,7 @@ func getFilesDbfsContent(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_files_dbfs.getFilesDbfsContent", "connection_error", err)
 		return nil, err

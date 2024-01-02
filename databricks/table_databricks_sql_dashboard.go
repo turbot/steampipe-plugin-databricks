@@ -134,7 +134,7 @@ func listSQLDashboards(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_dashboard.listSQLDashboards", "connection_error", err)
 		return nil, err

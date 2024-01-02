@@ -216,7 +216,7 @@ func listCatalogFunctions(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_function.listCatalogFunctions", "connection_error", err)
 		return nil, err
@@ -251,7 +251,7 @@ func getCatalogFunction(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_function.getCatalogFunction", "connection_error", err)
 		return nil, err
@@ -271,7 +271,7 @@ func getCatalogFunctionPermissions(ctx context.Context, d *plugin.QueryData, h *
 	name := h.Item.(catalog.FunctionInfo).FullName
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_function.getCatalogFunctionPermissions", "connection_error", err)
 		return nil, err
@@ -290,7 +290,7 @@ func getCatalogFunctionEffectivePermissions(ctx context.Context, d *plugin.Query
 	name := h.Item.(catalog.FunctionInfo).FullName
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_function.getCatalogFunctionEffectivePermissions", "connection_error", err)
 		return nil, err

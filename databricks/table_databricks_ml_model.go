@@ -94,7 +94,7 @@ func listMLModels(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_ml_model.listMLModels", "connection_error", err)
 		return nil, err
@@ -139,7 +139,7 @@ func getMLModel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData)
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_ml_model.getMLModel", "connection_error", err)
 		return nil, err

@@ -201,7 +201,7 @@ func listJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_job_run.listJobRuns", "connection_error", err)
 		return nil, err
@@ -243,7 +243,7 @@ func getJobRun(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) 
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_job_run.getJobRun", "connection_error", err)
 		return nil, err

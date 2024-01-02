@@ -88,7 +88,7 @@ func listComputeGlobalInitScripts(ctx context.Context, d *plugin.QueryData, h *p
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_global_init_script.listComputeGlobalInitScripts", "connection_error", err)
 		return nil, err
@@ -123,7 +123,7 @@ func getComputeGlobalInitScript(ctx context.Context, d *plugin.QueryData, _ *plu
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_global_init_script.getComputeGlobalInitScript", "connection_error", err)
 		return nil, err

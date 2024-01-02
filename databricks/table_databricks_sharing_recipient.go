@@ -154,7 +154,7 @@ func listSharingRecipients(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_recipient.listSharingRecipients", "connection_error", err)
 		return nil, err
@@ -189,7 +189,7 @@ func getSharingRecipient(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_recipient.getSharingRecipient", "connection_error", err)
 		return nil, err
@@ -208,7 +208,7 @@ func getSharingRecipientPermissions(ctx context.Context, d *plugin.QueryData, h 
 	name := h.Item.(sharing.RecipientInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_recipient.getSharingRecipientPermissions", "connection_error", err)
 		return nil, err

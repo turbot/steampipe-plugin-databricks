@@ -91,7 +91,7 @@ func listSettingsTokenManagement(ctx context.Context, d *plugin.QueryData, h *pl
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_settings_token_management.listSettingsTokenManagement", "connection_error", err)
 		return nil, err
@@ -126,7 +126,7 @@ func getSettingsTokenManagement(ctx context.Context, d *plugin.QueryData, _ *plu
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_settings_token_management.getSettingsTokenManagement", "connection_error", err)
 		return nil, err

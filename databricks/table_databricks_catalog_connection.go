@@ -125,7 +125,7 @@ func listCatalogConnections(ctx context.Context, d *plugin.QueryData, h *plugin.
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_connection.listCatalogConnections", "connection_error", err)
 		return nil, err
@@ -161,7 +161,7 @@ func getCatalogConnection(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_connection.getCatalogConnection", "connection_error", err)
 		return nil, err

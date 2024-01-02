@@ -84,7 +84,7 @@ func listWorkspaceRepos(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_workspace_repo.listWorkspaceRepos", "connection_error", err)
 		return nil, err
@@ -125,7 +125,7 @@ func getWorkspaceRepo(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_workspace_repo.getWorkspaceRepo", "connection_error", err)
 		return nil, err

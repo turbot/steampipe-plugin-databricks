@@ -134,7 +134,7 @@ func listCatalogStorageCredentials(ctx context.Context, d *plugin.QueryData, h *
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_storage_credential.listCatalogStorageCredentials", "connection_error", err)
 		return nil, err
@@ -169,7 +169,7 @@ func getCatalogStorageCredential(ctx context.Context, d *plugin.QueryData, _ *pl
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredential", "connection_error", err)
 		return nil, err
@@ -189,7 +189,7 @@ func getCatalogStorageCredentialPermissions(ctx context.Context, d *plugin.Query
 	name := h.Item.(catalog.StorageCredentialInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialPermissions", "connection_error", err)
 		return nil, err
@@ -208,7 +208,7 @@ func getCatalogStorageCredentialEffectivePermissions(ctx context.Context, d *plu
 	name := h.Item.(catalog.StorageCredentialInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_storage_credential.getCatalogStorageCredentialEffectivePermissions", "connection_error", err)
 		return nil, err

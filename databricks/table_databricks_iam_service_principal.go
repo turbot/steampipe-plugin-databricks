@@ -100,7 +100,7 @@ func listIAMServicePrincipals(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_service_principal.listIAMServicePrincipals", "connection_error", err)
 		return nil, err
@@ -153,7 +153,7 @@ func getIAMServicePrincipal(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_service_principal.getIAMServicePrincipal", "connection_error", err)
 		return nil, err

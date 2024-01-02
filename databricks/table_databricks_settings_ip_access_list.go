@@ -94,7 +94,7 @@ func listSettingsIpAccessLists(ctx context.Context, d *plugin.QueryData, h *plug
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_settings_ip_access_list.listSettingsIpAccessLists", "connection_error", err)
 		return nil, err
@@ -129,7 +129,7 @@ func getSettingsIpAccessList(ctx context.Context, d *plugin.QueryData, _ *plugin
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_settings_ip_access_list.getSettingsIpAccessList", "connection_error", err)
 		return nil, err

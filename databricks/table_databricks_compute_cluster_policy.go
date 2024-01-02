@@ -92,7 +92,7 @@ func listComputeClusterPolicies(ctx context.Context, d *plugin.QueryData, h *plu
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_cluster_policy.listComputeClusterPolicies", "connection_error", err)
 		return nil, err
@@ -130,7 +130,7 @@ func getComputeClusterPolicy(ctx context.Context, d *plugin.QueryData, _ *plugin
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_cluster_policy.getComputeClusterPolicy", "connection_error", err)
 		return nil, err

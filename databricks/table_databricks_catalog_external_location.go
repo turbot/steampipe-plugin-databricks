@@ -120,7 +120,7 @@ func listCatalogExternalLocations(ctx context.Context, d *plugin.QueryData, h *p
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_external_location.listCatalogExternalLocations", "connection_error", err)
 		return nil, err
@@ -155,7 +155,7 @@ func getCatalogExternalLocation(ctx context.Context, d *plugin.QueryData, _ *plu
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_external_location.getCatalogExternalLocation", "connection_error", err)
 		return nil, err
@@ -175,7 +175,7 @@ func getCatalogExternalLocationPermissions(ctx context.Context, d *plugin.QueryD
 	name := h.Item.(catalog.ExternalLocationInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationPermissions", "connection_error", err)
 		return nil, err
@@ -194,7 +194,7 @@ func getCatalogExternalLocationEffectivePermissions(ctx context.Context, d *plug
 	name := h.Item.(catalog.ExternalLocationInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_external_location.getCatalogExternalLocationEffectivePermissions", "connection_error", err)
 		return nil, err

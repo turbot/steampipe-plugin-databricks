@@ -129,7 +129,7 @@ func listSharingProviders(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_provider.listSharingProviders", "connection_error", err)
 		return nil, err
@@ -164,7 +164,7 @@ func getSharingProvider(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_provider.getSharingProvider", "connection_error", err)
 		return nil, err
@@ -183,7 +183,7 @@ func getSharingProviderShares(ctx context.Context, d *plugin.QueryData, h *plugi
 	name := h.Item.(sharing.ProviderInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_provider.getSharingProviderShares", "connection_error", err)
 		return nil, err

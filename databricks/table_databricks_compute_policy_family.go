@@ -76,7 +76,7 @@ func listComputePolicyFamilies(ctx context.Context, d *plugin.QueryData, h *plug
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_policy_family.listComputePolicyFamilies", "connection_error", err)
 		return nil, err
@@ -116,7 +116,7 @@ func getComputePolicyFamily(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_compute_policy_family.getComputePolicyFamily", "connection_error", err)
 		return nil, err
