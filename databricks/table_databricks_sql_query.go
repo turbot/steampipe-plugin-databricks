@@ -167,7 +167,7 @@ func listSQLQueries(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_query.listSQLQueries", "connection_error", err)
 		return nil, err
@@ -214,7 +214,7 @@ func getSQLQuery(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_query.getSQLQuery", "connection_error", err)
 		return nil, err

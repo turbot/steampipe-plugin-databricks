@@ -98,7 +98,7 @@ func listSQLAlerts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_alert.listSQLAlerts", "connection_error", err)
 		return nil, err
@@ -133,7 +133,7 @@ func getSQLAlert(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_alert.getSQLAlert", "connection_error", err)
 		return nil, err

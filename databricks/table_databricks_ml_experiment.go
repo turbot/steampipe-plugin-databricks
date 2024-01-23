@@ -102,7 +102,7 @@ func listMLExperiments(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_ml_experiment.listMLExperiments", "connection_error", err)
 		return nil, err
@@ -148,7 +148,7 @@ func getMLExperiment(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_ml_experiment.getMLExperiment", "connection_error", err)
 		return nil, err

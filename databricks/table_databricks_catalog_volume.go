@@ -128,7 +128,7 @@ func listCatalogVolumes(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_volume.listCatalogVolumes", "connection_error", err)
 		return nil, err
@@ -167,7 +167,7 @@ func getCatalogVolume(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_volume.getCatalogVolume", "connection_error", err)
 		return nil, err

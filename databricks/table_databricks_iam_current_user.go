@@ -88,7 +88,7 @@ func getIAMCurrentUser(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_iam_current_user.getIAMCurrentUser", "connection_error", err)
 		return nil, err

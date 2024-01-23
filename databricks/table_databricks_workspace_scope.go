@@ -61,7 +61,7 @@ func listWorkspaceScopes(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_workspace_scope.listWorkspaceScopes", "connection_error", err)
 		return nil, err
@@ -90,7 +90,7 @@ func getWorkspaceScopeAcls(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	scope := h.Item.(workspace.SecretScope).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_workspace_scope.getWorkspaceScopeAcls", "connection_error", err)
 		return nil, err

@@ -65,7 +65,7 @@ func listCatalogSystemSchemas(ctx context.Context, d *plugin.QueryData, h *plugi
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_catalog_system_schema.listCatalogSystemSchemas", "connection_error", err)
 		return nil, err
