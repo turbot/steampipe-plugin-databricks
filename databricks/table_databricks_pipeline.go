@@ -216,7 +216,7 @@ func listPipelines(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline.listPipelines", "connection_error", err)
 		return nil, err
@@ -262,7 +262,7 @@ func getPipeline(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline.getPipeline", "connection_error", err)
 		return nil, err
@@ -281,7 +281,7 @@ func getPipelinePermissions(ctx context.Context, d *plugin.QueryData, h *plugin.
 	id := getPipelineId(h.Item)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_pipeline.getPipelinePermissions", "connection_error", err)
 		return nil, err

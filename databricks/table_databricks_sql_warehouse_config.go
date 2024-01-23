@@ -64,7 +64,7 @@ func getSQLWarehouseConfig(ctx context.Context, d *plugin.QueryData, h *plugin.H
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_warehouse_config.getSQLWarehouseConfig", "connection_error", err)
 		return nil, err

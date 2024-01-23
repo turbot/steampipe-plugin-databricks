@@ -147,7 +147,7 @@ func listSQLWarehouses(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	request := sql.ListWarehousesRequest{}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_warehouse.listSQLWarehouses", "connection_error", err)
 		return nil, err
@@ -182,7 +182,7 @@ func getSQLWarehouse(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_warehouse.getSQLWarehouse", "connection_error", err)
 		return nil, err
@@ -201,7 +201,7 @@ func getSQLWarehousePermissions(ctx context.Context, d *plugin.QueryData, h *plu
 	id := getWarehouseId(h.Item)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sql_warehouse.getSQLWarehousePermissions", "connection_error", err)
 		return nil, err

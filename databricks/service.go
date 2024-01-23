@@ -3,123 +3,151 @@ package databricks
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/databricks/databricks-sdk-go"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func connectDatabricksAccount(ctx context.Context, d *plugin.QueryData) (*databricks.AccountClient, error) {
-
-	// Load connection from cache, which preserves throttling protection etc
-	cacheKey := "databricks_account_client"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
-		return cachedData.(*databricks.AccountClient), nil
-	}
-
-	databricksConfig := GetConfig(d.Connection)
-
-	// Default to using env vars (#2)
-	// But prefer the config (#1)
-
-	if databricksConfig.Profile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
-		if databricksConfig.ConfigFilePath != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
-		}
-	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
-		if databricksConfig.AccountToken != nil {
-			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.AccountToken)
-		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-                        if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
-                                os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
-                                os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
-                        } else {
-                                if databricksConfig.DataUsername != nil {
-                                        os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
-                                }
-                                if databricksConfig.DataPassword != nil {
-                                        os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-                                }
-                        }
-		}
-
-		if databricksConfig.AccountHost != nil {
-			os.Setenv("DATABRICKS_HOST", *databricksConfig.AccountHost)
-		}
-
-		if databricksConfig.AccountId != nil {
-			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
-		}
-	}
-
-	client, err := databricks.NewAccountClient()
+func getAccountClient(ctx context.Context, d *plugin.QueryData) (*databricks.AccountClient, error) {
+	i, err := getAccountClientCached(ctx, d, nil)
 	if err != nil {
-		fmt.Println("Unable to initialize client:", err)
 		return nil, err
 	}
+	return i.(*databricks.AccountClient), nil
+}
 
-	d.ConnectionManager.Cache.Set(cacheKey, client)
+// Cached form of getClient, using the per-connection and parallel safe
+// Memoize() method.
+var getAccountClientCached = plugin.HydrateFunc(getAccountClientUncached).Memoize()
+
+func getAccountClientUncached(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+
+	databricksConfig := GetConfig(d.Connection)
+	config := &databricks.Config{}
+
+	// Account ID is required for a common column
+	if databricksConfig.AccountId != nil {
+		config.AccountID = *databricksConfig.AccountId
+	}
+
+	if config.AccountID == "" && os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+		return nil, errors.New("account_id must be configured")
+	}
+
+	// Check for profile and config file first
+	if databricksConfig.Profile != nil {
+		config.Profile = *databricksConfig.Profile
+	}
+
+	if databricksConfig.ConfigFilePath != nil {
+		config.ConfigFile = *databricksConfig.ConfigFilePath
+	}
+
+	// If not using a profile and config file, check for token
+	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+
+		// Account host is required but can be set in the profile config
+		if databricksConfig.AccountHost != nil {
+			config.Host = *databricksConfig.AccountHost
+		}
+
+		if databricksConfig.AccountToken != nil {
+			config.Token = *databricksConfig.AccountToken
+		}
+
+                if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
+                        config.ClientID = *databricksConfig.ClientID
+                        config.ClientSecret = *databricksConfig.ClientSecret
+                }
+
+		// Finally, check for a username and password
+		if config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
+			if databricksConfig.Username != nil {
+				config.Username = *databricksConfig.Username
+			}
+			if databricksConfig.Password != nil {
+				config.Password = *databricksConfig.Password
+			}
+		}
+	}
+
+	client, err := databricks.NewAccountClient(config)
+	if err != nil {
+		plugin.Logger(ctx).Error("Unable to initialize account client:", err.Error())
+		return nil, err
+	}
 
 	return client, nil
 }
 
-func connectDatabricksWorkspace(ctx context.Context, d *plugin.QueryData) (*databricks.WorkspaceClient, error) {
-
-	// Load connection from cache, which preserves throttling protection etc
-	cacheKey := "databricks_workspace_client"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
-		return cachedData.(*databricks.WorkspaceClient), nil
-	}
-
-	databricksConfig := GetConfig(d.Connection)
-
-	// Default to using env vars (#2)
-	// But prefer the config (#1)
-
-	if databricksConfig.Profile != nil {
-		os.Setenv("DATABRICKS_CONFIG_PROFILE", *databricksConfig.Profile)
-		if databricksConfig.ConfigFilePath != nil {
-			os.Setenv("DATABRICKS_CONFIG_FILE", *databricksConfig.ConfigFilePath)
-		}
-	} else if os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
-		if databricksConfig.WorkspaceToken != nil {
-			os.Setenv("DATABRICKS_TOKEN", *databricksConfig.WorkspaceToken)
-		} else if os.Getenv("DATABRICKS_TOKEN") == "" {
-                        if databricksConfig.ClientId != nil && databricksConfig.ClientSecret != nil {
-                                os.Setenv("DATABRICKS_CLIENT_ID", *databricksConfig.ClientId)
-                                os.Setenv("DATABRICKS_CLIENT_SECRET", *databricksConfig.ClientSecret)
-                        } else {
-                                if databricksConfig.DataUsername != nil {
-                                        os.Setenv("DATABRICKS_USERNAME", *databricksConfig.DataUsername)
-                                }
-                                if databricksConfig.DataPassword != nil {
-                                        os.Setenv("DATABRICKS_PASSWORD", *databricksConfig.DataPassword)
-                                }
-                        }
-		}
-
-		if databricksConfig.WorkspaceHost != nil {
-			os.Setenv("DATABRICKS_HOST", *databricksConfig.WorkspaceHost)
-		}
-
-		if databricksConfig.AccountId != nil {
-			os.Setenv("DATABRICKS_ACCOUNT_ID", *databricksConfig.AccountId)
-		} else if os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
-			return nil, errors.New("account_id must be configured")
-		}
-	}
-
-	client, err := databricks.NewWorkspaceClient()
+func getWorkspaceClient(ctx context.Context, d *plugin.QueryData) (*databricks.WorkspaceClient, error) {
+	i, err := getWorkspacetClientCached(ctx, d, nil)
 	if err != nil {
-		fmt.Println("Unable to initialize client:", err)
 		return nil, err
 	}
+	return i.(*databricks.WorkspaceClient), nil
+}
 
-	d.ConnectionManager.Cache.Set(cacheKey, client)
+// Cached form of getClient, using the per-connection and parallel safe
+// Memoize() method.
+var getWorkspacetClientCached = plugin.HydrateFunc(getWorkspacetClientUncached).Memoize()
+
+func getWorkspacetClientUncached(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	databricksConfig := GetConfig(d.Connection)
+	config := &databricks.Config{}
+
+	// Account ID is required for a common column
+	if databricksConfig.AccountId != nil {
+		config.AccountID = *databricksConfig.AccountId
+	}
+
+	if config.AccountID == "" && os.Getenv("DATABRICKS_ACCOUNT_ID") == "" {
+		return nil, errors.New("account_id must be configured")
+	}
+
+	// Check for profile and config file first
+	if databricksConfig.Profile != nil {
+		config.Profile = *databricksConfig.Profile
+	}
+
+	if databricksConfig.ConfigFilePath != nil {
+		config.ConfigFile = *databricksConfig.ConfigFilePath
+	}
+
+	// If not using a profile and config file, check for token
+	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
+
+		// Workspace host is required but can be set in the profile config
+		if databricksConfig.WorkspaceHost != nil {
+			config.Host = *databricksConfig.WorkspaceHost
+		}
+
+		if databricksConfig.WorkspaceToken != nil {
+			config.Token = *databricksConfig.WorkspaceToken
+		}
+
+                if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
+                        config.ClientID = *databricksConfig.ClientID
+                        config.ClientSecret = *databricksConfig.ClientSecret
+                }
+
+		// Finally, check for a username and password
+		if config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
+			if databricksConfig.Username != nil {
+				config.Username = *databricksConfig.Username
+			}
+			if databricksConfig.Password != nil {
+				config.Password = *databricksConfig.Password
+			}
+		}
+	}
+
+	client, err := databricks.NewWorkspaceClient(config)
+	if err != nil {
+		plugin.Logger(ctx).Error("Unable to initialize workspace client:", err.Error())
+		return nil, err
+	}
 
 	return client, nil
 }

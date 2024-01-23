@@ -25,7 +25,7 @@ func listSettingsToken(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_settings_token.listSettingsToken", "connection_error", err)
 		return nil, err

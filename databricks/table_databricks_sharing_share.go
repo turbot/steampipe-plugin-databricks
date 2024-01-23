@@ -93,7 +93,7 @@ func listSharingShares(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	logger := plugin.Logger(ctx)
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_share.listSharingShares", "connection_error", err)
 		return nil, err
@@ -128,7 +128,7 @@ func getSharingShare(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	}
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_share.getSharingShare", "connection_error", err)
 		return nil, err
@@ -151,7 +151,7 @@ func getSharingSharePermissions(ctx context.Context, d *plugin.QueryData, h *plu
 	name := h.Item.(sharing.ShareInfo).Name
 
 	// Create client
-	client, err := connectDatabricksWorkspace(ctx, d)
+	client, err := getWorkspaceClient(ctx, d)
 	if err != nil {
 		logger.Error("databricks_sharing_share.getSharingSharePermissions", "connection_error", err)
 		return nil, err

@@ -12,9 +12,9 @@ type databricksConfig struct {
 	AccountId      *string `hcl:"account_id"`
 	Profile        *string `hcl:"profile"`
 	ConfigFilePath *string `hcl:"config_file_path"`
-	DataUsername   *string `hcl:"username"`
-	DataPassword   *string `hcl:"password"`
-        ClientId       *string `hcl:"client_id"`
+	Username       *string `hcl:"username"`
+	Password       *string `hcl:"password"`
+        ClientID       *string `hcl:"client_id"`
         ClientSecret   *string `hcl:"client_secret"`
 }
 
