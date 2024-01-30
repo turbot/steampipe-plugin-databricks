@@ -88,8 +88,8 @@ export DATABRICKS_HOST=https://accounts.cloud.databricks.com
 export DATABRICKS_ACCOUNT_ID=abcdd0f81-9be0-4425-9e29-3a7d96782373
 export DATABRICKS_USERNAME=user@turbot.com
 export DATABRICKS_PASSWORD=password
-export DATABRICKS_CLIENT_ID=client_id
-export DATABRICKS_CLIENT_SECRET=client_secret
+export DATABRICKS_CLIENT_ID=123-456-789
+export DATABRICKS_CLIENT_SECRET=dose1234567789abcde
 ```
 
 Run steampipe:

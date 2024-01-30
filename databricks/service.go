@@ -60,8 +60,8 @@ func getAccountClientUncached(ctx context.Context, d *plugin.QueryData, h *plugi
 		empty_oauth_config := config.ClientID == "" && config.ClientSecret == "" && os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""
 
                 // If not using OAuth config, check for token
-		if empty_oauth_config && databricksConfig.WorkspaceToken != nil {
-			config.Token = *databricksConfig.WorkspaceToken
+		if empty_oauth_config && databricksConfig.AccountToken != nil {
+			config.Token = *databricksConfig.AccountToken
 		}
 
 		// Finally, check for a username and password
