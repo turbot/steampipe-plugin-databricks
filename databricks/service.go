@@ -52,17 +52,19 @@ func getAccountClientUncached(ctx context.Context, d *plugin.QueryData, h *plugi
 			config.Host = *databricksConfig.AccountHost
 		}
 
-		if databricksConfig.AccountToken != nil {
-			config.Token = *databricksConfig.AccountToken
+		if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
+			config.ClientID = *databricksConfig.ClientID
+			config.ClientSecret = *databricksConfig.ClientSecret
 		}
 
-                if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
-                        config.ClientID = *databricksConfig.ClientID
-                        config.ClientSecret = *databricksConfig.ClientSecret
-                }
+		empty_oauth_config := config.ClientID == "" && config.ClientSecret == "" && os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""
+
+		if empty_oauth_config && databricksConfig.WorkspaceToken != nil {
+			config.Token = *databricksConfig.WorkspaceToken
+		}
 
 		// Finally, check for a username and password
-		if config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
+		if empty_oauth_config && config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
 			if databricksConfig.Username != nil {
 				config.Username = *databricksConfig.Username
 			}
@@ -123,17 +125,19 @@ func getWorkspacetClientUncached(ctx context.Context, d *plugin.QueryData, h *pl
 			config.Host = *databricksConfig.WorkspaceHost
 		}
 
-		if databricksConfig.WorkspaceToken != nil {
+		if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
+			config.ClientID = *databricksConfig.ClientID
+			config.ClientSecret = *databricksConfig.ClientSecret
+		}
+
+		empty_oauth_config := config.ClientID == "" && config.ClientSecret == "" && os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""
+
+		if empty_oauth_config && databricksConfig.WorkspaceToken != nil {
 			config.Token = *databricksConfig.WorkspaceToken
 		}
 
-                if databricksConfig.ClientID != nil && databricksConfig.ClientSecret != nil {
-                        config.ClientID = *databricksConfig.ClientID
-                        config.ClientSecret = *databricksConfig.ClientSecret
-                }
-
 		// Finally, check for a username and password
-		if config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
+		if empty_oauth_config && config.Token == "" && os.Getenv("DATABRICKS_TOKEN") == "" {
 			if databricksConfig.Username != nil {
 				config.Username = *databricksConfig.Username
 			}
