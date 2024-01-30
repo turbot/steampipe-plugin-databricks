@@ -44,7 +44,7 @@ func getAccountClientUncached(ctx context.Context, d *plugin.QueryData, h *plugi
 		config.ConfigFile = *databricksConfig.ConfigFilePath
 	}
 
-	// If not using a profile and config file, check for token
+	// If not using a profile and config file, check for OAuth config or token
 	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 
 		// Account host is required but can be set in the profile config
@@ -59,6 +59,7 @@ func getAccountClientUncached(ctx context.Context, d *plugin.QueryData, h *plugi
 
 		empty_oauth_config := config.ClientID == "" && config.ClientSecret == "" && os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""
 
+                // If not using OAuth config, check for token
 		if empty_oauth_config && databricksConfig.WorkspaceToken != nil {
 			config.Token = *databricksConfig.WorkspaceToken
 		}
@@ -117,7 +118,7 @@ func getWorkspacetClientUncached(ctx context.Context, d *plugin.QueryData, h *pl
 		config.ConfigFile = *databricksConfig.ConfigFilePath
 	}
 
-	// If not using a profile and config file, check for token
+        // If not using a profile and config file, check for OAuth config or token
 	if config.ConfigFile == "" && os.Getenv("DATABRICKS_CONFIG_PROFILE") == "" {
 
 		// Workspace host is required but can be set in the profile config
@@ -132,6 +133,7 @@ func getWorkspacetClientUncached(ctx context.Context, d *plugin.QueryData, h *pl
 
 		empty_oauth_config := config.ClientID == "" && config.ClientSecret == "" && os.Getenv("DATABRICKS_CLIENT_ID") == "" && os.Getenv("DATABRICKS_CLIENT_SECRET") == ""
 
+                // If not using OAuth config, check for token
 		if empty_oauth_config && databricksConfig.WorkspaceToken != nil {
 			config.Token = *databricksConfig.WorkspaceToken
 		}
