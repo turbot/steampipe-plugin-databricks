@@ -112,6 +112,14 @@ connection "databricks" {
   # A non-default location of the Databricks CLI credentials file.
   # This can also be set via the `DATABRICKS_CONFIG_FILE` environment variable.
   # config_file_path = "/Users/username/.databrickscfg"
+  
+  # OAuth secret client ID of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_ID` environment variable.
+  # client_id = "123-456-789"
+
+  # OAuth secret value of a service principal
+  # This can also be set via the `DATABRICKS_CLIENT_SECRET` environment variable.
+  # client_secret = "dose1234567789abcde"
 }
 ```
 
@@ -290,15 +298,34 @@ connection "databricks_user1-workspace" {
 }
 ```
 
+### Databricks OAuth credentials
+
+Configuration to query Databricks workspace by using [OAuth for service principals](https://docs.databricks.com/en/dev-tools/authentication-oauth.html).
+
+#### databricks.spc
+
+```hcl
+connection "databricks_user1-account" {
+  plugin  = "databricks"
+  account_id = "abcdd0f81-9be0-4425-9e29-3a7d96782373"
+  workspace_host = "https://dbc-a1b2c3d4-e6f7.cloud.databricks.com/"
+
+  client_id = "123-456-789"
+  client_secret = "dose1234567789abcde"
+}
+```
+
 ### Credentials from Environment Variables
 
-Alternatively, you can also use the standard Databricks environment variables to obtain credentials **only if other argument (`profile`, `account_id`, `account_token`/`account_host`/`workspace_token`/`workspace_host`) is not specified** in the connection:
+Alternatively, you can also use the standard Databricks environment variables to obtain credentials **only if other argument (`profile`, `account_id`, `client_id`/`client_secret`/`account_host`/`workspace_host`, `account_token`/`account_host`/`workspace_token`/`workspace_host`) is not specified** in the connection:
 
 ```sh
 export DATABRICKS_CONFIG_PROFILE=user1-test
 export DATABRICKS_TOKEN=dsapi5c72c067b40df73ccb6be3b085d3ba
 export DATABRICKS_HOST=https://accounts.cloud.databricks.com
 export DATABRICKS_ACCOUNT_ID=abcdd0f81-9be0-4425-9e29-3a7d96782373
+export DATABRICKS_CLIENT_ID=123-456-789
+export DATABRICKS_CLIENT_SECRET=dose1234567789abcde
 export DATABRICKS_USERNAME=user@turbot.com
 export DATABRICKS_PASSWORD=password
 ```
