@@ -1,3 +1,11 @@
+## v0.4.0 [2024-02-02]
+
+_What's new?_
+
+- Added `OAuth` config support to provide users the ability to set `OAuth secret client ID` and `OAuth secret value` of a service principal. For more information, please see [Databricks plugin configuration](https://hub.steampipe.io/plugins/turbot/databricks#configuration). ([#6](https://github.com/turbot/steampipe-plugin-databricks/pull/6)) (Thanks to [@rinzool](https://github.com/rinzool) for the contribution!)
+
+- Added `Config` object to directly pass credentials to the client. ([#10](https://github.com/turbot/steampipe-plugin-databricks/pull/10))
+
 ## v0.3.0 [2023-12-12]
 
 _What's new?_
