@@ -28,7 +28,7 @@ func databricksAccountColumns(columns []*plugin.Column) []*plugin.Column {
 
 var getCommonColumnsMemoized = plugin.HydrateFunc(getCommonColumnsUncached).Memoize(memoize.WithCacheKeyFunction(getCommonColumnsCacheKey))
 
-// Build a cache key for the call to getAccountIdCacheKey.
+// Build a cache key for the call to getCommonColumnsCacheKey.
 func getCommonColumnsCacheKey(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	key := "getCommonColumns"
 	return key, nil
