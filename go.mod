@@ -6,7 +6,7 @@ toolchain go1.21.1
 
 require (
 	github.com/databricks/databricks-sdk-go v0.12.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.2
 )
 
 require (
