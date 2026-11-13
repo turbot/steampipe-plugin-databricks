@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/catalog"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -16,14 +16,14 @@ func tableDatabricksCatalogTable(_ context.Context) *plugin.Table {
 		Name:        "databricks_catalog_table",
 		Description: "Gets an array of the available tables.",
 		List: &plugin.ListConfig{
-			Hydrate:           listCatalogTables,
-			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
-			KeyColumns:        plugin.AllColumns([]string{"catalog_name", "schema_name"}),
+			Hydrate:      listCatalogTables,
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"})},
+			KeyColumns:   plugin.AllColumns([]string{"catalog_name", "schema_name"}),
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.SingleColumn("full_name"),
-			ShouldIgnoreError: isNotFoundError([]string{"TABLE_DOES_NOT_EXIST", "CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"}),
-			Hydrate:           getCatalogTable,
+			KeyColumns:   plugin.SingleColumn("full_name"),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"TABLE_DOES_NOT_EXIST", "CATALOG_DOES_NOT_EXIST", "SCHEMA_DOES_NOT_EXIST"})},
+			Hydrate:      getCatalogTable,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/workspace"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -16,9 +16,9 @@ func tableDatabricksWorkspace(_ context.Context) *plugin.Table {
 		Name:        "databricks_workspace",
 		Description: "List all secret workspaces available in the workspace.",
 		List: &plugin.ListConfig{
-			Hydrate:           listWorkspaces,
-			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST"}),
-			KeyColumns:        plugin.OptionalColumns([]string{"path"}),
+			Hydrate:      listWorkspaces,
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST"})},
+			KeyColumns:   plugin.OptionalColumns([]string{"path"}),
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/catalog"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -19,9 +19,9 @@ func tableDatabricksCatalog(_ context.Context) *plugin.Table {
 			Hydrate: listCatalogs,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.SingleColumn("name"),
-			ShouldIgnoreError: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST"}),
-			Hydrate:           getCatalog,
+			KeyColumns:   plugin.SingleColumn("name"),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"CATALOG_DOES_NOT_EXIST"})},
+			Hydrate:      getCatalog,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

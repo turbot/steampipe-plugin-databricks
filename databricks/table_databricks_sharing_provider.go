@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/sharing"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -16,9 +16,9 @@ func tableDatabricksSharingProvider(_ context.Context) *plugin.Table {
 		Name:        "databricks_sharing_provider",
 		Description: "Gets an array of available authentication providers.",
 		List: &plugin.ListConfig{
-			Hydrate:           listSharingProviders,
-			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE"}),
-			KeyColumns:        plugin.OptionalColumns([]string{"data_provider_global_metastore_id"}),
+			Hydrate:      listSharingProviders,
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"INVALID_PARAMETER_VALUE"})},
+			KeyColumns:   plugin.OptionalColumns([]string{"data_provider_global_metastore_id"}),
 		},
 		Get: &plugin.GetConfig{
 			KeyColumns: plugin.AnyColumn([]string{"name"}),

@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/iam"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -26,9 +26,9 @@ func tableDatabricksIAMAccountGroup(_ context.Context) *plugin.Table {
 			Hydrate: listIAMAccountGroups,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.SingleColumn("id"),
-			ShouldIgnoreError: isNotFoundError([]string{"SCIM_404"}),
-			Hydrate:           getIAMAccountGroup,
+			KeyColumns:   plugin.SingleColumn("id"),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"SCIM_404"})},
+			Hydrate:      getIAMAccountGroup,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{
