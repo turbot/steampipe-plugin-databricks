@@ -2,13 +2,13 @@ package databricks
 
 import (
 	"context"
-        "fmt"
-        "strings"
+	"fmt"
+	"strings"
 
 	"github.com/databricks/databricks-sdk-go/service/jobs"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -212,10 +212,10 @@ func listJobRuns(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	for {
 		response, err := client.Jobs.Impl().ListRuns(ctx, request)
 		if err != nil {
-                        if strings.Contains(err.Error(), fmt.Sprintf("Job %v does not exist", request.JobId)) {
-                                logger.Warn("databricks_job_run.listJobRuns", "api_error", err)
-                                return nil, nil
-                        }
+			if strings.Contains(err.Error(), fmt.Sprintf("Job %v does not exist", request.JobId)) {
+				logger.Warn("databricks_job_run.listJobRuns", "api_error", err)
+				return nil, nil
+			}
 			logger.Error("databricks_job_run.listJobRuns", "api_error", err)
 			return nil, err
 		}

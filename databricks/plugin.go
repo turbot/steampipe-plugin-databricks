@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/useragent"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 const pluginName = "steampipe-plugin-databricks"
@@ -21,7 +21,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultTransform:   transform.FromCamel().Transform(transform.NullIfZeroValue),
 		DefaultRetryConfig: &plugin.RetryConfig{ShouldRetryErrorFunc: shouldRetryError([]string{"429"})},
 		DefaultGetConfig: &plugin.GetConfig{
-			ShouldIgnoreError: isNotFoundError([]string{"INVALID_PARAMETER_VALUE", "RESOURCE_DOES_NOT_EXIST", "DOES_NOT_EXIST", "404"}),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"INVALID_PARAMETER_VALUE", "RESOURCE_DOES_NOT_EXIST", "DOES_NOT_EXIST", "404"})},
 		},
 		ConnectionKeyColumns: []plugin.ConnectionKeyColumn{
 			{

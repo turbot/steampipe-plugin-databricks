@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/databricks/databricks-sdk-go/apierr"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
-func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
-	return func(err error) bool {
+func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicateWithContext {
+	return func(_ context.Context, _ *plugin.QueryData, _ *plugin.HydrateData, err error) bool {
 		switch err := err.(type) {
 		case *apierr.APIError:
 			for _, msg := range notFoundErrors {

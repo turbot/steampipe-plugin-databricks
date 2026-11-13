@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/databricks/databricks-sdk-go/service/files"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -16,9 +16,9 @@ func tableDatabricksFilesDbfs(_ context.Context) *plugin.Table {
 		Name:        "databricks_files_dbfs",
 		Description: "List the contents of a directory, or details of the file.",
 		List: &plugin.ListConfig{
-			Hydrate:           listFilesDbfs,
-			ShouldIgnoreError: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST", "INVALID_PARAMETER_VALUE"}),
-			KeyColumns:        plugin.AnyColumn([]string{"path", "path_prefix"}),
+			Hydrate:      listFilesDbfs,
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"RESOURCE_DOES_NOT_EXIST", "INVALID_PARAMETER_VALUE"})},
+			KeyColumns:   plugin.AnyColumn([]string{"path", "path_prefix"}),
 		},
 		Columns: []*plugin.Column{
 			{

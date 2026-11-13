@@ -3,9 +3,9 @@ package databricks
 import (
 	"context"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 //// TABLE DEFINITION
@@ -18,9 +18,9 @@ func tableDatabricksSQLAlert(_ context.Context) *plugin.Table {
 			Hydrate: listSQLAlerts,
 		},
 		Get: &plugin.GetConfig{
-			KeyColumns:        plugin.AnyColumn([]string{"id"}),
-			ShouldIgnoreError: isNotFoundError([]string{"400"}),
-			Hydrate:           getSQLAlert,
+			KeyColumns:   plugin.AnyColumn([]string{"id"}),
+			IgnoreConfig: &plugin.IgnoreConfig{ShouldIgnoreErrorFunc: isNotFoundError([]string{"400"})},
+			Hydrate:      getSQLAlert,
 		},
 		Columns: databricksAccountColumns([]*plugin.Column{
 			{

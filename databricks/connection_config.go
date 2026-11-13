@@ -1,7 +1,7 @@
 package databricks
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 type databricksConfig struct {
@@ -14,8 +14,8 @@ type databricksConfig struct {
 	ConfigFilePath *string `hcl:"config_file_path"`
 	Username       *string `hcl:"username"`
 	Password       *string `hcl:"password"`
-        ClientID       *string `hcl:"client_id"`
-        ClientSecret   *string `hcl:"client_secret"`
+	ClientID       *string `hcl:"client_id"`
+	ClientSecret   *string `hcl:"client_secret"`
 }
 
 func ConfigInstance() interface{} {
@@ -24,9 +24,9 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) databricksConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return databricksConfig{}
 	}
-	config, _ := connection.Config.(databricksConfig)
+	config, _ := connection.GetConfig().(databricksConfig)
 	return config
 }
